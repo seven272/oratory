@@ -1,0 +1,242 @@
+.main_taboo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font: var(--font-title);
+  color: var(--color-text-dark);
+  margin-bottom: 10px;
+}
+.descr {
+  font: var(--font-m-light);
+  color: var(--color-text-dark);
+  margin-bottom: 20px;
+}
+
+.screen {
+  width: 100%;
+  height: auto;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-bg);
+  background-image:
+    url('../../../../assets/images/design/corner-left.png'),
+    url('../../../../assets/images/design/corner-right.png');
+  background-position:
+    left bottom,
+    right bottom;
+  background-size:
+    80px 75px,
+    80px 75px;
+  background-repeat: no-repeat;
+  border-radius: 24px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.screen_idle {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 15px;
+  padding: 0 10px;
+}
+
+.text_start {
+  font: var(--font-decor);
+  font-size: 40px;
+  letter-spacing: 4px;
+  color: var(--color-primary);
+}
+
+.idle_warning {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.screen_running {
+  width: 100%;
+  min-height: 250px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 10px;
+  font: var(--font-m-light);
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: var(--color-text-dark);
+}
+
+.task_wrap {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.task_title {
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: var(--font-title);
+  background: var(--color-blue);
+  color: var(--color-white);
+  padding: 4px 12px;
+  border-radius: 2px;
+  margin-bottom: 15px;
+}
+
+.tags_title {
+  font: var(--font-m-light);
+  color: var(--color-text-primary);
+  margin-bottom: 5px;
+}
+
+.tags {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 5px;
+}
+
+.tag {
+  width: max-content;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: var(--font-subtitle);
+  color: var(--color-text-primary);
+  background: rgba(0, 123, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.note {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0; /* Растягиваем на всю ширину, чтобы работало выравнивание текста */
+  text-align: center;
+  font: var(--font-m-light);
+  color: var(--color-grey-dark);
+}
+
+.screen_finished {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  row-gap: 10px;
+  margin-top: 20px;
+}
+
+.finished_question {
+  text-align: center;
+  color: var(--color-text-dark);
+  font: var(--font-title);
+}
+
+.finished_block_result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  row-gap: 15px;
+}
+
+.finished_text {
+  font: var(--font-title);
+  color: var(--color-text-dark);
+  text-align: center;
+}
+
+.finished_xp {
+  color: var(--color-primary);
+  font: var(--font-title);
+  font-size: 30px;
+  text-align: center;
+}
+
+.finished_answer {
+  text-align: center;
+  color: var(--color-text-dark);
+  font: var(--font-m-light);
+}
+
+.audio_title {
+  display: flex;
+  width: 100%;
+  color: var(--color-text-primary);
+  font: var(--font-m);
+  align-self: flex-start;
+}
+.audio_pleer {
+  width: 100%;
+  margin: 3px 0 25px 0;
+}
+
+.btn_theory {
+  /* Сбрасываем дефолтные стили кнопки */
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--vkui--color_separator_primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px auto; /* Центрируем */
+  padding: 8px 16px;
+  color: var(--vkui--color_text_secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s active;
+}
+
+/* Эффект при наведении (для десктопа) */
+@media (hover: hover) {
+  .btn_theory:hover {
+    background-color: var(--vkui--color_background_secondary);
+  }
+}
+
+/* Эффект при нажатии */
+.btn_theory:active {
+  transform: scale(0.97);
+  background-color: var(--vkui--color_background_secondary);
+}
+
+.theory_icon {
+  color: var(--vkui--color_icon_medium);
+}

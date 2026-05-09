@@ -1,0 +1,45 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //убрать в продакшене, и установить сетрификаты Миецифры
+import express from 'express'
+import path from 'path'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
+
+import { connectDB } from './config/db.js'
+import corsOptions from './config/corsOptions.js'
+import userRoutes from './routes/userRoutes.js'
+import aiExerciseRoutes from './routes/aiExerciseRoutes.js'
+import exerciseRoutes from './routes/exerciseRoutes.js'
+
+dotenv.config()
+
+const __dirname = import.meta.dirname
+const PORT = process.env.PORT || 5020
+
+const app = express()
+
+app.use(express.json())
+app.use(cookieParser())
+app.use(cors(corsOptions))
+// чтобы парсить вложенные данные(например обьекты) передаваемые в req.body
+app.use(express.urlencoded({ extended: true }))
+
+//Мидлвар для изображений. При попытке загрузить изображение сервер отправляет get запрос на получение  изображения http://localhost:5000/static/name-folder/name-image.jpg, и я отправляю сервер искать в папку с изображениями uploads, чтобы проверить есть ли там файл с таким именем.
+app.use('/static', express.static(path.join(__dirname + '/uploads')))
+
+app.use('/api/user', userRoutes)
+app.use('/api/ai', aiExerciseRoutes)
+app.use('/api/exercises', exerciseRoutes)
+
+const start = async () => {
+  try {
+    await connectDB()
+    app.listen(PORT, () => {
+      console.log(`Сервер успешно запущен на порту ${PORT}`)
+    })
+  } catch (error) {
+    console.log(`Ошибка при подкючении с серверу ` + error)
+  }
+}
+
+start()
