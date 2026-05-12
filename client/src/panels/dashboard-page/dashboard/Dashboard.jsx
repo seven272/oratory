@@ -1,17 +1,25 @@
 import React from 'react'
-import { Spin, Progress, Button, Alert } from 'antd'
+import { Spin, Progress, Button } from 'antd'
 import {
   FireOutlined,
   DollarOutlined,
   TrophyOutlined,
   HistoryOutlined,
   StarOutlined,
-  BarChartOutlined
+  BarChartOutlined,
 } from '@ant-design/icons'
 import { Radar } from '@ant-design/plots'
+
+import Achievements from '../achievements/Achievements'
 import styles from './Dashboard.module.css'
 
-const Dashboard = ({ user, skills, weakPoint, recentActivity, totalExercises }) => {
+const Dashboard = ({
+  user,
+  skills,
+  weakPoint,
+  recentActivity,
+  totalExercises,
+}) => {
   if (!skills || !user) {
     return <Spin size="large" fullscreen />
   }
@@ -27,13 +35,15 @@ const Dashboard = ({ user, skills, weakPoint, recentActivity, totalExercises }) 
             <span className={styles.statTitle}>Уровень</span>
           </div>
           <div className={styles.statValue}>{user.level}</div>
-          <Progress 
-            percent={user.levelProgressPercent} 
-            size="small" 
-            status="active" 
-            strokeColor="#faad14" 
+          <Progress
+            percent={user.levelProgressPercent}
+            size="small"
+            status="active"
+            strokeColor="#faad14"
           />
-          <div className={styles.statSub}>{user.xp} / {user.nextThreshold} XP</div>
+          <div className={styles.statSub}>
+            {user.xp} / {user.nextThreshold} XP
+          </div>
         </div>
 
         {/* Карточка жетонов */}
@@ -52,7 +62,9 @@ const Dashboard = ({ user, skills, weakPoint, recentActivity, totalExercises }) 
             <BarChartOutlined className={styles.iconXp} />
             <span className={styles.statTitle}>Общий опыт</span>
           </div>
-          <div className={styles.statValue}>{user.lifetimeXp || 0}</div>
+          <div className={styles.statValue}>
+            {user.lifetimeXp || 0}
+          </div>
           <div className={styles.statSub}>За всё время</div>
         </div>
 
@@ -62,8 +74,12 @@ const Dashboard = ({ user, skills, weakPoint, recentActivity, totalExercises }) 
             <FireOutlined className={styles.iconStreak} />
             <span className={styles.statTitle}>Стрик</span>
           </div>
-          <div className={styles.statValue}>{user.streak} <span className={styles.unit}>дн.</span></div>
-          <div className={styles.statSub}>Всего тренировок: {totalExercises || 0}</div>
+          <div className={styles.statValue}>
+            {user.streak} <span className={styles.unit}>дн.</span>
+          </div>
+          <div className={styles.statSub}>
+            Всего тренировок: {totalExercises || 0}
+          </div>
         </div>
       </div>
 
@@ -93,11 +109,16 @@ const Dashboard = ({ user, skills, weakPoint, recentActivity, totalExercises }) 
             {recentActivity?.map((item, index) => (
               <div key={index} className={styles.activityItem}>
                 <div className={styles.activityInfo}>
-                  <div className={styles.activityName}>{item.title}</div>
-                  <div className={styles.activityScore}>Очков: {item.totalPoints}</div>
+                  <div className={styles.activityName}>
+                    {item.title}
+                  </div>
+                  <div className={styles.activityScore}>
+                    Очков: {item.totalPoints}
+                  </div>
                 </div>
                 <div className={styles.activityCount}>
-                  <StarOutlined style={{ color: '#fadb14' }} /> {item.completionsCount}
+                  <StarOutlined style={{ color: '#fadb14' }} />{' '}
+                  {item.completionsCount}
                 </div>
               </div>
             ))}
@@ -106,24 +127,29 @@ const Dashboard = ({ user, skills, weakPoint, recentActivity, totalExercises }) 
       </div>
 
       {/* 3. ЗОНА РОСТА */}
-     {weakPoint && (
-  <div className={styles.growthBanner}>
-    <div className={styles.growthIcon}>
-      <StarOutlined />
-    </div>
-    <div className={styles.growthInfo}>
-      <div className={styles.growthTitle}>Твоя ближайшая цель: {weakPoint.skill}</div>
-      <div className={styles.growthDesc}>
-        Средний балл здесь {weakPoint.score}%. {weakPoint.recommendation}
-      </div>
-    </div>
-    <div className={styles.growthAction}>
-      <Button type="primary" className={styles.growthBtn}>
-        Поднажать
-      </Button>
-    </div>
-  </div>
-)}
+      {weakPoint && (
+        <div className={styles.growthBanner}>
+          <div className={styles.growthIcon}>
+            <StarOutlined />
+          </div>
+          <div className={styles.growthInfo}>
+            <div className={styles.growthTitle}>
+              Твоя ближайшая цель: {weakPoint.skill}
+            </div>
+            <div className={styles.growthDesc}>
+              Средний балл здесь {weakPoint.score}%.{' '}
+              {weakPoint.recommendation}
+            </div>
+          </div>
+          <div className={styles.growthAction}>
+            <Button type="primary" className={styles.growthBtn}>
+              Поднажать
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <Achievements />
     </div>
   )
 }

@@ -5,8 +5,8 @@ import axiosInstance from '../../utils/axiosInstance'
 // Экшен для отправки результата упражнения
 const fetchCompleteExercise = createAsyncThunk(
   'exercise/complete',
-  async ({ exAlias, score }, { rejectWithValue }) => {
-    
+  async ({ exAlias, score, isDaily }, { rejectWithValue }) => {
+    console.log('ежедневное упражнение? ' + isDaily)
     try {
       // Отправляем ID упражнения и набранные очки
       const res = await axiosInstance.post(
@@ -14,6 +14,7 @@ const fetchCompleteExercise = createAsyncThunk(
         {
           exAlias,
           score,
+          isDaily
         },
       )
       return res.data // Ждем { earnedXp, isLevelUp, level, coins, ... }

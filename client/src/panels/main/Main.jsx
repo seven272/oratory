@@ -6,6 +6,7 @@ import Footer from '../../components/footer/Footer'
 import Header from '../../components/header/Header'
 import PointsUser from '../../components/points-user/PointsUser'
 import ExerciseSlider from './exercise-slider/ExerciseSlider'
+import DailyTasksList from '../../components/daily-tasks-list/DailyTasksList'
 
 const Main = ({ id }) => {
   return (
@@ -19,20 +20,19 @@ const Main = ({ id }) => {
         </header>
         <div className={styles.line_border}></div>
 
+        <DailyTasksList />
+
         <ExerciseSlider
           titleLvl="Уровень 1: База"
-          exLvl="level1"
           exList={All_EXERCISES.level1}
         />
         <ExerciseSlider
           titleLvl="Уровень 2: Продвинутый"
-          exLvl="level2"
           exList={All_EXERCISES.level2}
         />
 
         <ExerciseSlider
           titleLvl="Уровень 3: Эксперт"
-          exLvl="level3"
           exList={All_EXERCISES.level3}
         />
       </div>

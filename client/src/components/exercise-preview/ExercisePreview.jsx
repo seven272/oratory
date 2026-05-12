@@ -9,7 +9,7 @@ import styles from './ExercisePreview.module.css'
 import Modal from '../../UI/modal/Modal'
 import TheoryContent from '../theory-content/TheoryContent'
 
-const ExercisePreview = ({ exData, exLvl }) => {
+const ExercisePreview = ({ exData }) => {
   const routeNavigator = useRouteNavigator()
   const { user } = useSelector((state) => state.profile)
   const [showModal, setShowModal] = useState(false)
@@ -20,7 +20,7 @@ const ExercisePreview = ({ exData, exLvl }) => {
 
   const handleClick = () => {
     if (!isLocked) {
-      routeNavigator.push(`/exercise/${exLvl}/${exData.alias}`)
+      routeNavigator.push(`/exercise/${exData.alias}`)
     }
   }
 

@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
       xp: { type: Number, default: 0 },
       // баланс жетонов оратора
       coins: { type: Number, default: 0 },
-      // Список полученных званий и наград
+      // Список полученных званий и наград 
       achievements: [
         {
           title: { type: String }, // "Оратор 4 уровня", "Мастер споров"

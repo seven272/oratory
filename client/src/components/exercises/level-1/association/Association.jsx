@@ -11,7 +11,7 @@ import { useSpeech } from '../../../../hooks/useSpeech'
 import { fetchCompleteExercise } from '../../../../redux/slices/exerciseSlice'
 import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import TheoryContent from '../../../theory-content/TheoryContent'
-import Modal from '../../../../UI/modal/Modal'
+import Modal from '../../../../UI/modal/Modal' 
 
 const STATUS = {
   IDLE: 'idle',
@@ -33,7 +33,7 @@ const isSpeechSupported = !!(
   (window.SpeechRecognition || window.webkitSpeechRecognition)
 )
 
-const Association = ({ alias }) => {
+const Association = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -78,13 +78,13 @@ const Association = ({ alias }) => {
 
   const clickNext = () => {
     setWords(getRandomPairWords(similarWords))
-    dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
+    dispatch(fetchCompleteExercise({ exAlias: alias, score: xp, isDaily: isDaily }))
     resetExerciseState()
     setStatus(STATUS.RUNNING)
   }
 
   const clickStop = () => {
-    dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
+    dispatch(fetchCompleteExercise({ exAlias: alias, score: xp, isDaily: isDaily }))
     routerNavigator.push('/')
   }
 

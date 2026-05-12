@@ -8,7 +8,9 @@ const fetchProfileData = createAsyncThunk(
   'profile/fetchProfileData',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/user/user-statistics')
+      const response = await axiosInstance.get(
+        '/user/user-statistics',
+      )
       return response.data // Ждем объект { user, skills, weakPoint, recentActivity, totalExercises }
     } catch (error) {
       return rejectWithValue(
@@ -24,9 +26,9 @@ const initialState = {
     level: 3,
     coins: 23,
     streak: 3,
-    lifetimeXp:799,
+    achievements: [],
     levelProgressPercent: 57,
-    isPremium: true
+    isPremium: true,
   },
   skills: [
     { subject: 'Дикция', A: 80, fullMark: 100 },
@@ -43,6 +45,8 @@ const initialState = {
   },
   recentActivity: [],
   totalExercises: 0,
+  lastAwarded: null, // Сюда кладем новую ачивку для триггера модалки
+  isStale: false,
   loading: false,
   error: null,
 }
@@ -55,11 +59,13 @@ const profileSlice = createSlice({
     updateCoins: (state, action) => {
       if (state.user) state.user.coins = action.payload
     },
+    clearLastAwarded: (state) => {
+      state.lastAwarded = null
+    },
   },
   extraReducers: (builder) => {
     builder
-    // ПОДПИСКА НА ЗАВЕРШЕНИЕ УПРАЖНЕНИЯ
-    builder
+      // ПОДПИСКА НА ЗАВЕРШЕНИЕ УПРАЖНЕНИЯ
       .addCase(fetchCompleteExercise.fulfilled, (state, action) => {
         // action.payload — это то, что прислал бэкенд (res.status(200).json)
         // В твоем контроллере это объект с earnedXp, isLevelUp и объектом stats
@@ -69,8 +75,24 @@ const profileSlice = createSlice({
           state.user.xp = action.payload.stats.xp
           state.user.coins = action.payload.stats.coins
           state.user.streak = action.payload.stats.streak
-          // Обновляем глобальную статистику
-          state.stats.lifetimeXp += action.payload.earnedXp
+
+          // ЛОГИКА АЧИВОК
+          if (
+            action.payload.newAchievements &&
+            action.payload.newAchievements.length > 0
+          ) {
+            // 1. Сохраняем в lastAwarded для всплывающего окна
+            // Если ачивок несколько, берем первую (или можно передать весь массив)
+            state.lastAwarded = action.payload.newAchievements[0]
+
+            // 2. Добавляем в общий список в профиле, чтобы они сразу появились в Dashboard
+            if (!state.user.achievements) {
+              state.user.achievements = []
+            }
+            state.user.achievements.push(
+              ...action.payload.newAchievements,
+            )
+          }
         }
 
         // Помечаем данные как "устаревшие", чтобы при переходе на страницу
@@ -97,6 +119,6 @@ const profileSlice = createSlice({
   },
 })
 
-export const { updateCoins } = profileSlice.actions
+export const { updateCoins, clearLastAwarded } = profileSlice.actions
 export { fetchProfileData }
 export default profileSlice.reducer

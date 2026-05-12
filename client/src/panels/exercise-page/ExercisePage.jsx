@@ -1,6 +1,7 @@
 import {
   useRouteNavigator,
   useParams,
+  useSearchParams
 } from '@vkontakte/vk-mini-apps-router'
 import { Panel } from '@vkontakte/vkui'
 
@@ -11,15 +12,16 @@ import Footer from '../../components/footer/Footer'
 import Header from '../../components/header/Header'
 
 const ExercisePage = ({ id }) => {
-  const params = useParams()
   const routerNavigator = useRouteNavigator()
+  const params = useParams()
+  const [queryParams] = useSearchParams()
+  const isDaily = queryParams.get('daily') === 'true'
 
-  // Защита от undefined: проверяем, есть ли ключи в params и All_EXERCISES
-  const levelData = params?.level ? All_EXERCISES[params.level] : []
+  //  Находим иконку из статического конфига по alias
+  const exerciseData =  params?.alias ? Object.values(All_EXERCISES)
+    .flat()
+    .find((ex) => ex.alias.toString() === params?.alias.toString()) : null
 
-  const exerciseData = levelData.find(
-    (ex) => ex.alias.toString() === params?.alias.toString(),
-  )
   const handleGoBack = () => {
     routerNavigator.back() // Уходим назад в меню
   }
@@ -29,15 +31,14 @@ const ExercisePage = ({ id }) => {
       <Panel id={id}>
         <Header />
         <div className={styles.main_no_ex}>
-  <button className={styles.back_btn} onClick={handleGoBack}>
-          ← Назад в меню
-        </button>
-        <div className={styles.screen}>
-          <span>Упражнение не найдено...</span>
+          <button className={styles.back_btn} onClick={handleGoBack}>
+            ← Назад в меню
+          </button>
+          <div className={styles.screen}>
+            <span>Упражнение не найдено...</span>
+          </div>
         </div>
 
-        </div>
-      
         <Footer />
       </Panel>
     )
@@ -52,7 +53,7 @@ const ExercisePage = ({ id }) => {
             ← Назад в меню
           </button>
           <div className={styles.exercise_wrapper}>
-            <ExerciseRenderer exercise={exerciseData} />
+            <ExerciseRenderer exercise={exerciseData} isDaily={isDaily}/>
           </div>
         </div>
       </div>

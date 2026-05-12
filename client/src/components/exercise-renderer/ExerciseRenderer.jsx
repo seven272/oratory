@@ -23,45 +23,45 @@ import InterviewAi from '../exercises/level-3/interview-ai/InterviewAi'
 import IcebreakerAi from '../exercises/level-3/icebreaker-ai/IcebreakerAi'
 import TribuneAi from '../exercises/level-3/tribune-ai/TribuneAi'
 
-const ExerciseRenderer = ({ exercise }) => {
+const ExerciseRenderer = ({ exercise, isDaily }) => {
   // Определяем, какой компонент отрисовать на основе типа из конфига
   switch (exercise.alias) {
     case 'association':
-      return <Association alias={exercise.alias}/>
+      return <Association alias={exercise.alias} isDaily={isDaily}/>
     case 'description':
-      return <Description alias={exercise.alias}/>
+      return <Description alias={exercise.alias} isDaily={isDaily}/>
     case 'tongue-twister':
-      return <TongueTwister alias={exercise.alias}/>
+      return <TongueTwister alias={exercise.alias} isDaily={isDaily}/>
     case 'synonyms':
-      return <Synonyms alias={exercise.alias}/>
+      return <Synonyms alias={exercise.alias} isDaily={isDaily}/>
     case 'emotion':
-      return <Emotion alias={exercise.alias}/>
+      return <Emotion alias={exercise.alias} isDaily={isDaily}/>
     case 'logic-chain':
-      return <LogicChain alias={exercise.alias}/>
+      return <LogicChain alias={exercise.alias} isDaily={isDaily}/>
     case 'jargon-task':
-      return <JargonTask alias={exercise.alias}/>
+      return <JargonTask alias={exercise.alias} isDaily={isDaily}/>
     case 'speaking-thread':
-      return <SpeakingThread alias={exercise.alias}/>
+      return <SpeakingThread alias={exercise.alias} isDaily={isDaily}/>
     case 'toast-master':
-      return <ToastMaster alias={exercise.alias}/>
+      return <ToastMaster alias={exercise.alias} isDaily={isDaily}/>
     case 'joke-master':
-      return <JokeMaster alias={exercise.alias}/>
+      return <JokeMaster alias={exercise.alias} isDaily={isDaily}/>
     case 'taboo':
-      return <Taboo alias={exercise.alias}/>
+      return <Taboo alias={exercise.alias} isDaily={isDaily}/>
     case 'science-translator':
-      return <ScienceTranslator alias={exercise.alias}/>
+      return <ScienceTranslator alias={exercise.alias} isDaily={isDaily}/>
     case 'fear-explosive':
-      return <FearExplosive alias={exercise.alias}/>
+      return <FearExplosive alias={exercise.alias} isDaily={isDaily}/>
     case 'king-failure':
-      return <KingFailure alias={exercise.alias}/>
+      return <KingFailure alias={exercise.alias} isDaily={isDaily}/>
     case 'ai-debate':
-      return <DebateTrainerAi alias={exercise.alias}/>
+      return <DebateTrainerAi alias={exercise.alias} isDaily={isDaily}/>
     case 'ai-interview':
-      return <InterviewAi alias={exercise.alias}/>
+      return <InterviewAi alias={exercise.alias} isDaily={isDaily}/>
     case 'ai-icebreaker':
-      return <IcebreakerAi alias={exercise.alias}/>
+      return <IcebreakerAi alias={exercise.alias} isDaily={isDaily}/>
     case 'ai-tribune':
-      return <TribuneAi alias={exercise.alias}/>
+      return <TribuneAi alias={exercise.alias} isDaily={isDaily}/>
 
     default:
       return (

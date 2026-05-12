@@ -13,7 +13,7 @@ const routers = [
     view: 'main_view',
   },
     {
-    path: '/exercise/:level/:alias',
+    path: '/exercise/:alias',
     panel: 'exercise-page-panel',
     view: 'main_view',
   },

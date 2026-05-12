@@ -4,6 +4,7 @@ import DailyTask from '../models/DailyTask.js'
 
 import { All_EXERCISES } from '../constants/exercises.js'
 import { getXpThreshold } from '../utils/fnForControllers.js'
+import { checkAchievements } from '../utils/achievementService.js'
 
 // const completeExercise = async (req, res) => {
 //   try {
@@ -248,6 +249,9 @@ const completeExercise = async (req, res) => {
     }
     user.stats.totalExercises = (user.stats.totalExercises || 0) + 1
 
+    //проверка на получение новых достижений
+    const newAwards = checkAchievements(user)
+
     await user.save()
 
     res.status(200).json({
@@ -255,6 +259,7 @@ const completeExercise = async (req, res) => {
       earnedXp,
       earnedCoins,
       isLevelUp,
+      newAchievements: newAwards || [],
       stats: {
         level: user.progression.level,
         xp: user.progression.xp,
@@ -340,7 +345,5 @@ const getDailyTasks = async (req, res) => {
       .json({ message: 'Ошибка получения ежедневных заданий' })
   }
 }
-
-
 
 export { completeExercise, getDailyTasks }
