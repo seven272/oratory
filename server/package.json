@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./src/server.js",
     "dev": "nodemon ./src/server.js",
-    "seed:tasks": "node ./src/scripts/seedTasks.js"
+    "seed:tasks": "node ./src/scripts/seedTasks.js",
+    "seed:users": "node ./src/scripts/seedUsers.js"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.2",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
     "nodemon": "^3.1.11",
     "uuid": "^14.0.0"
   },

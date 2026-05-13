@@ -221,6 +221,7 @@ const completeExercise = async (req, res) => {
     user.stats.lifetimeXp += earnedXp
     user.progression.xp += earnedXp
     user.progression.coins += earnedCoins
+    user.weeklyXp += earnedXp
 
     // --- LEVEL UP ---
     let isLevelUp = false
@@ -260,6 +261,7 @@ const completeExercise = async (req, res) => {
       earnedCoins,
       isLevelUp,
       newAchievements: newAwards || [],
+
       stats: {
         level: user.progression.level,
         xp: user.progression.xp,

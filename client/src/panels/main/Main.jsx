@@ -7,6 +7,7 @@ import Header from '../../components/header/Header'
 import PointsUser from '../../components/points-user/PointsUser'
 import ExerciseSlider from './exercise-slider/ExerciseSlider'
 import DailyTasksList from '../../components/daily-tasks-list/DailyTasksList'
+import Leaderboard from '../../components/leaderboard/Leaderboard'
 
 const Main = ({ id }) => {
   return (
@@ -36,6 +37,8 @@ const Main = ({ id }) => {
           exList={All_EXERCISES.level3}
         />
       </div>
+
+      <Leaderboard />
 
       <Footer />
     </Panel>

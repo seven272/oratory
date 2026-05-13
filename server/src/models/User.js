@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
     password: { type: String },
+    avatar: { type: String, default: 'dicebear.com' },
+
     // Внешние ID (для будущего расширения)
     vkId: { type: String, unique: true, sparse: true },
     googleId: { type: String, unique: true, sparse: true },
@@ -27,7 +29,7 @@ const userSchema = new mongoose.Schema(
       xp: { type: Number, default: 0 },
       // баланс жетонов оратора
       coins: { type: Number, default: 0 },
-      // Список полученных званий и наград 
+      // Список полученных званий и наград
       achievements: [
         {
           title: { type: String }, // "Оратор 4 уровня", "Мастер споров"
@@ -64,6 +66,7 @@ const userSchema = new mongoose.Schema(
         date: { type: String }, // Формат "YYYY-MM-DD" для быстрой проверки
       },
     ],
+    weeklyXp: { type: Number, default: 0 },
   },
   {
     timestamps: true, // Автоматически создаст createdAt и updatedAt

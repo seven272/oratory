@@ -1,4 +1,4 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //убрать в продакшене, и установить сетрификаты Миецифры
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0' //убрать в продакшене, и установить сетрификаты Миецифры
 import express from 'express'
 import path from 'path'
 import cors from 'cors'
@@ -7,9 +7,11 @@ import cookieParser from 'cookie-parser'
 
 import { connectDB } from './config/db.js'
 import corsOptions from './config/corsOptions.js'
+import { initCronJobs } from './config/cronService.js'
 import userRoutes from './routes/userRoutes.js'
 import aiExerciseRoutes from './routes/aiExerciseRoutes.js'
 import exerciseRoutes from './routes/exerciseRoutes.js'
+import leaderboardRoutes from './routes/leaderboardRoutes.js'
 
 dotenv.config()
 
@@ -30,15 +32,17 @@ app.use('/static', express.static(path.join(__dirname + '/uploads')))
 app.use('/api/user', userRoutes)
 app.use('/api/ai', aiExerciseRoutes)
 app.use('/api/exercises', exerciseRoutes)
+app.use('/api/leaderboard', leaderboardRoutes)
 
 const start = async () => {
   try {
     await connectDB()
+    initCronJobs()//автоматическая ф-я обновления недельного рейтинга пользователей
     app.listen(PORT, () => {
       console.log(`Сервер успешно запущен на порту ${PORT}`)
     })
   } catch (error) {
-    console.log(`Ошибка при подкючении с серверу ` + error)
+    console.error(`❌ Ошибка при подключении к серверу: `, error)
   }
 }
 
