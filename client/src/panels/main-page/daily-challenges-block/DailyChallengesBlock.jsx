@@ -1,0 +1,61 @@
+import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+
+import { All_EXERCISES } from '../../../assets/mocks/exercises'
+import styles from './DailyChallengesBlock.module.css'
+
+const DailyChallengesBlock = () => {
+  const routeNavigator = useRouteNavigator()
+  const { tasks = [] } = useSelector((state) => state.daily || {})
+  // Берем только 1 невыполненно задания дня
+  const task = tasks[0] || {}
+  const {
+    alias,
+    title,
+    description,
+    reward,
+    goal,
+    currentValue,
+    isCompleted,
+    locked,
+  } = task
+  //  Находим иконку из статического конфига по alias
+  const exerciseConfig = Object.values(All_EXERCISES)
+    .flat()
+    .find((ex) => ex.alias === alias)
+
+  const iconSrc = exerciseConfig?.icon
+
+  return (
+    <section className={styles.challenges_section}>
+      <h2 className={styles.section_title}>🔥 ЗАДАНИЯ ДНЯ</h2>
+
+      <div className={styles.card} onClick={() => console.log('f')}>
+        <div className={styles.content_wrap}>
+          <div className={styles.icon_wrapper}>
+            <img src={iconSrc} alt={title} className={styles.icon} />
+          </div>
+
+          <div className={styles.content}>
+            <span className={styles.task_title}>{title}</span>
+            <span className={styles.description}>{description}</span>
+          </div>
+
+          <div className={styles.side_info}>
+            <span className={styles.reward}>+{reward} XP</span>
+            <span className={styles.progress_label}>
+              {currentValue}/{goal}
+            </span>
+          </div>
+        </div>
+        <div className={styles.banner_footer}>
+          <span>Нажми, чтобы посмотреть все 3 задания</span>
+          <span className={styles.chevron_icon}>›</span>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default DailyChallengesBlock

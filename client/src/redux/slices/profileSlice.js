@@ -24,9 +24,10 @@ const initialState = {
   user: {
     displayName: 'Tom',
     level: 3,
-    coins: 23,
+    coins: 23, 
     streak: 3,
     achievements: [],
+    inventory: [],
     levelProgressPercent: 57,
     isPremium: true,
   },
@@ -43,7 +44,7 @@ const initialState = {
     score: 55,
     recommendation: `Твой навык "Small Talk" требует внимания. Попробуй улучшить его!`,
   },
-  recentActivity: [],
+  recentActivity: [], //последние 5 сделанных упражнений
   totalExercises: 0,
   lastAwarded: null, // Сюда кладем новую ачивку для триггера модалки
   isStale: false,
@@ -61,6 +62,12 @@ const profileSlice = createSlice({
     },
     clearLastAwarded: (state) => {
       state.lastAwarded = null
+    },
+    updateCoinsAndInventory: (state, action) => {
+      if (state.user) {
+        state.user.coins = action.payload.coins
+        state.user.inventory = action.payload.inventory
+      }
     },
   },
   extraReducers: (builder) => {
@@ -119,6 +126,10 @@ const profileSlice = createSlice({
   },
 })
 
-export const { updateCoins, clearLastAwarded } = profileSlice.actions
+export const {
+  updateCoins,
+  clearLastAwarded,
+  updateCoinsAndInventory,
+} = profileSlice.actions
 export { fetchProfileData }
 export default profileSlice.reducer

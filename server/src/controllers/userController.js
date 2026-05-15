@@ -228,7 +228,7 @@ const getUserDashboard = async (req, res) => {
         levelProgressPercent,
         nextThreshold,
       },
-      skills: skillsData,
+      skills: skillsData, 
       weakPoint,
       recentActivity: user.stats.exerciseStats.slice(-5).reverse(), // Последние 5
       totalExercises: user.stats.totalExercises,

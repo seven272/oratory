@@ -40,7 +40,7 @@ const Leaderboard = () => {
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('global') // 'global' | 'weekly'
   const { list, currentUser, status } = useSelector(
-    (state) => state.leaderboard,
+    (state) => state.leaderboard, 
   )
 
   useEffect(() => {

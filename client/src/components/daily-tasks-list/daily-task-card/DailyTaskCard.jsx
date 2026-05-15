@@ -2,7 +2,7 @@ import React from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 import { FaCheckSquare } from "react-icons/fa";
 
-import { All_EXERCISES } from '../../../assets/mocks/exercises' // Путь к твоему файлу со списком упражнений
+import { All_EXERCISES } from '../../../assets/mocks/exercises' 
 import styles from './DailyTaskCard.module.css'
 
 const DailyTaskCard = ({ task }) => {
@@ -12,7 +12,7 @@ const DailyTaskCard = ({ task }) => {
     description,
     reward,
     goal,
-    currentValue,
+    currentValue, 
     isCompleted,
     locked,
   } = task

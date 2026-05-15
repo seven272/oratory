@@ -7,6 +7,7 @@ import exerciseSlice from './slices/exerciseSlice'
 import profileSlice from './slices/profileSlice'
 import dailySlice from './slices/dailySlice'
 import leaderboardSlice from './slices/leaderboardSlice'
+import shopSlice from './slices/shopSlice'
 
 const store = configureStore({
   reducer: {
@@ -16,7 +17,8 @@ const store = configureStore({
     aiExercise: aiExerciseSlice,
     exercise: exerciseSlice,
     daily: dailySlice,
-    leaderboard:leaderboardSlice
+    leaderboard: leaderboardSlice,
+    shop: shopSlice
   },
 })
 

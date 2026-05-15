@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { TbHandClick } from "react-icons/tb";
+import { FaBasketShopping } from "react-icons/fa6";
+import {useRouteNavigator} from '@vkontakte/vk-mini-apps-router'
 
 import styles from './Footer.module.css'
 
 const Footer = () => {
   const [year, setYear] = useState('')
   const [activeItem, setActiveItem] = useState(null)
+  const routeNavigator = useRouteNavigator()
   //Получаем текущий год
   useEffect(() => {
     const dateObj = new Date()
@@ -25,12 +28,13 @@ const Footer = () => {
             className={`${styles.btn} ${activeItem === 1 ? styles.active : ''}`}
           onClick={() => handleClick(1)}
         >
-          <TbHandClick
+          <FaBasketShopping
             size={25}
             className={styles.btn_icon}
+            onClick={() => routeNavigator.go('/shop')}
 
           />
-          <span className={styles.btn_title}>Пункт 1</span>
+          <span className={styles.btn_title}>Магазин</span>
         </li>
         <li
           className={`${styles.btn} ${activeItem === 2 ? styles.active : ''}`}

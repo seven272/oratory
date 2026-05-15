@@ -1,6 +1,6 @@
 import { Dropdown, Space } from 'antd'
 import { TfiMenu } from 'react-icons/tfi'
-import { FaStar } from 'react-icons/fa'
+import { FaRegHandPointRight } from "react-icons/fa";
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 
 import styles from './DropdownMenu.module.css'
@@ -18,8 +18,8 @@ const DropdownMenu = () => {
       alias: 'exercise-card',
     },
     {
-      title: 'другая',
-      alias: 'other',
+      title: 'магазин',
+      alias: 'shop',
     },
     {
       title: '404',
@@ -32,7 +32,7 @@ const DropdownMenu = () => {
     const categories = [
       '/',
       'exercise-card',
-      'other',
+      'shop',
       'notfound',
     ]
 
@@ -49,7 +49,6 @@ const DropdownMenu = () => {
       backgroundColor: '#ffffff',
       border: '1px solid #d9d9d9',
       borderRadius: '4px',
-      // marginLeft: '50px',
     },
     item: {
       padding: '8px 12px',
@@ -59,7 +58,7 @@ const DropdownMenu = () => {
       fontWeight: '500',
     },
     itemIcon: {
-      color: `#EC2578`,
+      color: `#007aff`,
       marginRight: '5px',
     },
     itemContent: {
@@ -71,7 +70,7 @@ const DropdownMenu = () => {
     return {
       label: elem.title,
       key: elem.alias,
-      icon: <FaStar />,
+      icon: <FaRegHandPointRight />,
     }
   })
 

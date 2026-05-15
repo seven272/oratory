@@ -12,6 +12,7 @@ import userRoutes from './routes/userRoutes.js'
 import aiExerciseRoutes from './routes/aiExerciseRoutes.js'
 import exerciseRoutes from './routes/exerciseRoutes.js'
 import leaderboardRoutes from './routes/leaderboardRoutes.js'
+import shopRoutes from './routes/shopRoutes.js'
 
 dotenv.config()
 
@@ -33,6 +34,7 @@ app.use('/api/user', userRoutes)
 app.use('/api/ai', aiExerciseRoutes)
 app.use('/api/exercises', exerciseRoutes)
 app.use('/api/leaderboard', leaderboardRoutes)
+app.use('/api/shop', shopRoutes)
 
 const start = async () => {
   try {

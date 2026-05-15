@@ -67,6 +67,13 @@ const userSchema = new mongoose.Schema(
       },
     ],
     weeklyXp: { type: Number, default: 0 },
+    inventory: [
+      {
+        itemCode: { type: String },
+        quantity: { type: Number, default: 1 },
+        purchasedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true, // Автоматически создаст createdAt и updatedAt

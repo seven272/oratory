@@ -22,6 +22,11 @@ const routers = [
     panel: 'dashboard-panel',
     view: 'main_view',
   },
+   {
+    path: '/shop',
+    panel: 'shop-panel',
+    view: 'main_view',
+  },
 ]
 
 const router = createHashRouter(routers);
