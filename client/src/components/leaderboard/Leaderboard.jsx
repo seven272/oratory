@@ -5,42 +5,11 @@ import { fetchLeaderboard } from '../../redux/slices/leaderboardSlice' // Тво
 import styles from './Leaderboard.module.css'
 import LeaderboardList from './leaderboard-list/LeaderboardList'
 
-// const LeaderboardRow = ({ user, isCurrent, activeTab }) => {
-//   const isTopThree = user.rank <= 3
-//   const medals = { 1: '🥇', 2: '🥈', 3: '🥉' }
-
-//   return (
-//     <div
-//       className={`${styles.row} ${isCurrent ? styles.rowCurrentUser : ''}`}
-//     >
-//       <div className={styles.rank}>
-//         {isTopThree ? medals[user.rank] : user.rank}
-//       </div>
-
-//       <img src={user.avatar} alt="avatar" className={styles.avatar} />
-
-//       <div className={styles.nameContainer}>
-//         <span className={styles.name}>{user.displayName}</span>
-//         {user.isPremium && (
-//           <span className={styles.premiumBadge}>PRO</span>
-//         )}
-//       </div>
-
-//       <div className={styles.stats}>
-//         <span className={styles.score}>
-//           {user.score} {activeTab === 'weekly' ? 'WXP' : 'XP'}
-//         </span>
-//         <span className={styles.level}>{user.level} ур.</span>
-//       </div>
-//     </div>
-//   )
-// }
-
 const Leaderboard = () => {
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState('global') // 'global' | 'weekly'
   const { list, currentUser, status } = useSelector(
-    (state) => state.leaderboard, 
+    (state) => state.leaderboard,
   )
 
   useEffect(() => {
@@ -89,7 +58,9 @@ const Leaderboard = () => {
 
           {!isUserInTopTen && currentUser && (
             <>
-              <hr className={styles.divider} />
+              <div className={styles.user_divider}>
+                Вы на этой неделе
+              </div>
               <div className={styles.list}>
                 <LeaderboardList
                   user={currentUser}

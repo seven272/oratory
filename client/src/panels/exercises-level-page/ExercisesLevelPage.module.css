@@ -1,0 +1,34 @@
+.level_section {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: calc(100vh - 120px); /* Компенсация высоты Header и Footer */
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin: 0;
+}
+
+.descr {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.list {
+  display: grid;
+  /* Автоматически создает колонки min 260px (как в карточке) и max 1fr */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  justify-items: center; /* Центрируем карточки внутри колонок */
+  align-items: start;
+  margin-top: 8px;
+  width: 100%;
+}

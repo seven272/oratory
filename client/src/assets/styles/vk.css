@@ -2,22 +2,22 @@
 .vkuiAppRoot,
 .vkuiRoot__view,
 .vkuiRoot {
-  --vkui--color_background: var(--color-white) !important;
-  --vkui--color_background_content: var(--color-white) !important;
-  --vkui--color_background_page: var(--color-white) !important;
-  background-color: var(--color-white) !important;
+  --vkui--color_background: #fcfcfc !important;
+  --vkui--color_background: #fcfcfc !important;
+  --vkui--color_background_page: #fcfcfc !important;
+  background-color: #fcfcfc !important;
 }
 
 .vkui {
-  background-color: var(--color-white) !important;
+  background-color: #fcfcfc !important;
   margin: 0 auto;
 }
 .vkuiAppRoot {
-  background-color: var(--color-white) !important;
+  background-color: #fcfcfc !important;
   height: auto;
 }
 .vkuiPanel__in {
-  background-color: var(--color-white) !important;
+  background-color: #fcfcfc !important;
 }
 .vkuiCustomSelectInput__container {
   color: var(--color-blue-vk);

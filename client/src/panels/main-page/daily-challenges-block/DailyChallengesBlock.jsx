@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 
 import { All_EXERCISES } from '../../../assets/mocks/exercises'
 import styles from './DailyChallengesBlock.module.css'
+import { fetchDailyTasks } from '../../../redux/slices/dailySlice'
 
 const DailyChallengesBlock = () => {
   const routeNavigator = useRouteNavigator()
+  const dispatch = useDispatch()
   const { tasks = [] } = useSelector((state) => state.daily || {})
   // Берем только 1 невыполненно задания дня
   const task = tasks[0] || {}
@@ -20,7 +22,13 @@ const DailyChallengesBlock = () => {
     isCompleted,
     locked,
   } = task
-  //  Находим иконку из статического конфига по alias
+
+  // Загружаем задачи при монтировании
+  useEffect(() => {
+    dispatch(fetchDailyTasks())
+  }, [dispatch])
+
+  // Находим иконку из статического конфига по alias
   const exerciseConfig = Object.values(All_EXERCISES)
     .flat()
     .find((ex) => ex.alias === alias)
@@ -31,7 +39,10 @@ const DailyChallengesBlock = () => {
     <section className={styles.challenges_section}>
       <h2 className={styles.section_title}>🔥 ЗАДАНИЯ ДНЯ</h2>
 
-      <div className={styles.card} onClick={() => console.log('f')}>
+      <div
+        className={styles.card}
+        onClick={() => routeNavigator.go('/exercises-daily')}
+      >
         <div className={styles.content_wrap}>
           <div className={styles.icon_wrapper}>
             <img src={iconSrc} alt={title} className={styles.icon} />

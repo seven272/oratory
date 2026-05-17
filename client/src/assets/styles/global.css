@@ -11,7 +11,7 @@ body {
   height: 100%;
   margin: 0 auto;
   color: var(--font-color);
-  background-color: var(--color-white);
+  background-color: #fcfcfc !important;
   font: var(--font-m);
 }
 
@@ -19,7 +19,7 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: var(--color-white);
+  background-color: #fcfcfc !important;
 }
 
 a {
@@ -43,7 +43,7 @@ h1 {
   justify-content: flex-start;
   align-items: center;
   box-sizing: border-box;
-  background-color: var(--bg-color);
+  background-color: #fcfcfc !important;
   border: var(--border-main);
   /* overflow: auto; */
 }

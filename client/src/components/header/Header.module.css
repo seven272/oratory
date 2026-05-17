@@ -12,12 +12,28 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  padding: 10px 20px;
+  padding: 10px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
+  height: 56px;
 }
 
+.left_block {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Отступ между бургер-меню и логотипом */
+  z-index: 2;
+}
+
+.right_block {
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+/* По умолчанию для больших экранов центрируем логотип абсолютно */
 .logo_wrap {
   width: max-content;
   height: 40px;
@@ -30,31 +46,109 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 1;
 }
 
-.logo {
-  width: 100%;
-  display: flex;
-  object-fit: cover;
-  object-position: center;
-}
 .logo_icon {
   color: var(--color-primary);
-  margin-right: 5px;
+  flex-shrink: 0;
 }
+
 .logo_title {
   font: var(--font-decor);
   font-size: 25px;
   color: var(--color-primary);
   cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Виджет профиля */
+.profile_widget {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Капсула статуса */
+.status_badge {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-white);
+  border-radius: 20px;
+  padding: 4px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  height: 26px;
+  box-sizing: border-box;
+}
+
+.status_text {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+/* По умолчанию короткий вариант "Ур." скрыт */
+.level_short {
+  display: none;
+}
+
+.divider {
+  font-size: 10px;
+  color: var(--color-primary);
+  opacity: 0.25;
+  margin: 0 5px;
+  user-select: none;
 }
 
 .avatar {
   cursor: pointer;
   background-color: var(--color-primary);
   color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  font-weight: 700;
 }
 
-@media screen and (max-width: 950px) {
- 
+/* 📱 МЕДИА-ЗАПРОСЫ ДЛЯ ИСКЛЮЧЕНИЯ НАЕЗДОВ НА ЭКРАНАХ СМАРТФОНОВ */
+
+@media screen and (max-width: 480px) {
+  /* 1. Отменяем абсолютное центрирование логотипа. 
+        Теперь он послушно встает в левый блок рядом с иконкой меню */
+  .logo_wrap {
+    position: static;
+    transform: none;
+  }
+  
+  /* 2. Чуть уменьшаем шрифт логотипа */
+  .logo_title {
+    font-size: 22px;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  /* 3. На экстремально узких экранах переключаем "Уровень" на "Ур." */
+  .level_full {
+    display: none;
+  }
+  .level_short {
+    display: inline;
+  }
+  
+  /* Ужимаем паддинги шапки до минимума */
+  .header_wrapper {
+    padding: 10px 8px;
+  }
+  
+  .status_badge {
+    padding: 4px 6px;
+  }
+}
+
+@media screen and (max-width: 340px) {
+  /* 4. На экранах типа iPhone SE скрываем текст логотипа, оставляя только красивую иконку */
+  .logo_title {
+    display: none;
+  }
 }

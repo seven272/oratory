@@ -1,210 +1,225 @@
 .container {
-  padding: 16px; /* Чуть меньше паддинг для мобилок */
-  background-color: #f0f2f5;
+  width: 100%;
+  max-width: 600px; /* Жесткое ограничение ширины компонента */
+  margin: 0 auto; /* Центрирование на больших экранах */
+  padding: 16px;
+  background-color: transparent; /* Убрали серый фон, теперь наследует фон приложения */
   min-height: 100vh;
-  box-sizing: border-box; /* Чтобы паддинги не увеличивали ширину */
-  overflow-x: hidden; /* Защита от горизонтального скролла */
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* Сетка карточек сверху */
-.statsGrid {
+/* Сетка карточек статистики сверху */
+.stats_grid {
   display: grid;
-  /* Используем minmax(0, 1fr), чтобы карточки не распирали экран */
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(2, 1fr); /* Жестко 2 равные колонки */
+  grid-template-rows: repeat(
+    2,
+    auto
+  ); /* Жестко 2 строки с автовысотой */
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
 }
 
 .card {
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  width: 100%; /* Карточка всегда занимает всю ширину колонки */
+  background: var(--color-white, white);
+  background-color: var(--color-white, #ffffff);
+  padding: 14px;
+  border-radius: 16px; /* Чуть более мягкие современные углы */
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); 
+  width: 100%;
   box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.statHeader {
+.stat_header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
-.statTitle {
-  color: #8c8c8c;
-  font-size: 14px;
+.stat_title {
+  color: var(--color-text-secondary, #8c8c8c);
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.statValue {
-  font-size: 24px;
-  font-weight: bold;
-  color: #262626;
-  margin-bottom: 4px;
+.stat_value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text-primary, #262626);
+  margin-bottom: 2px;
 }
 
 .unit {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: normal;
 }
 
-.statSub {
-  font-size: 12px;
-  color: #bfbfbf;
+.stat_sub {
+  font-size: 11px;
+  color: var(--color-text-secondary, #bfbfbf);
+  white-space: nowrap; /* Запретит перенос текста на новую строку */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Аккуратно сократит, если экран будет критически узким */
 }
 
 /* Иконки */
-.iconLevel { color: #faad14; }
-.iconCoins { color: #52c41a; }
-.iconXp { color: #1890ff; }
-.iconStreak { color: #ff4d4f; }
-
-/* Основная сетка */
-.mainGrid {
-    display: grid;
-  /* minmax(0, ...) — критически важно для корректной работы графиков внутри Grid */
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 20px;
+.icon_level {
+  color: #faad14;
+}
+.icon_coins {
+  color: #52c41a;
+}
+.icon_xp {
+  color: #1890ff;
+}
+.icon_streak {
+  color: #ff4d4f;
 }
 
-.cardTitle {
+/* Центральная сетка: для ширины 600px строго в 1 столбец */
+.main_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card_title {
   margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 16px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--color-text-primary);
 }
 
-.chartWrapper {
-height: 350px;
+.chart_wrapper {
+  height: 280px; /* Оптимальная высота для отображения радара на мобильных */
   width: 100%;
   position: relative;
 }
 
 /* История активности */
-.activityInfo {
-  min-width: 0; 
+.activity_info {
+  min-width: 0;
   flex: 1;
 }
-.activityList {
+
+.activity_list {
   display: flex;
   flex-direction: column;
 }
 
-.activityItem {
+.activity_item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.activityItem:last-child {
+.activity_item:last-child {
   border-bottom: none;
 }
 
-.activityName {
-  font-weight: 500;
+.activity_name {
+  font-weight: 600;
   font-size: 14px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--color-text-primary);
 }
 
-.activityScore {
+.activity_score {
   font-size: 12px;
-  color: #8c8c8c;
+  color: var(--color-text-secondary);
 }
 
-.growthBanner {
-  margin-top: 20px;
+/* Баннер зоны роста */
+.growth_banner {
+  margin-top: 16px;
   background: linear-gradient(90deg, #fffbe6 0%, #ffffff 100%);
   border: 1px solid #ffe58f;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 16px;
   display: flex;
   align-items: center;
-  gap: 20px;
-  box-shadow: 0 4px 12px rgba(255, 229, 143, 0.2);
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(255, 229, 143, 0.15);
+  box-sizing: border-box;
 }
 
-.growthIcon {
+.growth_icon {
   background: #fff1b8;
   color: #d48806;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
-.growthInfo {
+.growth_info {
   flex: 1;
+  min-width: 0;
 }
 
-.growthTitle {
-  font-weight: 600;
-  font-size: 16px;
+.growth_title {
+  font-weight: 700;
+  font-size: 15px;
   color: #874d00;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
-.growthDesc {
+.growth_desc {
   color: #595959;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
 }
 
-.growthAction {
+.growth_action {
   flex-shrink: 0;
 }
 
-.growthBtn {
+.growth_btn {
   background: #faad14;
   border-color: #faad14;
-  font-weight: 500;
-  border-radius: 6px;
+  font-weight: 600;
+  border-radius: 20px; /* Капсульный стиль кнопки */
+  font-size: 13px;
 }
 
-.growthBtn:hover {
+.growth_btn:hover {
   background: #d48806 !important;
   border-color: #d48806 !important;
 }
 
-/* Адаптивность для планшетов и мобилок */
-@media (max-width: 992px) {
-  .mainGrid {
-    grid-template-columns: 1fr; /* На планшетах карточки встают друг под друга */
-  }
-  
-  .chartWrapper {
-    height: 300px; /* Уменьшаем график на маленьких экранах */
-  }
-}
-
-@media (max-width: 480px) {
+/* 📱 Адаптация под очень узкие экраны смартфонов */
+@media (max-width: 420px) {
   .container {
     padding: 12px;
   }
-  .statsGrid {
-    grid-template-columns: 1fr; /* На узких телефонах статистика в один столбец */
-  }
 
-  .growthBanner {
+  .growth_banner {
     flex-direction: column;
     text-align: center;
     gap: 12px;
   }
-  
-  .growthAction {
+
+  .growth_action {
     width: 100%;
   }
-  
-  .growthBtn {
+
+  .growth_btn {
     width: 100%;
   }
 }

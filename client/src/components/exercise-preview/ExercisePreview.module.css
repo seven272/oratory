@@ -1,25 +1,28 @@
 .execise_container {
   width: 100%;
-  height: 250px; /* Фиксируем высоту для ровной карусели */
-  min-width: 260px; /* Чтобы в карусели не сжимались */
+  height: 240px; 
+  min-width: 240px; 
   max-width: 280px;
   display: flex;
   flex-direction: column;
   background-color: var(--color-bg-light);
-  position: relative; /* Важно для позиционирования оверлея */
-  transition: transform 0.2s ease;
-  border-radius: 12px; /* Чуть мягче углы для 3D стиля */
+  position: relative; 
+  border-radius: 12px; 
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  overflow: hidden; /* Чтобы блики не вылезали за края */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Легкая тень */
+  overflow: hidden; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
 }
-
 .execise_container:hover {
   transform: translateY(-5px); /* Подъем вместо простого скейла */
   box-shadow: 0 8px 24px rgba(0, 0, 100, 0.1);
 }
-
+.inner_content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
 .execise_header {
   width: 100%;
   display: flex;
@@ -55,11 +58,12 @@
 }
 
 .execise_text_wrap {
-  flex-grow: 1; /* Занимает всё свободное место */
+  flex-grow: 1; 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0 15px 15px;
+  padding: 0 15px 12px; /* Чуть уменьшили нижний отступ, чтобы не поджимать награду */
+  overflow: hidden; /* Обрезает избыточный текст, защищая верстку */
 }
 
 .execise_title {
@@ -93,13 +97,18 @@
   border: 1px solid rgba(22, 119, 255, 0.2);
 }
 
+.text_main {
+  overflow: hidden;
+}
+
 .exercise_footer {
   width: 100%;
-  height: 24px; /* Чуть увеличил для видимости меандра */
+  height: 24px; 
   background-image: url('../../assets/images/design/card_footer.png');
   background-size: cover;
   background-position: center;
-  flex-shrink: 0; /* Чтобы не сжимался */
+  flex-shrink: 0; 
+  margin-top: auto; /* Выталкивает элемент в самый низ .inner_content */
 }
 
 .locked {

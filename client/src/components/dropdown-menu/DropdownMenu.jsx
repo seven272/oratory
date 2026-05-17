@@ -1,6 +1,6 @@
 import { Dropdown, Space } from 'antd'
 import { TfiMenu } from 'react-icons/tfi'
-import { FaRegHandPointRight } from "react-icons/fa";
+import { FaRegHandPointRight } from 'react-icons/fa'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 
 import styles from './DropdownMenu.module.css'
@@ -13,14 +13,23 @@ const DropdownMenu = () => {
       title: 'главная',
       alias: 'main',
     },
-     {
-      title: 'карточка заданий',
-      alias: 'exercise-card',
-    },
     {
       title: 'магазин',
       alias: 'shop',
     },
+    {
+      title: 'все упражнения',
+      alias: 'exercises-all',
+    },
+    {
+      title: 'ежедневные упражнения',
+      alias: 'exercises-daily',
+    },
+     {
+      title: 'рейтинг ораторов',
+      alias: 'leaderboard',
+    },
+
     {
       title: '404',
       alias: 'notfound',
@@ -31,9 +40,11 @@ const DropdownMenu = () => {
     const { key } = payload
     const categories = [
       '/',
-      'exercise-card',
       'shop',
       'notfound',
+      'exercises-all',
+      'exercises-daily',
+      'leaderboard'
     ]
 
     if (categories.includes(key)) {

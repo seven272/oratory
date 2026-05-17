@@ -1,26 +1,29 @@
 .container {
+  width: 100%;
   max-width: 600px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: var(--color-bg);
-  border-radius: 24px;
+  margin: 0 auto;
+  padding: 16px 8px; /* Уменьшили боковые отступы, чтобы список не казался узким */
+  box-sizing: border-box;
+  background-color: transparent; /* Позволяет фону страницы бесшовно перетекать */
 }
 
 .title {
   color: var(--color-text-primary);
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   text-align: center;
+  letter-spacing: -0.5px;
 }
 
-/* Стили вкладок переключения */
+/* Стили вкладок переключения (iOS / VK стиль капсулы) */
 .tabs {
   display: flex;
-  background-color: var(--color-bg-dark);
+  background-color: var(--color-bg); /* Используем светлый фон вместо --color-bg-dark */
   padding: 4px;
-  border-radius: 14px;
+  border-radius: 20px; /* Более округлые углы */
   margin-bottom: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .tabButton {
@@ -32,91 +35,62 @@
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  border-radius: 10px;
-  transition: all 0.2s ease;
+  border-radius: 16px;
+  transition: all 0.25s ease;
 }
 
 .activeTab {
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Эффект приподнятой активной вкладки */
 }
 
 .list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  width: 100%;
 }
 
-/* .row {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background-color: var(--color-white);
-  border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-}
-
-.rowCurrentUser {
-  border: 2px solid var(--color-primary);
-}
-
-.rank {
-  width: 32px;
-  font-weight: 800;
-  font-size: 1.1rem;
+.loader {
+  text-align: center;
   color: var(--color-text-secondary);
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--color-bg);
-  margin-right: 12px;
-  border: 1px solid var(--color-secondary);
-}
-
-.nameContainer {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.name {
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.premiumBadge {
-  background: var(--color-primary);
-  color: var(--color-white);
-  font-size: 0.55rem;
-  font-weight: 900;
-  padding: 2px 5px;
-  border-radius: 5px;
-}
-
-.stats {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.score {
+  padding: 40px 0;
   font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.level {
-  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-text-secondary);
-} */
-
-.divider {
-  border: none;
-  border-top: 2px dashed var(--color-secondary);
-  margin: 16px 0;
 }
+
+/* Красивый текстовый разделитель для текущего юзера вне ТОП-10 */
+.user_divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 24px 0 14px 0;
+  opacity: 0.7;
+}
+
+.user_divider::before,
+.user_divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px dashed var(--color-secondary);
+}
+
+.user_divider::before {
+  margin-right: 12px;
+}
+
+.user_divider::after {
+  margin-left: 12px;
+}
+
+/* ==========================================================================
+   Ниже приведены стили для строк (если вы используете их внутри LeaderboardList)
+   ========================================================================== */
+
+

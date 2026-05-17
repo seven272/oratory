@@ -42,7 +42,6 @@ const DashboardPage = ({ id }) => {
   return (
     <Panel id={id}>
       <Header />
-      {/* Здесь рендерим Antd компоненты: Progress, Statistic и т.д. */}
       <h1>Привет, {user?.displayName}!</h1>
       <Dashboard
         user={user}

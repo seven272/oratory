@@ -26,6 +26,7 @@ const initialState = {
     level: 3,
     coins: 23, 
     streak: 3,
+    xp: 0,
     achievements: [],
     inventory: [],
     levelProgressPercent: 57,

@@ -7,6 +7,10 @@ import AuthPage from '../panels/auth-page/AuthPage'
 import ExercisePage from '../panels/exercise-page/ExercisePage'
 import DashboardPage from '../panels/dashboard-page/DashboardPage'
 import ShopPage from '../panels/shop-page/ShopPage'
+import ExercisesDailyPage from '../panels/exercises-daily-page/ExercisesDailyPage'
+import ExercisesAllPage from '../panels/exercises-all-page/ExercisesAllPage'
+import ExercisesLevelPage from '../panels/exercises-level-page/ExercisesLevelPage'
+import LeaderboardPage from '../panels/leaderboard-page/LeaderboardPage'
 
 const MainView = ({ activePanel, id }) => {
   return (
@@ -16,6 +20,10 @@ const MainView = ({ activePanel, id }) => {
       <ExercisePage id="exercise-page-panel" />
       <DashboardPage id="dashboard-panel" />
       <ShopPage id="shop-panel" />
+      <ExercisesDailyPage id="exercises-daily-panel" />
+      <ExercisesAllPage id="exercises-all-panel" />
+      <ExercisesLevelPage id="exercises-level-panel" />
+      <LeaderboardPage id="leaderboard-panel" />
     </View>
   )
 }

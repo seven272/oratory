@@ -1,5 +1,4 @@
 import React from 'react'
-
 import styles from './LeaderboardList.module.css'
 
 const LeaderboardList = ({ user, isCurrent, activeTab }) => {
@@ -7,10 +6,9 @@ const LeaderboardList = ({ user, isCurrent, activeTab }) => {
   const medals = { 1: '🥇', 2: '🥈', 3: '🥉' }
 
   return (
-    <div
-      className={`${styles.row} ${isCurrent ? styles.rowCurrentUser : ''}`}
-    >
-      <div className={styles.rank}>
+    <div className={`${styles.row} ${isCurrent ? styles.rowCurrentUser : ''}`}>
+      {/* Добавили класс для выравнивания смайликов-медалей по центру */}
+      <div className={`${styles.rank} ${isTopThree ? styles.rank_medal : ''}`}>
         {isTopThree ? medals[user.rank] : user.rank}
       </div>
 

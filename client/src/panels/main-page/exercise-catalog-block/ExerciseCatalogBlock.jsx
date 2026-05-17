@@ -1,11 +1,11 @@
 // components/Dashboard/ExerciseCatalogBlock.jsx
 import React from 'react'
-import { useDispatch } from 'react-redux'
-// import { changeScreen } from '../../store/navigationSlice'
+import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+
 import styles from './ExerciseCatalogBlock.module.css'
 
 const ExerciseCatalogBlock = () => {
-  const dispatch = useDispatch()
+  const routeNavigator = useRouteNavigator()
 
   return (
     <section className={styles.catalog_section}>
@@ -13,7 +13,7 @@ const ExerciseCatalogBlock = () => {
       <div className={styles.catalog_grid}>
         <button
           className={`${styles.catalog_item} ${styles.type_base}`}
-        //   onClick={() => dispatch(changeScreen('exercises_base'))}
+          onClick={() => routeNavigator.push('exercises/level1')}
         >
           <div className={styles.badge_dot}>🟢 БАЗА</div>
           <span className={styles.level_subtitle}>1 Уровень</span>
@@ -21,7 +21,7 @@ const ExerciseCatalogBlock = () => {
 
         <button
           className={`${styles.catalog_item} ${styles.type_advanced}`}
-        //   onClick={() => dispatch(changeScreen('exercises_advanced'))}
+          onClick={() => routeNavigator.push('exercises/level2')}
         >
           <div className={styles.badge_dot}>🟡 ПРОДВИНУТЫЙ</div>
           <span className={styles.level_subtitle}>2 Уровень</span>
@@ -29,7 +29,7 @@ const ExerciseCatalogBlock = () => {
 
         <button
           className={`${styles.catalog_item} ${styles.type_expert}`}
-        //   onClick={() => dispatch(changeScreen('exercises_expert'))}
+          onClick={() => routeNavigator.push('exercises/level3')}
         >
           <div className={styles.badge_dot}>👑 ЭКСПЕРТ</div>
           <span className={styles.level_subtitle}>Premium</span>

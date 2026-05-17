@@ -1,9 +1,12 @@
 // components/Dashboard/LeaderboardShortBlock.jsx
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+
 import styles from './LeaderboardShortBlock.module.css'
 
 const LeaderboardShortBlock = () => {
+  const routeNavigator = useRouteNavigator()
   const { list, currentUser, status } = useSelector(
     (state) => state.leaderboard,
   )
@@ -16,14 +19,13 @@ const LeaderboardShortBlock = () => {
   const weeklyTop3 = list.slice(0, 3) || []
   const medals = ['🥇', '🥈', '🥉']
 
-  console.log(currentUser)
   return (
     <section className={styles.leaderboard_section}>
       <h2 className={styles.section_title}>
         🏆 ТОП ОРАТОРОВ (НЕДЕЛЯ)
       </h2>
 
-      <div className={styles.leaderboard_wrapper}>
+      <div className={styles.leaderboard_wrapper} onClick={() => routeNavigator.push('leaderboard')}>
         <ul className={styles.leaderboard_list}>
           {weeklyTop3.map((player, index) => (
             <li key={player.id} className={styles.leaderboard_item}>
@@ -31,11 +33,11 @@ const LeaderboardShortBlock = () => {
                 {medals[index] || `${index + 1}.`}
               </span>
               <span className={styles.player_name}>
-                {player.displayName}
+                {player?.displayName}
               </span>
               <div className={styles.dot_filler}></div>
               <span className={styles.xp_value}>
-                {player.score} XP
+                {player?.score} XP
               </span>
             </li>
           ))}
@@ -46,14 +48,14 @@ const LeaderboardShortBlock = () => {
         {/* Строка текущего юзера с мягким выделением под стиль БЭМ */}
         <div className={styles.user_row}>
           <span className={styles.rank_cell}>
-            {currentUser.rank || '—'}. 👤
+            {currentUser?.rank || '—'}. 👤
           </span>
           <span className={styles.player_name}>
-            Вы ({displayName})
+            Вы ({displayName || 'Anonimus'})
           </span>
           <div className={styles.dot_filler}></div>
           <span className={styles.xp_value}>
-            {currentUser.score || 0} XP
+            {currentUser?.score || 0} XP
           </span>
         </div>
 
