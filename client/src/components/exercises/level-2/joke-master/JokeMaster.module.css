@@ -192,6 +192,22 @@
   text-align: center;
 }
 
+.btn_show {
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 5px;
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: 5px;
+  font: var(--font-ml);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .finished_answer {
   text-align: center;
   color: var(--color-text-dark);
@@ -206,7 +222,7 @@
 }
 
 .audio_title {
- font: var(--font-subtitle);
+  font: var(--font-subtitle);
   background: rgba(0, 123, 255, 0.1);
   color: var(--color-blue);
   padding: 4px 12px;
@@ -216,7 +232,6 @@
   width: 100%;
   margin: 5px 0 15px 0;
 }
-
 
 .btn_theory {
   /* Сбрасываем дефолтные стили кнопки */

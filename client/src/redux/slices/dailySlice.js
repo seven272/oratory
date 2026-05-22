@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../utils/axiosInstance'
+import { fetchCompleteExercise } from './exerciseSlice'
 
 // Асинхронный запрос для получения заданий дня
 const fetchDailyTasks = createAsyncThunk(
   'daily/fetchDailyTasks',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get('/exercises/daily-tasks')
+      const res = await axiosInstance.get('/daily-tasks/get')
       return res.data // { date: "...", tasks: [...] }
     } catch (err) {
       return rejectWithValue(err.response.data)
@@ -35,6 +36,18 @@ const dailySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchCompleteExercise.fulfilled, (state, action) => {
+        const update = action.payload.daily_task_update
+        if (update) {
+          const task = state.tasks.find(
+            (t) => t.alias === update.alias,
+          )
+          if (task) {
+            task.isCompleted = update.isCompleted
+            task.currentValue = update.currentValue
+          }
+        }
+      })
       .addCase(fetchDailyTasks.pending, (state) => {
         state.status = 'loading'
       })

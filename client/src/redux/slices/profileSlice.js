@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 import axiosInstance from '../../utils/axiosInstance'
 import { fetchCompleteExercise } from './exerciseSlice'
+import { fetchGetMe } from './authSlice'
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
@@ -9,7 +10,7 @@ const fetchProfileData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
-        '/user/user-statistics',
+        '/user/get-data-profile',
       )
       return response.data // Ждем объект { user, skills, weakPoint, recentActivity, totalExercises }
     } catch (error) {
@@ -24,12 +25,13 @@ const initialState = {
   user: {
     displayName: 'Tom',
     level: 3,
-    coins: 23, 
+    coins: 23,
     streak: 3,
-    xp: 0,
+    xp: 0, 
     achievements: [],
     inventory: [],
     levelProgressPercent: 57,
+    completed_days: ["2026-05-18", "2026-05-17", "2026-05-19"],
     isPremium: true,
   },
   skills: [
@@ -61,6 +63,9 @@ const profileSlice = createSlice({
     updateCoins: (state, action) => {
       if (state.user) state.user.coins = action.payload
     },
+    setTotalPoints: (state, action) => {
+      if (state.user) state.user.xp = action.payload
+    },
     clearLastAwarded: (state) => {
       state.lastAwarded = null
     },
@@ -83,7 +88,7 @@ const profileSlice = createSlice({
           state.user.xp = action.payload.stats.xp
           state.user.coins = action.payload.stats.coins
           state.user.streak = action.payload.stats.streak
-
+          state.user.completed_days = action.payload.stats.completed_days 
           // ЛОГИКА АЧИВОК
           if (
             action.payload.newAchievements &&
@@ -102,7 +107,6 @@ const profileSlice = createSlice({
             )
           }
         }
-
         // Помечаем данные как "устаревшие", чтобы при переходе на страницу
         // Dashboard мы знали, что нужно обновить паутинку (skillsData)
         state.isStale = true
@@ -112,7 +116,6 @@ const profileSlice = createSlice({
         state.error = null
       })
       .addCase(fetchProfileData.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.loading = false
         state.user = action.payload.user
         state.skills = action.payload.skills
@@ -131,6 +134,7 @@ export const {
   updateCoins,
   clearLastAwarded,
   updateCoinsAndInventory,
+  setTotalPoints
 } = profileSlice.actions
 export { fetchProfileData }
 export default profileSlice.reducer

@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const dailyTaskSchema = new mongoose.Schema({
   alias: { type: String, required: true }, 
   title: { type: String, required: true },
-  description: { type: String },
+  description: { type: String }, 
   level: { type: Number, enum: [1, 2, 3], required: true },
   skill: { type: String },
   reward: { type: Number, default: 30 },

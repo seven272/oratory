@@ -1,10 +1,33 @@
 const SKILLS_MAP = {
-  'Дикция': ['tongue-twister', 'fear-explosive'],
-  'Лаконичность': ['description', 'taboo', 'science-translator'],
-  'Логика': ['logic-chain', 'association', 'speaking-thread'],
-  'Убедительность': ['jargon-task', 'ai-debate', 'ai-inrerview'],
-  'Импровизация': ['emotion', 'joke-master', 'toast-master', 'synonyms'],
-  'Small Talk': ['ai-icebreaker', 'description']
-};
+  'Техника речи': [
+    'tongue-twister', // Битва дикции
+    'fear-explosive', // Громкий вызов (громкость голоса)
+  ],
+  Находчивость: [
+    'association', // Словесный мост (поиск связей)
+    'synonyms', // Синонимайзер (богатство языка)
+    'description', // Ода предмету (безостановочная речь)
+    'taboo', // Словесное табу (обход запретных слов)
+  ],
+  'Харизма и Юмор': [
+    'emotion', // Эмоциональный окрас
+    'joke-master', // Импровизатор анекдотов (юмор)
+    'toast-master', // Мастер тостов
+    'king-failure', // Король провала (самоирония, уверенность)
+  ],
+  Убедительность: [
+    'logic-chain', // Логическая цепь
+    'speaking-thread', // Нить разговора
+    'jargon-task', // Блатной базар (ответ на провокации)
+    'science-translator', // Просто о сложном
+    'ai-debate', // Дебат-клуб (с ИИ)
+    'ai-tribune', // Трибуна
+  ],
+  Коммуникация: [
+    'ai-icebreaker', // Ледокол (умение завязать разговор)
+    'ai-inrerview', // Неудобный вопрос (ответы интервьюеру)
+    'description', // Ода предмету (базовый навык монолога)
+  ],
+}
 
-export {SKILLS_MAP}
+export { SKILLS_MAP }

@@ -8,7 +8,7 @@ import styles from './JargonTask.module.css'
 import { jargonTasks } from '../../../../assets/mocks/jargonTasks'
 import { useSpeech } from '../../../../hooks/useSpeech'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
-import { setTotalPoints } from '../../../../redux/slices/userSlice'
+import { fetchCompleteExercise } from '../../../../redux/slices/exerciseSlice'
 import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
@@ -33,7 +33,7 @@ const isSpeechSupported = !!(
   (window.SpeechRecognition || window.webkitSpeechRecognition)
 )
 
-const JargonTask = ({ alias }) => {
+const JargonTask = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -65,18 +65,41 @@ const JargonTask = ({ alias }) => {
     setIsTaskInterrupted(false)
   }
 
-  const handleCheckResult = () => {
+  const handleAutoCheckResult = (currentTranscript) => {
     stopListening()
-    // Простая логика валидации: ищем вхождение корней из validationKeywords в transcript
-    const lowerTranscript = transcript.toLowerCase()
-    const foundKeywords = randomTask.validationKeywords.filter(
-      (word) => lowerTranscript.includes(word.toLowerCase()),
+    if (currentTranscript && currentTranscript.trim().length > 0) {
+      // Простая логика валидации: ищем вхождение корней из validationKeywords в transcript
+      const lowerTranscript = currentTranscript.toLowerCase()
+      const foundKeywords = randomTask.validationKeywords.filter(
+        (word) => lowerTranscript.includes(word.toLowerCase()),
+      )
+      const isSuccess =
+        foundKeywords.length >= randomTask.settings.minKeywords
+      // Начисление XP (50 или 5)
+      const earnedXP = isSuccess ? 50 : 0
+      setXp(earnedXP)
+      dispatch(
+        fetchCompleteExercise({
+          exAlias: alias,
+          score: earnedXP,
+          isDaily: isDaily,
+        }),
+      )
+    }
+    // Если транскрипт пуст — ничего не отправляем, стейт xp остается 0, ждем ручного выбора юзера
+  }
+
+  // Ручная фиксация и отправка при клике на оценку себя
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
     )
-    const isSuccess =
-      foundKeywords.length >= randomTask.settings.minKeywords
-    // Начисление XP (50 или 5)
-    const earnedXP = isSuccess ? 50 : 0
-    setXp(earnedXP)
   }
 
   const handleInterrupt = () => {
@@ -86,7 +109,6 @@ const JargonTask = ({ alias }) => {
 
   // логика получения новой задачи
   const clickNext = () => {
-    dispatch(setTotalPoints(xp))
     const { selectedItem, newPool } = getRandomObjTask(
       poolTasks,
       jargonTasks,
@@ -98,8 +120,7 @@ const JargonTask = ({ alias }) => {
   }
 
   const clickStop = () => {
-    dispatch(setTotalPoints(xp))
-    routerNavigator.push('/')
+    routerNavigator.back()
   }
 
   //получаю фразу при первом рендере компонента
@@ -123,7 +144,7 @@ const JargonTask = ({ alias }) => {
         )
       } else {
         setStatus(STATUS.FINISHED)
-        handleCheckResult()
+        handleAutoCheckResult(transcript)
       }
     }
     return () => clearInterval(timer)
@@ -236,7 +257,7 @@ const JargonTask = ({ alias }) => {
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />

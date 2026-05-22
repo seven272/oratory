@@ -11,6 +11,7 @@ import { initCronJobs } from './config/cronService.js'
 import userRoutes from './routes/userRoutes.js'
 import aiExerciseRoutes from './routes/aiExerciseRoutes.js'
 import exerciseRoutes from './routes/exerciseRoutes.js'
+import dailyTaskRoutes from './routes/dailyTaskRoutes.js'
 import leaderboardRoutes from './routes/leaderboardRoutes.js'
 import shopRoutes from './routes/shopRoutes.js'
 
@@ -33,6 +34,7 @@ app.use('/static', express.static(path.join(__dirname + '/uploads')))
 app.use('/api/user', userRoutes)
 app.use('/api/ai', aiExerciseRoutes)
 app.use('/api/exercises', exerciseRoutes)
+app.use('/api/daily-tasks', dailyTaskRoutes)
 app.use('/api/leaderboard', leaderboardRoutes)
 app.use('/api/shop', shopRoutes)
 

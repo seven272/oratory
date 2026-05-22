@@ -5,9 +5,9 @@ const calculateXP = (accuracy) => {
   } else if (accuracy > 0 && accuracy < 10) {
     result = 5
   } else if (accuracy > 10 && accuracy < 80) {
-    result = 25
+    result = 15
   } else if (accuracy >= 80) {
-    result = 50
+    result = 30
   }
 
   return result

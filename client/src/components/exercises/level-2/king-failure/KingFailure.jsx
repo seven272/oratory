@@ -8,7 +8,7 @@ import { PiTimer } from 'react-icons/pi'
 import { failScenarios } from '../../../../assets/mocks/similarWords'
 import { useAudioRecorder } from '../../../../hooks/useAudioRecorder'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
-import { setTotalPoints } from '../../../../redux/slices/userSlice'
+import { fetchCompleteExercise } from '../../../../redux/slices/exerciseSlice'
 import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import styles from './KingFailure.module.css'
 import TheoryContent from '../../../theory-content/TheoryContent'
@@ -28,7 +28,7 @@ const SCORING_LABELS = {
   0: 'Задание не пройдено',
 }
 
-const KingFailure = ({ alias }) => {
+const KingFailure = ({ alias, isDaily }) => {
   const {
     audioUrl,
     startRecording,
@@ -89,19 +89,30 @@ const KingFailure = ({ alias }) => {
     setPoolTasks(newPool)
   }
 
+   const handleManualRate = (selectedXp) => {
+      setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+      // отправляем этот выбранный балл на бэкенд
+      dispatch(
+        fetchCompleteExercise({
+          exAlias: alias,
+          score: selectedXp,
+          isDaily: isDaily,
+        }),
+      )
+    }
+
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
     setIsTaskInterrupted(true)
   }
 
   const clickNext = () => {
-    dispatch(setTotalPoints(xp))
     resetExerciseState()
   }
 
   const clickStop = () => {
-    dispatch(setTotalPoints(xp))
-    routerNavigator.push('/')
+   
+    routerNavigator.back()
   }
 
   if (!randomTask) return <ScreenSpinner />
@@ -206,7 +217,7 @@ const KingFailure = ({ alias }) => {
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />

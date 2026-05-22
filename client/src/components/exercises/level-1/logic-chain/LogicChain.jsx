@@ -32,7 +32,7 @@ const isSpeechSupported = !!(
   (window.SpeechRecognition || window.webkitSpeechRecognition)
 )
 
-const LogicChain = ({ alias }) => {
+const LogicChain = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -64,14 +64,35 @@ const LogicChain = ({ alias }) => {
     resetTranscript()
     setIsTaskInterrupted(false)
   }
-
-  const handleCheckResult = () => {
+  const handleAutoCheckResult = (currentTranscript) => {
     stopListening()
-    // Если есть текст в транскрипте — ставим 50, если нет — оставляем 0 для ручного выбора
-    if (transcript && transcript.trim().length > 0) {
-      setXp(50)
+    // Если пользователь что-то сказал — автоматически начисляем 30 баллов и шлем на бэк
+    if (currentTranscript && currentTranscript.trim().length > 0) {
+      setXp(30)
+      dispatch(
+        fetchCompleteExercise({
+          exAlias: alias,
+          score: 30,
+          isDaily: isDaily,
+        }),
+      )
     }
+    // Если транскрипт пуст — ничего не отправляем, стейт xp остается 0, ждем ручного выбора юзера
   }
+
+  // Ручная фиксация и отправка при клике на оценку себя
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
+  }
+
 
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
@@ -79,14 +100,13 @@ const LogicChain = ({ alias }) => {
   }
   const clickNext = () => {
     setCurrentStart(chainGenerator())
-    dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
     resetExerciseState()
     setStatus(STATUS.RUNNING)
   }
 
   const clickStop = () => {
-    dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
-    routerNavigator.push('/')
+     resetExerciseState()
+    routerNavigator.back()
   }
 
   // логика основного таймера
@@ -100,7 +120,7 @@ const LogicChain = ({ alias }) => {
         )
       } else {
         setStatus(STATUS.FINISHED)
-        handleCheckResult()
+        handleAutoCheckResult(transcript)
       }
     }
     return () => clearInterval(timer)
@@ -198,7 +218,7 @@ const LogicChain = ({ alias }) => {
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />

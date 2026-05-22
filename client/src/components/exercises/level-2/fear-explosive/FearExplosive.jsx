@@ -8,11 +8,10 @@ import { PiTimer } from 'react-icons/pi'
 import { fearScenarios } from '../../../../assets/mocks/similarWords'
 import { useAudioRecorder } from '../../../../hooks/useAudioRecorder'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
-import { setTotalPoints } from '../../../../redux/slices/userSlice'
+import { fetchCompleteExercise } from '../../../../redux/slices/exerciseSlice'
 import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
-
 import styles from './FearExplosive.module.css'
 
 const STATUS = {
@@ -30,7 +29,7 @@ const SCORING_LABELS = {
   0: 'Задание не пройдено',
 }
 
-const FearExplosive = ({ alias }) => {
+const FearExplosive = ({ alias, isDaily }) => {
   const {
     audioUrl,
     startRecording,
@@ -48,7 +47,7 @@ const FearExplosive = ({ alias }) => {
   const [isTaskInterrupted, setIsTaskInterrupted] = useState(false)
   const [showModal, setShowModal] = useState(false)
 
-  // Инициализация тоста
+  // Инициализация
   useEffect(() => {
     const { selectedItem, newPool } = getRandomObjTask(
       [],
@@ -92,19 +91,30 @@ const FearExplosive = ({ alias }) => {
     setPoolTasks(newPool)
   }
 
+
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
+  }
+
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
     setIsTaskInterrupted(true)
   }
 
   const clickNext = () => {
-    dispatch(setTotalPoints(xp))
     resetExerciseState()
   }
 
   const clickStop = () => {
-    dispatch(setTotalPoints(xp))
-    routerNavigator.push('/')
+    routerNavigator.back()
   }
 
   if (!randomTask) return <ScreenSpinner />
@@ -210,7 +220,7 @@ const FearExplosive = ({ alias }) => {
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />

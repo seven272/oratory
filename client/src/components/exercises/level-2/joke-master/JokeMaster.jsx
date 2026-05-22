@@ -8,7 +8,7 @@ import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 import { jokeScenarios } from '../../../../assets/mocks/jokeScenarios'
 import { useAudioRecorder } from '../../../../hooks/useAudioRecorder'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
-import { setTotalPoints } from '../../../../redux/slices/userSlice'
+import { fetchCompleteExercise } from '../../../../redux/slices/exerciseSlice'
 import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import styles from './JokeMaster.module.css'
 import TheoryContent from '../../../theory-content/TheoryContent'
@@ -29,7 +29,7 @@ const SCORING_LABELS = {
   0: '',
 }
 
-const JokeMaster = ({alias}) => {
+const JokeMaster = ({ alias, isDaily }) => {
   const {
     audioUrl,
     startRecording,
@@ -48,7 +48,7 @@ const JokeMaster = ({alias}) => {
   const [xp, setXp] = useState(0)
   const [showOriginal, setShowOriginal] = useState(false)
   const [isTaskInterrupted, setIsTaskInterrupted] = useState(false)
- const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   // Инициализация первого анекдота
   useEffect(() => {
@@ -95,19 +95,29 @@ const JokeMaster = ({alias}) => {
     setPoolTasks(newPool)
   }
 
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
+  }
+
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
     setIsTaskInterrupted(true)
   }
   const clickNext = () => {
     setShowOriginal(false)
-    dispatch(setTotalPoints(xp))
     resetExerciseState()
   }
 
   const clickStop = () => {
-    dispatch(setTotalPoints(xp))
-    routerNavigator.push('/')
+    routerNavigator.back()
   }
 
   if (!scenario) return <ScreenSpinner />
@@ -125,7 +135,7 @@ const JokeMaster = ({alias}) => {
             <span className={styles.text_start}>Приготовиться</span>
             <button
               className={styles.btn_theory}
-             onClick={() => setShowModal(true)}
+              onClick={() => setShowModal(true)}
             >
               <Icon20InfoCircleOutline
                 className={styles.theory_icon}
@@ -233,7 +243,7 @@ const JokeMaster = ({alias}) => {
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />

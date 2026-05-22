@@ -8,7 +8,7 @@ import { PiTimer } from 'react-icons/pi'
 import { toastScenarios } from '../../../../assets/mocks/similarWords'
 import { useAudioRecorder } from '../../../../hooks/useAudioRecorder'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
-import { setTotalPoints } from '../../../../redux/slices/userSlice'
+import { fetchCompleteExercise } from '../../../../redux/slices/exerciseSlice'
 import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
@@ -28,7 +28,7 @@ const SCORING_LABELS = {
   0: 'Задание не пройдено',
 }
 
-const ToastMaster = ({ alias }) => {
+const ToastMaster = ({ alias, isDaily }) => {
   const {
     audioUrl,
     startRecording,
@@ -110,6 +110,17 @@ const ToastMaster = ({ alias }) => {
     setScenario(selectedItem)
     setPoolTasks(newPool)
   }
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
+  }
 
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
@@ -117,13 +128,11 @@ const ToastMaster = ({ alias }) => {
   }
 
   const clickNext = () => {
-    dispatch(setTotalPoints(xp))
     resetExerciseState()
   }
 
   const clickStop = () => {
-    dispatch(setTotalPoints(xp))
-    routerNavigator.push('/')
+    routerNavigator.back()
   }
 
   if (!scenario) return <ScreenSpinner />
@@ -243,7 +252,7 @@ const ToastMaster = ({ alias }) => {
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />

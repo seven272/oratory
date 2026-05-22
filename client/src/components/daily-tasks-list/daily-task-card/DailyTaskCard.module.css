@@ -19,7 +19,7 @@
 
 /* Состояние: Выполнено */
 .completed {
-  border-color: var(--color-green);
+  border-color: var(--color-green); /* Используем напрямую, если нет переменной  */
   background-color: #fafffa;
 }
 
@@ -27,15 +27,22 @@
 .locked {
   background-color: #f5f7fa;
   cursor: not-allowed;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .locked:hover {
   transform: none;
+  box-shadow: none;
   border-color: transparent;
 }
 
-.iconWrapper {
+/* Эффект размытия контента внутри заблокированной карточки для лучшего UX */
+.locked .icon_wrapper,
+.locked .content {
+  filter: grayscale(1) blur(0.3px);
+}
+
+.icon_wrapper {
   width: 52px;
   height: 52px;
   background-color: var(--color-bg);
@@ -57,7 +64,7 @@
   flex: 1;
 }
 
-.taskTitle {
+.task_title {
   display: block;
   font-size: 1rem;
   font-weight: 700;
@@ -72,7 +79,7 @@
   line-height: 1.2;
 }
 
-.sideInfo {
+.side_info {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -86,14 +93,14 @@
   color: var(--color-primary);
 }
 
-.progressLabel {
+.progress_label {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   margin-top: 4px;
 }
 
-.premiumBadge {
+.premium_badge {
   position: absolute;
   top: 0;
   right: 16px;
@@ -101,14 +108,18 @@
   color: var(--color-white);
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 0 0 8px 8px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.checkIcon {
-  color: #4caf50;
-  font: var(--font-ms);
+.check_icon {
+  color: var(--color-green);
   display: flex;
   align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 4px;
 }

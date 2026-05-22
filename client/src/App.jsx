@@ -1,12 +1,21 @@
 import { Root, SplitLayout } from '@vkontakte/vkui'
 import { useActiveVkuiLocation } from '@vkontakte/vk-mini-apps-router'
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
 
 import MainView from './views/MainView'
 import AchievementModal from './components/achievement-modal/AchievementModal'
-
+import { fetchGetMe } from './redux/slices/authSlice'
+import { fetchProfileData } from './redux/slices/profileSlice'
 
 const App = () => {
   const { panel, view } = useActiveVkuiLocation()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchGetMe())
+    dispatch(fetchProfileData())
+  }, [dispatch])
 
   return (
     <SplitLayout>

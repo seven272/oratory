@@ -13,9 +13,8 @@ import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
-
 const STATUS = {
-  IDLE: 'idle', 
+  IDLE: 'idle',
   RUNNING: 'running',
   FINISHED: 'finished',
 }
@@ -34,7 +33,7 @@ const isSpeechSupported = !!(
   (window.SpeechRecognition || window.webkitSpeechRecognition)
 )
 
-const Description = ({alias}) => {
+const Description = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -67,14 +66,34 @@ const Description = ({alias}) => {
     setIsTaskInterrupted(false)
   }
 
-  const handleCheckResult = () => {
+  const handleAutoCheckResult = (currentTranscript) => {
     stopListening()
-    // Если есть текст в транскрипте — ставим 50, если нет — оставляем 0 для ручного выбора
-    if (transcript && transcript.trim().length > 0) {
-      setXp(50)
+    // Если пользователь что-то сказал — автоматически начисляем 30 баллов и шлем на бэк
+    if (currentTranscript && currentTranscript.trim().length > 0) {
+      setXp(30)
+      dispatch(
+        fetchCompleteExercise({
+          exAlias: alias,
+          score: 30,
+          isDaily: isDaily,
+        }),
+      )
     }
+    // Если транскрипт пуст — ничего не отправляем, стейт xp остается 0, ждем ручного выбора юзера
   }
 
+  // Ручная фиксация и отправка при клике на оценку себя
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
+  }
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
     setIsTaskInterrupted(true)
@@ -94,14 +113,14 @@ const Description = ({alias}) => {
 
   const clickNext = () => {
     setRandomWord(wordGenerator())
-   dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
+
     resetExerciseState()
     setStatus(STATUS.RUNNING)
   }
 
   const clickStop = () => {
-   dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
-    routerNavigator.push('/')
+    resetExerciseState()
+    routerNavigator.back()
   }
 
   // логика основного таймера
@@ -115,7 +134,7 @@ const Description = ({alias}) => {
         )
       } else {
         setStatus(STATUS.FINISHED)
-        handleCheckResult()
+        handleAutoCheckResult(transcript)
       }
     }
     return () => clearInterval(timer)
@@ -142,9 +161,8 @@ const Description = ({alias}) => {
 
             {!isSpeechSupported && status === STATUS.IDLE && (
               <span className={styles.warning}>
-                 Ваш браузер не
-                поддерживает запись голоса. Выполните задание вслух и
-                оцените себя самостоятельно в конце.
+                Ваш браузер не поддерживает запись голоса. Выполните
+                задание вслух и оцените себя самостоятельно в конце.
               </span>
             )}
           </div>
@@ -206,20 +224,20 @@ const Description = ({alias}) => {
         )}
       </div>
 
-        {/* блок с нижними кнопками */}
+      {/* блок с нижними кнопками */}
       <ExerciseControls
         status={status}
-         level='LEVEL_1'
+        level="LEVEL_1"
         STATUS={STATUS}
         xp={xp}
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />
-<Modal active={showModal} onClose={() => setShowModal(false)}>
+      <Modal active={showModal} onClose={() => setShowModal(false)}>
         <TheoryContent
           alias={alias}
           onClose={() => setShowModal(false)}

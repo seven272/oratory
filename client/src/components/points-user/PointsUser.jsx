@@ -1,30 +1,49 @@
 import React from 'react'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { useSelector } from 'react-redux'
-import { FaStar, FaAward } from 'react-icons/fa'
+import { FaStar, FaAward, FaFire, FaCoins } from 'react-icons/fa'
 
 import styles from './PointsUser.module.css'
 
 const PointsUser = () => {
   const routeNavigator = useRouteNavigator()
-  const { level, totalPoints } = useSelector((state) => state.user)
+  const { level, coins, xp, streak } = useSelector((state) => state.profile.user)
+
   return (
     <div
       className={styles.main_points_user}
       onClick={() => routeNavigator.push('/dashboard')}
     >
-      <div className={styles.box}>
-        <span className={styles.title}>
-          <FaStar size={15} className={styles.icon} /> Уровень
-        </span>
-        <span className={styles.value}>{level}</span>
+      {/* Верхний ярус таблички */}
+      <div className={styles.row}>
+        <div className={styles.box}>
+          <span className={styles.title}>
+            <FaStar size={11} className={styles.icon_level} /> Уровень
+          </span>
+          <span className={styles.value}>{level}</span>
+        </div>
+        <div className={styles.box}>
+          <span className={styles.title}>
+            <FaAward size={11} className={styles.icon_xp} /> Xp
+          </span>
+          <span className={styles.value}>{xp}</span>
+        </div>
       </div>
-      <div className={styles.box}>
-        <span className={styles.title}>
-          <FaAward size={15} className={styles.icon} />
-          Очки
-        </span>
-        <span className={styles.value}>{totalPoints}</span>
+
+      {/* Нижний ярус таблички */}
+      <div className={styles.row}>
+        <div className={styles.box}>
+          <span className={styles.title}>
+            <FaFire size={11} className={styles.icon_streak} /> Стрик
+          </span>
+          <span className={styles.value}>{streak}</span>
+        </div>
+        <div className={styles.box}>
+          <span className={styles.title}>
+            <FaCoins size={11} className={styles.icon_coins} /> Монеты
+          </span>
+          <span className={styles.value}>{coins}</span>
+        </div>
       </div>
     </div>
   )

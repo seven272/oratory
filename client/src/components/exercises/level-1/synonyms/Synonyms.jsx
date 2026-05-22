@@ -13,7 +13,6 @@ import ExerciseControls from '../../../exercise-controls/ExerciseControls'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
-
 const STATUS = {
   IDLE: 'idle',
   RUNNING: 'running',
@@ -34,7 +33,7 @@ const isSpeechSupported = !!(
   (window.SpeechRecognition || window.webkitSpeechRecognition)
 )
 
-const Synonyms = ({alias}) => {
+const Synonyms = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -50,7 +49,7 @@ const Synonyms = ({alias}) => {
   const [status, setStatus] = useState(STATUS.IDLE) // idle, counting, running, finished
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME)
   const [isTaskInterrupted, setIsTaskInterrupted] = useState(false)
-const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   // Управление микрофоном
   useEffect(() => {
@@ -65,11 +64,11 @@ const [showModal, setShowModal] = useState(false)
     setIsTaskInterrupted(false)
   }
 
-  const handleCheckResult = () => {
+  const handleAutoCheckResult = (currentTranscript) => {
     stopListening()
     let foundSynonyms = []
-    if (transcript) {
-      const words = transcript
+    if (currentTranscript) {
+      const words = currentTranscript
         .toLowerCase()
         .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')
         .split(/\s+/)
@@ -78,8 +77,27 @@ const [showModal, setShowModal] = useState(false)
     }
 
     const count = foundSynonyms.length
-    const earnedXP = count === 0 ? 0 : Math.min(count * 10, 100)
+    const earnedXP = count === 0 ? 0 : Math.min(count * 6, 30)
     setXp(earnedXP)
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: earnedXP,
+        isDaily: isDaily,
+      }),
+    )
+  }
+
+  // Ручная фиксация и отправка при клике на оценку себя
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp)
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
   }
 
   // --- ЛОГИКА ОБРАБОТКИ СЛОВ ---
@@ -104,14 +122,13 @@ const [showModal, setShowModal] = useState(false)
   const clickNext = () => {
     // Генерируем новое слово и сбрасываем состояние раунда
     setRandomWord(wordGenerator())
-     dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
     resetExerciseState()
     setStatus(STATUS.RUNNING)
   }
 
   const clickStop = () => {
-     dispatch(fetchCompleteExercise({ exAlias: alias, score: xp }))
-    routerNavigator.push('/')
+    resetExerciseState()
+    routerNavigator.back()
   }
 
   // логика основного таймера
@@ -125,7 +142,7 @@ const [showModal, setShowModal] = useState(false)
         )
       } else {
         setStatus(STATUS.FINISHED)
-        handleCheckResult()
+        handleAutoCheckResult(transcript)
       }
     }
     return () => clearInterval(timer)
@@ -231,20 +248,20 @@ const [showModal, setShowModal] = useState(false)
         )}
       </div>
 
-        {/* блок с нижними кнопками */}
+      {/* блок с нижними кнопками */}
       <ExerciseControls
         status={status}
         STATUS={STATUS}
-        level='LEVEL_1'
+        level="LEVEL_1"
         xp={xp}
         isTaskInterrupted={isTaskInterrupted}
         onStart={() => setStatus(STATUS.RUNNING)}
         onStop={handleInterrupt}
-        onRate={(value) => setXp(value)}
+        onRate={handleManualRate}
         onFinish={clickStop}
         onNext={clickNext}
       />
-<Modal active={showModal} onClose={() => setShowModal(false)}>
+      <Modal active={showModal} onClose={() => setShowModal(false)}>
         <TheoryContent
           alias={alias}
           onClose={() => setShowModal(false)}

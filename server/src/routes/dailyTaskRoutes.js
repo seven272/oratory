@@ -1,10 +1,11 @@
 import express from 'express';
-import { completeExercise } from '../controllers/exerciseController.js';
+import { getDailyTasks} from '../controllers/dailyTaskController.js';
 
 import { checkAuth } from '../middlewares/authMiddleware.js'
 
 const router = express.Router();
 
-router.post('/complete', checkAuth, completeExercise);
+router.get('/get', checkAuth, getDailyTasks)
+
 
 export default router;

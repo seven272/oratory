@@ -23,7 +23,7 @@ const ExercisePage = ({ id }) => {
     .find((ex) => ex.alias.toString() === params?.alias.toString()) : null
 
   const handleGoBack = () => {
-    routerNavigator.back() // Уходим назад в меню
+    routerNavigator.back()
   }
 
   if (!exerciseData) {
@@ -50,7 +50,7 @@ const ExercisePage = ({ id }) => {
       <div className={styles.main_exercise_page}>
         <div className={styles.wrapper}>
           <button className={styles.back_btn} onClick={handleGoBack}>
-            ← Назад в меню
+            ← Назад
           </button>
           <div className={styles.exercise_wrapper}>
             <ExerciseRenderer exercise={exerciseData} isDaily={isDaily}/>

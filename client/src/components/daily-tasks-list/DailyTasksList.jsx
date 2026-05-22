@@ -33,16 +33,7 @@ const DailyTasksList = () => {
 
   return (
     <section className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Задания дня</h2>
-        <span className={styles.date}>
-          {new Date().toLocaleDateString('ru-RU', {
-            day: 'numeric',
-            month: 'long',
-          })}
-        </span>
-      </div>
-
+    
       <div className={styles.grid}>
         {tasks && tasks.length > 0 ? (
           tasks.map((task) => (

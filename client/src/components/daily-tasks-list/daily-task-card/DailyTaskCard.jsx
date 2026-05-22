@@ -1,8 +1,8 @@
 import React from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
-import { FaCheckSquare } from "react-icons/fa";
+import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { FaCheckSquare } from 'react-icons/fa'
 
-import { All_EXERCISES } from '../../../assets/mocks/exercises' 
+import { All_EXERCISES } from '../../../assets/mocks/exercises'
 import styles from './DailyTaskCard.module.css'
 
 const DailyTaskCard = ({ task }) => {
@@ -12,13 +12,13 @@ const DailyTaskCard = ({ task }) => {
     description,
     reward,
     goal,
-    currentValue, 
+    currentValue,
     isCompleted,
     locked,
   } = task
   const routeNavigator = useRouteNavigator()
 
-  //  Находим иконку из статического конфига по alias
+  // Находим иконку из статического конфига по alias
   const exerciseConfig = Object.values(All_EXERCISES)
     .flat()
     .find((ex) => ex.alias === alias)
@@ -27,7 +27,6 @@ const DailyTaskCard = ({ task }) => {
 
   const handleClick = () => {
     if (locked) {
-      // Здесь можно вызвать открытие модалки Premium
       console.log('Доступно только в Premium')
       return
     }
@@ -36,41 +35,43 @@ const DailyTaskCard = ({ task }) => {
       return
     }
 
-    // Логика перехода к упражнению.
-    // ВАЖНО: передаем флаг isDaily, чтобы бэкенд засчитал стрик
     console.log(`Запуск ${alias} в режиме Daily`)
     routeNavigator.push(`/exercise/${alias}?daily=true`)
   }
 
-  // Динамические классы
-  const cardClasses = `
-    ${styles.card} 
-    ${locked ? styles.locked : ''} 
-    ${isCompleted ? styles.completed : ''}
-  `.trim()
+  // Динамические классы собраны через удобный массив в snake_case
+  const cardClasses = [
+    styles.card,
+    locked ? styles.locked : '',
+    isCompleted ? styles.completed : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className={cardClasses} onClick={handleClick}>
       {/* Бейдж для премиум-задач */}
-      {locked && <div className={styles.premiumBadge}>Premium</div>}
+      {locked && <div className={styles.premium_badge}>Premium</div>}
 
-      <div className={styles.iconWrapper}>
+      <div className={styles.icon_wrapper}>
         <img src={iconSrc} alt={title} className={styles.icon} />
       </div>
 
       <div className={styles.content}>
-        <span className={styles.taskTitle}>{title}</span>
+        <span className={styles.task_title}>{title}</span>
         <span className={styles.description}>{description}</span>
       </div>
 
-      <div className={styles.sideInfo}>
+      <div className={styles.side_info}>
         <span className={styles.reward}>+{reward} XP</span>
 
         {isCompleted ? (
-          <span className={styles.checkIcon}><FaCheckSquare size={20}/> выполнено</span>
+          <span className={styles.check_icon}>
+            <FaCheckSquare size={20} /> выполнено
+          </span>
         ) : (
           !locked && (
-            <span className={styles.progressLabel}>
+            <span className={styles.progress_label}>
               {currentValue}/{goal}
             </span>
           )

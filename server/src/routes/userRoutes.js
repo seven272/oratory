@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login, register, logout, getMe, getUserDashboard } from "../controllers/userController.js";
+import { login, register, logout, getMe, getUserProfile } from "../controllers/userController.js";
 import { checkAuth } from "../middlewares/authMiddleware.js";
 
 const router = new Router()
@@ -9,7 +9,7 @@ router.post('/register', register)
 router.post('/login', login)
 router.post('/logout', logout)
 router.get('/me', checkAuth, getMe)
-router.get('/user-statistics', checkAuth, getUserDashboard)
+router.get('/get-data-profile', checkAuth, getUserProfile)
 
 
 

@@ -1,44 +1,75 @@
 .main_points_user {
   width: max-content;
-  height: 50px;
+  height: 88px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  background: var(--color-primary);
-  padding: 5px 0;
+  background: #ffffff;
+  padding: 8px 3px;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
   cursor: pointer;
+
+  /* Граница компонента теперь в фирменном синем цвете */
+  border: 1.5px solid #b1d6fd; 
+  box-shadow: 
+    inset 0 0 0 2px #ffffff, 
+    inset 0 0 0 3px #b1d6fd, 
+    0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Контейнер для строк */
+.row {
+  display: flex;
+  width: 100%;
+  height: 34px;
+  align-items: center;
+}
+
+/* Горизонтальный разделитель в цвет #b1d6fd */
+.row:first-child {
+  border-bottom: 1.5px solid #b1d6fd;
 }
 
 .box {
-  width: 100px;
+  width: 94px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  color: var(--color-white);
-  row-gap: 5px;
+  row-gap: 1px;
 }
 
-.box:first-child {
-  border-right: 1px solid var(--color-white);
+/* Вертикальный разделитель в цвет #b1d6fd */
+.row .box:first-child {
+  border-right: 1.5px solid #b1d6fd;
 }
 
 .title {
-  font: var(--font-m);
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #b1d6fd; /* Цвет подписей изменен на синий */
   display: flex;
-  width: 100%;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
-.icon {
-  margin-right: 5px;
+/* Иконки Уровня и XP */
+.icon_level,
+.icon_streak,
+.icon_coins,
+.icon_xp {
+  margin-right: 4px;
+  color: #b1d6fd; /* Базовые иконки изменены на синий */
 }
+
+
 
 .value {
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #b1d6fd; /* Цвет цифр изменен на синий */
 }

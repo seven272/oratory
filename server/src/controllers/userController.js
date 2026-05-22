@@ -152,7 +152,7 @@ const getMe = async (req, res) => {
   }
 }
 
-const getUserDashboard = async (req, res) => {
+const getUserProfile = async (req, res) => {
   const userId = req.userId
   try {
     const user = await User.findById(userId).select('-password')
@@ -217,6 +217,15 @@ const getUserDashboard = async (req, res) => {
         recommendation: `Твой навык "${weakest.subject}" требует внимания. Попробуй улучшить его!`,
       }
     }
+    //Отслеживания прогресса выполнения ежедневных заданий
+    // Собираем только уникальные даты, где есть выполненные ежедневные задачи
+    const completedDays = [
+      ...new Set(
+        user.dailyProgress
+          .filter((item) => item.isCompleted === true)
+          .map((item) => item.date), // достаем строки "YYYY-MM-DD"
+      ),
+    ]
     res.status(200).json({
       user: {
         displayName: user.displayName,
@@ -227,8 +236,9 @@ const getUserDashboard = async (req, res) => {
         streak: user.streak.current,
         levelProgressPercent,
         nextThreshold,
+        completed_days: completedDays,
       },
-      skills: skillsData, 
+      skills: skillsData,
       weakPoint,
       recentActivity: user.stats.exerciseStats.slice(-5).reverse(), // Последние 5
       totalExercises: user.stats.totalExercises,
@@ -241,4 +251,4 @@ const getUserDashboard = async (req, res) => {
   }
 }
 
-export { register, login, logout, getMe, getUserDashboard }
+export { register, login, logout, getMe, getUserProfile }
