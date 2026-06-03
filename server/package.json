@@ -7,7 +7,8 @@
     "start": "node ./src/server.js",
     "dev": "nodemon ./src/server.js",
     "seed:tasks": "node ./src/scripts/seedTasks.js",
-    "seed:users": "node ./src/scripts/seedUsers.js"
+    "seed:users": "node ./src/scripts/seedUsers.js",
+    "seed:shop": "node ./src/scripts/seedShop.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.21",
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",

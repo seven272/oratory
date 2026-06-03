@@ -20,29 +20,7 @@ import IconEx16 from '../images/card-icons/ai-inrerview.png'
 import IconEx17 from '../images/card-icons/ai-icebreaker.png'
 import IconEx18 from '../images/card-icons/ai-tribune.png'
 
-const SKILLS_MAP = {
-  'Техника речи': ['tongue-twister', 'fear-explosive'],
-  Находчивость: ['association', 'synonyms', 'description', 'taboo'],
-  'Харизма и Юмор': [
-    'emotion',
-    'joke-master',
-    'toast-master',
-    'king-failure',
-  ],
-  Убедительность: [
-    'logic-chain', // Логическая цепь
-    'speaking-thread', // Нить разговора
-    'jargon-task', // Блатной базар (ответ на провокации)
-    'science-translator', // Просто о сложном
-    'ai-debate', // Дебат-клуб (с ИИ)
-    'ai-tribune', // Трибуна
-  ],
-  Коммуникация: [
-    'ai-icebreaker', // Ледокол (умение завязать разговор)
-    'ai-inrerview', // Неудобный вопрос (ответы интервьюеру)
-    'description', // Ода предмету (базовый навык монолога)
-  ],
-}
+
 
 const All_EXERCISES = {
   level1: [

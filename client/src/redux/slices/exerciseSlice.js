@@ -8,7 +8,7 @@ const fetchCompleteExercise = createAsyncThunk(
   async ({ exAlias, score, isDaily }, { rejectWithValue }) => {
     console.log('ежедневное упражнение? ' + isDaily)
     try {
-      // Отправляем ID упражнения и набранные очки
+      // Отправляем ID упражнения и набранные очки 
       const res = await axiosInstance.post( 
         '/exercises/complete',
         {

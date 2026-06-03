@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+// Shop.jsx
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   fetchShopItems,
@@ -7,56 +8,93 @@ import {
 } from '../../../redux/slices/shopSlice'
 
 import styles from './Shop.module.css'
+import ShopAddressModal from './shop-address-modal/ShopAddressModal.jsx'
 
 const Shop = () => {
   const dispatch = useDispatch()
 
-  // Берем данные из профиля
+  // Получаем баланс жетонов из профиля пользователя
   const userCoins = useSelector(
-    (state) => state.profile.user?.coins || 0,
+    (state) =>
+      state.profile.user?.progression?.coins ||
+      state.profile.user?.coins ||
+      0,
   )
+
+  // Получаем инвентарь пользователя
   const userInventory = useSelector(
     (state) => state.profile.user?.inventory || [],
   )
 
-  // Берем данные из магазина
+  // Получаем состояние витрины магазина
   const { items, status, purchaseStatus, error } = useSelector(
     (state) => state.shop,
   )
 
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [pendingItem, setPendingItem] = useState(null)
+
+  // Соответствие технических имен иконок визуальным эмодзи
   const iconMap = {
     freeze: '❄️',
     'theme-cyber': '🌐',
     'crown-title': '👑',
+    'ai-prompt': '💡', // Суфлер ИИ
+    'color-glow': '✨', // Неоновый ник
+    'physical-badge': '🏅', // Физический значок
+    'physical-diploma': '📜', // Настоящий диплом в рамке
   }
 
   useEffect(() => {
     dispatch(fetchShopItems())
-
-    // При размонтировании сбрасываем статус ошибок покупки
+    // Очистка экшенов при размонтировании экрана
     return () => dispatch(resetShopStatus())
   }, [dispatch])
 
-  // Следим за ошибками или успехом покупки для вывода алертов
+  // Контроль модальных окон и алертов по статусу транзакции
   useEffect(() => {
     if (purchaseStatus === 'failed' && error) {
       alert(error.message || 'Ошибка транзакции')
       dispatch(resetShopStatus())
     }
+    if (purchaseStatus === 'succeeded') {
+      setIsModalOpen(false)
+      setPendingItem(null)
+      dispatch(resetShopStatus())
+    }
   }, [purchaseStatus, error, dispatch])
 
-  const handleBuy = (itemCode, price) => {
-    if (userCoins < price) {
+  // Обработка нажатия на кнопку покупки
+  const handleBuyClick = (item) => {
+    if (userCoins < item.price) {
       alert('Недостаточно жетонов!')
       return
     }
-    dispatch(fetchPurchaseItem(itemCode))
+
+    // Если категория — мерч, сначала открываем модалку для ввода адреса
+    if (item.category === 'merch') {
+      setPendingItem(item)
+      setIsModalOpen(true)
+    } else {
+      dispatch(fetchPurchaseItem({ itemCode: item.code }))
+    }
+  }
+
+  // Колбэк подтверждения из дочерней модалки адреса
+  const handleConfirmAddress = (deliveryAddress) => {
+    dispatch(
+      fetchPurchaseItem({
+        itemCode: pendingItem.code,
+        deliveryAddress,
+      }),
+    )
   }
 
   if (status === 'loading')
     return (
       <div className={styles.container}>Загрузка магазина...</div>
     )
+
   if (status === 'failed')
     return (
       <div className={styles.container}>
@@ -75,10 +113,14 @@ const Shop = () => {
 
       <div className={styles.grid}>
         {items.map((item) => {
+          // Проверяем, куплен ли уже этот товар пользователем
           const isOwned = userInventory.some(
             (inv) => inv.itemCode === item.code,
           )
-          const isUnique = item.category !== 'utility'
+
+          // Исключаем утилиты и мерч из уникальных предметов, их можно брать многократно
+          const isUnique =
+            item.category !== 'utility' && item.category !== 'merch'
           const isBuying = purchaseStatus === 'loading'
 
           return (
@@ -97,7 +139,7 @@ const Shop = () => {
               <button
                 className={styles.buyButton}
                 disabled={(isUnique && isOwned) || isBuying}
-                onClick={() => handleBuy(item.code, item.price)}
+                onClick={() => handleBuyClick(item)} // ИСПРАВЛЕНО: Передаем объект item целиком
               >
                 {isUnique && isOwned ? 'Куплено' : `🪙 ${item.price}`}
               </button>
@@ -105,6 +147,15 @@ const Shop = () => {
           )
         })}
       </div>
+
+      {/* Отрисовка модального окна доставки */}
+      {isModalOpen && (
+        <ShopAddressModal
+          item={pendingItem}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirmAddress}
+        />
+      )}
     </div>
   )
 }

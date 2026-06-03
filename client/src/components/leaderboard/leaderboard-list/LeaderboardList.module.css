@@ -103,3 +103,31 @@
   color: var(--color-text-secondary);
   margin-top: 1px;
 }
+
+/* Заглушка аватара, если картинка невалидна */
+.avatarFallback {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  border: 1px solid var(--color-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Элитное оформление строки PRO-пользователей в стиле платформы */
+.rowPremium .name {
+  color: #fa8c16; /* Насыщенный оранжево-золотой оттенок */
+}
+
+.rowPremium .premiumBadge {
+  background: linear-gradient(135deg, #ffa940 0%, #fa8c16 100%);
+  box-shadow: 0 2px 6px rgba(250, 140, 22, 0.3);
+}

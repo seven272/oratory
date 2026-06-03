@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { LuCrown } from 'react-icons/lu'
 import { MdOutlineLock } from 'react-icons/md'
-import { FaQuestion } from "react-icons/fa"
+import { FaQuestion } from 'react-icons/fa'
 
 import styles from './ExercisePreview.module.css'
 import Modal from '../../UI/modal/Modal'
@@ -13,7 +13,7 @@ const ExercisePreview = ({ exData }) => {
   const routeNavigator = useRouteNavigator()
   const { user } = useSelector((state) => state.profile)
   const [showModal, setShowModal] = useState(false)
-
+  
   const isLevelLocked = Number(exData.minLevel) > Number(user.level)
   const isPremiumLocked = exData.premium && !user.isPremium
   const isLocked = isLevelLocked || isPremiumLocked
@@ -63,7 +63,9 @@ const ExercisePreview = ({ exData }) => {
         )}
 
         {/* 💡 Контейнер теперь рендерится ВСЕГДА, а класс blur добавляется по условию */}
-        <div className={`${styles.inner_content} ${isLocked ? styles.content_blur : ''}`}>
+        <div
+          className={`${styles.inner_content} ${isLocked ? styles.content_blur : ''}`}
+        >
           <div className={styles.execise_header}>
             <div className={styles.icon_wrap}>
               <img
@@ -78,7 +80,9 @@ const ExercisePreview = ({ exData }) => {
           <div className={styles.execise_text_wrap}>
             <div className={styles.text_main}>
               <h3 className={styles.execise_title}>{exData.title}</h3>
-              <p className={styles.execise_descr}>{exData.description}</p>
+              <p className={styles.execise_descr}>
+                {exData.description}
+              </p>
             </div>
             <div className={styles.execise_reward}>
               +{exData.reward} XP
@@ -90,7 +94,10 @@ const ExercisePreview = ({ exData }) => {
       </div>
 
       <Modal active={showModal} onClose={() => setShowModal(false)}>
-        <TheoryContent alias={exData.alias} onClose={() => setShowModal(false)}/>
+        <TheoryContent
+          alias={exData.alias}
+          onClose={() => setShowModal(false)}
+        />
       </Modal>
     </>
   )

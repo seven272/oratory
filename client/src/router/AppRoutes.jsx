@@ -21,7 +21,7 @@ const routers = [
     panel: 'exercises-all-panel',
     view: 'main_view',
   },
-    {
+  {
     path: '/exercises/:level',
     panel: 'exercises-level-panel',
     view: 'main_view',
@@ -36,7 +36,7 @@ const routers = [
     panel: 'dashboard-panel',
     view: 'main_view',
   },
-   {
+  {
     path: '/leaderboard',
     panel: 'leaderboard-panel',
     view: 'main_view',
@@ -44,6 +44,16 @@ const routers = [
   {
     path: '/shop',
     panel: 'shop-panel',
+    view: 'main_view',
+  },
+  {
+    path: '/challenges',
+    panel: 'challenges-panel',
+    view: 'main_view',
+  },
+  {
+    path: '/admin',
+    panel: 'admin-panel',
     view: 'main_view',
   },
 ]

@@ -34,7 +34,7 @@ const TIME_ROUND = 60
 //   (window.SpeechRecognition || window.webkitSpeechRecognition)
 // )
 
-const TribuneAi = ({ alias }) => {
+const TribuneAi = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -121,10 +121,21 @@ const TribuneAi = ({ alias }) => {
   }
 
   const handleFinishTribune = () => {
-    // меняем экран на финальный
-    setScreenStatus(SCREEN_STATUS.FINISHED)
-    // диспатч на получение оценки,
-    dispatch(fetchFinishTribune())
+    // 1. Ставим статус "ИИ думает" для красивой анимации внутри TribuneProcess
+    dispatch(setAiStatus(AI_STATUS.AI_THINKING))
+
+    // 2. Запускаем получение оценки от GigaChat
+    dispatch(fetchFinishTribune({ isDaily }))
+      .unwrap() // Позволяет дождаться успешного выполнения промиса
+      .then(() => {
+        // 3. Только КОГДА данные уже в Redux и exStatus стал 'succeeded' — открываем финальный экран!
+        setScreenStatus(SCREEN_STATUS.FINISHED)
+      })
+      .catch((err) => {
+        console.error('Ошибка при получении аналитики трибуны:', err)
+        // В случае форс-мажора все равно пускаем на экран, там сработает наш фоллбек
+        setScreenStatus(SCREEN_STATUS.FINISHED)
+      })
   }
 
   const handleAutoSubmit = () => {
@@ -146,7 +157,13 @@ const TribuneAi = ({ alias }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetExerciseState(EXERCISE_NAME))
-    routerNavigator.push('/')
+    routerNavigator.push('/exercises/level3')
+  }
+
+  const handleRestartExercise = () => {
+    dispatch(resetExerciseState(EXERCISE_NAME))
+    // dispatch(fetchStartTribune(randomTribune))
+    setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
   if (!randomTribune) return <ScreenSpinner />
@@ -184,7 +201,10 @@ const TribuneAi = ({ alias }) => {
         )}
 
         {screenStatus === SCREEN_STATUS.FINISHED && (
-          <TribuneResult onCloseExercise={handleCloseExercise} />
+          <TribuneResult
+            onCloseExercise={handleCloseExercise}
+            onRestartExercise={handleRestartExercise}
+          />
         )}
       </div>
       <Modal active={showModal} onClose={() => setShowModal(false)}>

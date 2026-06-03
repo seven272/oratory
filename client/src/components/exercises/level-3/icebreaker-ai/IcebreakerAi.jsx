@@ -34,7 +34,7 @@ const TIME_ROUND = 10
 //   (window.SpeechRecognition || window.webkitSpeechRecognition)
 // )
 
-const IcebreakerAi = ({alias}) => {
+const IcebreakerAi = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -124,7 +124,7 @@ const IcebreakerAi = ({alias}) => {
     // меняем экран на финальный
     setScreenStatus(SCREEN_STATUS.FINISHED)
     // диспатч на получение оценки,
-    dispatch(fetchFinishIcebreaker())
+    dispatch(fetchFinishIcebreaker({ isDaily }))
   }
 
   const handleAutoSubmit = () => {
@@ -147,7 +147,12 @@ const IcebreakerAi = ({alias}) => {
 
   const handleCloseExercise = () => {
     dispatch(resetExerciseState(EXERCISE_NAME))
-    routerNavigator.push('/')
+    routerNavigator.push('/exercises/level3')
+  }
+
+  const handleRestartExercise = () => {
+    dispatch(resetExerciseState(EXERCISE_NAME))
+    setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
   if (!randomSituation) return <ScreenSpinner />
@@ -184,7 +189,10 @@ const IcebreakerAi = ({alias}) => {
         )}
 
         {screenStatus === SCREEN_STATUS.FINISHED && (
-          <IcebreakerResult onCloseExercise={handleCloseExercise} />
+          <IcebreakerResult
+            onCloseExercise={handleCloseExercise}
+            onRestartExercise={handleRestartExercise}
+          />
         )}
       </div>
       <Modal active={showModal} onClose={() => setShowModal(false)}>

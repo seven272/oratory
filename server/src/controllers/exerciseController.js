@@ -1,5 +1,5 @@
 import User from '../models/User.js'
-import DailyChallenge from '../models/DailyChallenge.js'
+import DailyTask from '../models/DailyTask.js'
 
 import { All_EXERCISES } from '../constants/exercises.js'
 import { getXpThreshold } from '../utils/fnForControllers.js'
@@ -80,7 +80,7 @@ const completeExercise = async (req, res) => {
     // --- ЛОГИКА DAILY CHALLENGE (🟢 ТЕПЕРЬ С БУСТОМ Х2) ---
     if (isDaily) {
       // Ищем пул задач, назначенных системой на сегодняшнюю UTC-дату
-      const dailySet = await DailyChallenge.findOne({
+      const dailySet = await DailyTask.findOne({
         date: todayStr,
       }).populate('tasks')
 
@@ -197,9 +197,6 @@ const completeExercise = async (req, res) => {
     // Увеличиваем глобальный счетчик абсолютно всех тренировок на платформе
     user.stats.totalExercises = (user.stats.totalExercises || 0) + 1
 
-    // Запускаем внешнюю проверку на получение новых достижений/ачивок
-    const newAwards = checkAchievements(user)
-
     // Собираем массив уникальных строковых дат, в которые были полностью закрыты дейлики
     const completedDays = [
       ...new Set(
@@ -209,7 +206,10 @@ const completeExercise = async (req, res) => {
       ),
     ]
 
-    // 4. Сохраняем все изменения документа в базу данных MongoDB
+    // Запускаем внешнюю проверку на получение новых достижений/ачивок: (user, hasJustCompletedIrlChallenge, currentScore, currentExerciseAlias)
+    const newAwards = checkAchievements(user, false, score, exAlias)
+
+    //  Сохраняем все изменения документа в базу данных MongoDB
     await user.save()
 
     // 5. Возвращаем клиенту успешный ответ со всеми обновленными данными для синхронизации Redux
@@ -237,6 +237,5 @@ const completeExercise = async (req, res) => {
       .json({ message: 'Ошибка при сохранении результата' })
   }
 }
-
 
 export { completeExercise }

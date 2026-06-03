@@ -10,8 +10,10 @@ const LeaderboardPage = ({ id }) => {
   return (
     <Panel id={id}>
       <Header />
-      <h1>Рейтинг лучших ораторов</h1>
-      <Leaderboard />
+      <div className={styles.leaderboard_page}>
+        <Leaderboard />
+      </div>
+
       <Footer />
     </Panel>
   )

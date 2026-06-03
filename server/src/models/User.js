@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       sparse: true,
-      trim: true, 
+      trim: true,
       lowercase: true,
     },
     password: { type: String },
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     progression: {
       // уровень
       level: { type: Number, default: 1 },
-      // игровой опыт
+      // игровой опыт текущего уроня
       xp: { type: Number, default: 0 },
       // баланс жетонов оратора
       coins: { type: Number, default: 0 },
@@ -72,6 +72,8 @@ const userSchema = new mongoose.Schema(
         itemCode: { type: String },
         quantity: { type: Number, default: 1 },
         purchasedAt: { type: Date, default: Date.now },
+        deliveryAddress: { type: String, default: '' }, // Хранит ФИО, телефон и адрес
+        isShipped: { type: Boolean, default: false }, // Флаг: отправлен/выполнен ли заказ
       },
     ],
   },
@@ -80,11 +82,9 @@ const userSchema = new mongoose.Schema(
   },
 )
 
-// Индекс для быстрого поиска по уровню (понадобится для лидербордов)
-userSchema.index({
-  'progression.level': -1,
-  'progression.xp': -1,
-})
+// Позволяют MongoDB мгновенно находить ТОП-10 и считать ранг текущего юзера
+userSchema.index({ 'stats.lifetimeXp': -1 })
+userSchema.index({ weeklyXp: -1 })
 
 const User = mongoose.model('User', userSchema)
 

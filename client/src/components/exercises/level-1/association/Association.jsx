@@ -71,7 +71,7 @@ const Association = ({ alias, isDaily }) => {
       dispatch(
         fetchCompleteExercise({
           exAlias: alias,
-          score: 30,
+          score: 30, 
           isDaily: isDaily,
         }),
       )

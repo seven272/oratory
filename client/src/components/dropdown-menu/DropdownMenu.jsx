@@ -25,11 +25,18 @@ const DropdownMenu = () => {
       title: 'ежедневные упражнения',
       alias: 'exercises-daily',
     },
-     {
+    {
       title: 'рейтинг ораторов',
       alias: 'leaderboard',
     },
-
+    {
+      title: 'испытания',
+      alias: 'challenges',
+    },
+    {
+      title: 'админ',
+      alias: 'admin',
+    },
     {
       title: '404',
       alias: 'notfound',
@@ -44,7 +51,9 @@ const DropdownMenu = () => {
       'notfound',
       'exercises-all',
       'exercises-daily',
-      'leaderboard'
+      'leaderboard',
+      'challenges',
+      'admin',
     ]
 
     if (categories.includes(key)) {

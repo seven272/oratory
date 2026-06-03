@@ -1,7 +1,6 @@
 import User from '../models/User.js'
-import DailyChallenge from '../models/DailyChallenge.js'
 import DailyTask from '../models/DailyTask.js'
-
+import Task from '../models/Task.js'
 
 const getDailyTasks = async (req, res) => {
   try {
@@ -9,35 +8,35 @@ const getDailyTasks = async (req, res) => {
     const today = new Date().toISOString().split('T')[0] // Формат "2023-10-27"
 
     // 1. Ищем, определены ли общие задачи на сегодня
-    let challenge = await DailyChallenge.findOne({
+    let challenge = await DailyTask.findOne({
       date: today,
     }).populate('tasks')
 
     // 2. Если на сегодня задач еще нет (первый юзер зашел в систему) — генерируем
     if (!challenge) {
-      const [t1] = await DailyTask.aggregate([
+      const [t1] = await Task.aggregate([
         //aggregate всегда возвращает массив, даже если выбрана одна
         { $match: { level: 1 } }, // Этап 1: Фильтрация ($match)
         { $sample: { size: 1 } }, // Этап 2: Случайный выбор ($sample)
       ])
-      const [t2] = await DailyTask.aggregate([
+      const [t2] = await Task.aggregate([
         { $match: { level: 2 } },
         { $sample: { size: 1 } },
       ])
-      const [t3] = await DailyTask.aggregate([
+      const [t3] = await Task.aggregate([
         { $match: { level: 3 } },
         { $sample: { size: 1 } },
       ])
 
-      challenge = await DailyChallenge.create({
+      challenge = await DailyTask.create({
         date: today,
         tasks: [t1._id, t2._id, t3._id],
       })
 
       // Снова подтягиваем данные после создания
-      challenge = await DailyChallenge.findById(
-        challenge._id,
-      ).populate('tasks')
+      challenge = await DailyTask.findById(challenge._id).populate(
+        'tasks',
+      )
     }
 
     // 3. Получаем данные пользователя для проверки прогресса и премиума
@@ -73,4 +72,4 @@ const getDailyTasks = async (req, res) => {
   }
 }
 
-export {  getDailyTasks }
+export { getDailyTasks }

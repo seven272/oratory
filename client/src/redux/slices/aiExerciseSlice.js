@@ -6,14 +6,12 @@ import axiosInstance from '../../utils/axiosInstance'
 const fetchStartDebate = createAsyncThunk(
   'aiExercise/fetchStartDebate',
   async ({ topic, position }, { rejectWithValue }) => {
-    const userId = '66778899aabbccddeeff0011'
     const exerciseData = {
       topic,
       position,
     }
     try {
       const res = await axiosInstance.post('/ai/start-debate', {
-        userId,
         exerciseData,
       })
 
@@ -46,11 +44,14 @@ const fetchSendUserResponseDebate = createAsyncThunk(
 )
 const fetchFinishDebate = createAsyncThunk(
   'aiExercise/fetchFinishDebate',
-  async (_, { rejectWithValue }) => {
+  async ({ isDaily }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/ai/finish-debate') // путь к вашему новому контроллеру
-      return response.data // Ожидаем объект с totalScore, feedback и criteria
+      const res = await axiosInstance.post('/ai/finish-debate', {
+        isDaily,
+      }) // путь к вашему новому контроллеру
+      return res.data // Ожидаем объект с totalScore, feedback и criteria
     } catch (error) {
+      console.log(error)
       return rejectWithValue(
         error.response?.data?.message ||
           'Ошибка при получении вердикта дебатов',
@@ -63,11 +64,8 @@ const fetchFinishDebate = createAsyncThunk(
 const fetchStartInterview = createAsyncThunk(
   'aiExercise/fetchStartInerview',
   async (exerciseData, { rejectWithValue }) => {
-    const userId = '66778899aabbccddeeff0011'
-
     try {
       const res = await axiosInstance.post('/ai/start-interview', {
-        userId,
         exerciseData,
       })
 
@@ -82,12 +80,10 @@ const fetchStartInterview = createAsyncThunk(
 )
 
 const fetchResponseInterview = createAsyncThunk(
-  'aiExercise/fetchResponseInerview',
+  'aiExercise/fetchResponseInterview',
   async ({ interviewData, userMessage }, { rejectWithValue }) => {
-    const userId = '66778899aabbccddeeff0011'
     try {
       const res = await axiosInstance.post('/ai/response-interview', {
-        userId,
         interviewData,
         userMessage,
       })
@@ -103,10 +99,12 @@ const fetchResponseInterview = createAsyncThunk(
 )
 
 const fetchFinishInterview = createAsyncThunk(
-  'aiExercise/fetchFinishInerview',
-  async (_, { rejectWithValue }) => {
+  'aiExercise/fetchFinishInterview',
+  async ({ isDaily }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/ai/finish-interview')
+      const res = await axiosInstance.post('/ai/finish-interview', {
+        isDaily,
+      })
 
       return res.data
     } catch (error) {
@@ -122,11 +120,8 @@ const fetchFinishInterview = createAsyncThunk(
 const fetchStartIcebreaker = createAsyncThunk(
   'aiExercise/fetchStartIcebreaker',
   async (exerciseData, { rejectWithValue }) => {
-    const userId = '66778899aabbccddeeff0011'
-
     try {
       const res = await axiosInstance.post('/ai/start-icebreaker', {
-        userId,
         exerciseData,
       })
 
@@ -165,9 +160,11 @@ const fetchResponseIcebreaker = createAsyncThunk(
 
 const fetchFinishIcebreaker = createAsyncThunk(
   'aiExercise/fetchFinishIcebreaker',
-  async (_, { rejectWithValue }) => {
+  async ({ isDaily }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/ai/finish-icebreaker')
+      const res = await axiosInstance.post('/ai/finish-icebreaker', {
+        isDaily,
+      })
 
       return res.data
     } catch (error) {
@@ -183,11 +180,8 @@ const fetchFinishIcebreaker = createAsyncThunk(
 const fetchStartTribune = createAsyncThunk(
   'aiExercise/fetchStartTribune',
   async (exerciseData, { rejectWithValue }) => {
-    const userId = '66778899aabbccddeeff0011'
-
     try {
       const res = await axiosInstance.post('/ai/start-tribune', {
-        userId,
         exerciseData,
       })
 
@@ -204,7 +198,6 @@ const fetchStartTribune = createAsyncThunk(
 const fetchResponseTribune = createAsyncThunk(
   'aiExercise/fetchResponseTribune',
   async ({ scenarioData, userMessage }, { rejectWithValue }) => {
-    // const userId = '66778899aabbccddeeff0011'
     try {
       const res = await axiosInstance.post('/ai/response-tribune', {
         scenarioData,
@@ -223,12 +216,15 @@ const fetchResponseTribune = createAsyncThunk(
 
 const fetchFinishTribune = createAsyncThunk(
   'aiExercise/fetchFinishTribune',
-  async (_, { rejectWithValue }) => {
+  async ({ isDaily }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/ai/finish-tribune')
+      const res = await axiosInstance.post('/ai/finish-tribune', {
+        isDaily,
+      })
 
       return res.data
     } catch (error) {
+      console.log(error)
       const errorMsg =
         error.response?.data?.message ||
         'Ошибка сервера при завершении упражнения трибуна'
@@ -307,7 +303,12 @@ const aiExerciseSlice = createSlice({
           messages: [],
           exStatus: 'idle',
           aiStatus: 'idle',
+          verdict: null,
           error: null,
+        }
+        // Дополнительный сброс шкалы warmth для Ледокола
+        if (exerciseName === 'icebreaker') {
+          state.exercises.icebreaker.warmth = 0
         }
         if (state.activeExercise === exerciseName) {
           state.activeExercise = ''
@@ -401,13 +402,18 @@ const aiExerciseSlice = createSlice({
         setPending(state, 'debate')
       })
       .addCase(fetchFinishDebate.fulfilled, (state, action) => {
+        state.globalStatus = 'succeeded'
         state.exercises.debate.exStatus = 'succeeded'
         // Записываем данные из БД (модель AiExercise) в стейт
-        state.exercises.debate.verdict = action.payload.result
+        if (action.payload?.session?.result) {
+          state.exercises.debate.verdict =
+            action.payload.session.result
+        }
       })
       .addCase(fetchFinishDebate.rejected, (state, action) => {
         setRejected(state, action, 'debate')
       })
+
     // --- Логика для упражнения INTERVIEW ---
 
     builder
@@ -480,10 +486,14 @@ const aiExerciseSlice = createSlice({
         setPending(state, 'interview')
       })
       .addCase(fetchFinishInterview.fulfilled, (state, action) => {
+        state.globalStatus = 'succeeded'
         state.exercises.interview.exStatus = 'succeeded'
-        // Записываем данные из БД (модель AiExercise) в стейт
-        console.log(action.payload.result)
-        state.exercises.interview.verdict = action.payload.result
+        state.exercises.interview.aiStatus = 'finished'
+
+        if (action.payload?.session?.result) {
+          state.exercises.interview.verdict =
+            action.payload.session.result
+        }
       })
       .addCase(fetchFinishInterview.rejected, (state, action) => {
         setRejected(state, action, 'interview')
@@ -498,6 +508,7 @@ const aiExerciseSlice = createSlice({
         state.exercises.icebreaker.exStatus = 'succeeded'
         // Очищаем историю и добавляем первое сообщение от ИИ
         state.exercises.icebreaker.messages = []
+        state.exercises.icebreaker.warmth = 0
 
         state.exercises.icebreaker.messages.push({
           role: 'assistant',
@@ -527,36 +538,46 @@ const aiExerciseSlice = createSlice({
         state.globalStatus = 'succeeded'
         const { answer, warmth, isFinished } = action.payload
         const icebreaker = state.exercises.icebreaker
-
         icebreaker.exStatus = 'succeeded'
+        icebreaker.warmth = warmth
         // Если диалог завершен по лимиту ходов или успеху
         // ЕСЛИ это был последний ответ пользователя — не добавляем ответ ИИ и финализируем
         if (isFinished) {
           icebreaker.aiStatus = 'finished'
         } else {
-          // ЕСЛИ раунды еще есть — добавляем ответ ИИ-оппонента
-          const aiMessage = {
+          // Если раунды еще есть — добавляем ответ ИИ-собеседника
+          icebreaker.messages.push({
             role: 'assistant',
             text: answer,
-          }
-          icebreaker.messages.push(aiMessage)
-          // Обновляем шкалу тепла
-          icebreaker.warmth = warmth
-          icebreaker.aiStatus = 'idle' // Возвращаем в ожидание новой записи
+          })
+          icebreaker.aiStatus = 'idle' // Возвращаем в ожидание новой реплики
         }
       })
       .addCase(fetchResponseIcebreaker.rejected, (state, action) => {
-        setRejected(state, action, 'icebreaker')
+        state.globalStatus = 'failed'
+        state.exercises.icebreaker.exStatus = 'idle' // возвращаем в idle, чтобы кнопка записи разблокировалась
+
+        // Удаляем последнее сообщение пользователя, так как ответ ИИ не сгенерировался
+        const lastMsg = state.exercises.icebreaker.messages.at(-1)
+        if (lastMsg && lastMsg.role === 'user') {
+          state.exercises.icebreaker.messages.pop()
+        }
+        state.exercises.icebreaker.error = action.payload
       })
       //оценка ии за Ледокол
       .addCase(fetchFinishIcebreaker.pending, (state) => {
         setPending(state, 'icebreaker')
       })
       .addCase(fetchFinishIcebreaker.fulfilled, (state, action) => {
+        state.globalStatus = 'succeeded'
         state.exercises.icebreaker.exStatus = 'succeeded'
-        // Записываем данные из БД (модель AiExercise) в стейт
-        console.log(action.payload.result)
-        state.exercises.icebreaker.verdict = action.payload.result
+        state.exercises.icebreaker.aiStatus = 'finished'
+
+        // Забираем вердикт строго из вложенной сессии согласно структуре бэкенда
+        if (action.payload?.session?.result) {
+          state.exercises.icebreaker.verdict =
+            action.payload.session.result
+        }
       })
       .addCase(fetchFinishIcebreaker.rejected, (state, action) => {
         setRejected(state, action, 'icebreaker')
@@ -623,9 +644,11 @@ const aiExerciseSlice = createSlice({
       })
       .addCase(fetchFinishTribune.fulfilled, (state, action) => {
         state.exercises.tribune.exStatus = 'succeeded'
-        // Записываем данные из БД (модель AiExercise) в стейт
-        console.log(action.payload.result)
-        state.exercises.tribune.verdict = action.payload.result
+
+        if (action.payload?.session?.result) {
+          state.exercises.tribune.verdict =
+            action.payload.session.result
+        }
       })
       .addCase(fetchFinishTribune.rejected, (state, action) => {
         setRejected(state, action, 'tribune')

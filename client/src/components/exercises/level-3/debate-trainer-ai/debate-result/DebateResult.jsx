@@ -11,7 +11,7 @@ const dictianory = {
   counterargumentation: 'Контраргументация',
 }
 
-const DebateResult = ({ onCloseExercise }) => {
+const DebateResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
     (state) => state.aiExercise.exercises.debate,
   )
@@ -54,7 +54,7 @@ const DebateResult = ({ onCloseExercise }) => {
         <div className={styles.btn_group}>
           <button
             className={styles.btn_restart}
-            onClick={() => window.location.reload()}
+            onClick={onRestartExercise} 
           >
             Начать заново
           </button>

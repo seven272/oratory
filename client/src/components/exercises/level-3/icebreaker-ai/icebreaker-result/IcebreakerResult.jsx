@@ -11,7 +11,7 @@ const dictianory = {
   initiative: 'Инициативность',
 }
 
-const IcebreakerResult = ({ onCloseExercise }) => {
+const IcebreakerResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
     (state) => state.aiExercise.exercises.icebreaker,
   )
@@ -54,7 +54,7 @@ const IcebreakerResult = ({ onCloseExercise }) => {
         <div className={styles.btn_group}>
           <button
             className={styles.btn_restart}
-            onClick={() => window.location.reload()}
+            onClick={onRestartExercise}
           >
             Начать заново
           </button>

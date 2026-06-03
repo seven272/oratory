@@ -34,7 +34,7 @@ const isSpeechSupported = !!(
   (window.SpeechRecognition || window.webkitSpeechRecognition)
 )
 
-const DebateTrainerAi = ({ alias }) => {
+const DebateTrainerAi = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -127,11 +127,12 @@ const DebateTrainerAi = ({ alias }) => {
     }, 600)
   }
 
-  const handleFinishDebate = () => {
+  const handleFinishDebate = (evt) => {
+    evt.preventDefault()
     // меняем экран на финальный
     setScreenStatus(SCREEN_STATUS.FINISHED)
     // диспатч на получение оценки,
-    dispatch(fetchFinishDebate())
+    dispatch(fetchFinishDebate({ isDaily }))
   }
 
   const handleAutoSubmit = () => {
@@ -154,7 +155,12 @@ const DebateTrainerAi = ({ alias }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetExerciseState(EXERCISE_NAME))
-    routerNavigator.push('/')
+    routerNavigator.push('/exercises/level3')
+  }
+
+  const handleRestartExercise = () => {
+    dispatch(resetExerciseState(EXERCISE_NAME))
+    setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
   if (!randomTopic) return <ScreenSpinner />
@@ -194,7 +200,10 @@ const DebateTrainerAi = ({ alias }) => {
         )}
 
         {screenStatus === SCREEN_STATUS.FINISHED && (
-          <DebateResult onCloseExercise={handleCloseExercise} />
+          <DebateResult
+            onCloseExercise={handleCloseExercise}
+            onRestartExercise={handleRestartExercise}
+          />
         )}
       </div>
       <Modal active={showModal} onClose={() => setShowModal(false)}>

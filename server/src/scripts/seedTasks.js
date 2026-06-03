@@ -1,11 +1,12 @@
 import mongoose from 'mongoose'
-import DailyTask from '../models/DailyTask.js'
+import Task from '../models/Task.js'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
+
 const ALL_EXERCISES = [
-  // LEVEL 1
+  // LEVEL 1 
   {
     alias: 'association',
     title: 'Словесный мост',
@@ -13,7 +14,7 @@ const ALL_EXERCISES = [
     reward: 30,
     level: 1,
     premium: false,
-    skill: 'логика',
+    skill: 'находчивость',
   },
   {
     alias: 'description',
@@ -22,7 +23,7 @@ const ALL_EXERCISES = [
     reward: 30,
     level: 1,
     premium: false,
-    skill: 'лаконичность',
+    skill: 'коммуникация',
   },
   {
     alias: 'tongue-twister',
@@ -31,7 +32,7 @@ const ALL_EXERCISES = [
     reward: 30,
     level: 1,
     premium: false,
-    skill: 'дикция',
+    skill: 'техника речи',
   },
   {
     alias: 'synonyms',
@@ -40,7 +41,7 @@ const ALL_EXERCISES = [
     reward: 30,
     level: 1,
     premium: false,
-    skill: 'импровизация',
+    skill: 'находчивость',
   },
   {
     alias: 'emotion',
@@ -49,7 +50,7 @@ const ALL_EXERCISES = [
     reward: 30,
     level: 1,
     premium: false,
-    skill: 'импровизация',
+    skill: 'харизма и юмор',
   },
   {
     alias: 'logic-chain',
@@ -58,7 +59,7 @@ const ALL_EXERCISES = [
     reward: 30,
     level: 1,
     premium: false,
-    skill: 'логика',
+    skill: 'убедительность',
   },
 
   // LEVEL 2
@@ -69,7 +70,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'импровизация',
+    skill: 'убедительность',
   },
   {
     alias: 'speaking-thread',
@@ -78,7 +79,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'small talk',
+    skill: 'убедительность',
   },
   {
     alias: 'toast-master',
@@ -87,7 +88,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'импровизация',
+    skill: 'харизма и юмор',
   },
   {
     alias: 'joke-master',
@@ -96,7 +97,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'импровизация',
+    skill: 'харизма и юмор',
   },
   {
     alias: 'taboo',
@@ -105,7 +106,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'лаконичность',
+    skill: 'находчивость',
   },
   {
     alias: 'science-translator',
@@ -114,7 +115,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'small talk',
+    skill: 'убедительность',
   },
   {
     alias: 'fear-explosive',
@@ -123,7 +124,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'дикция',
+    skill: 'техника речи',
   },
   {
     alias: 'king-failure',
@@ -132,7 +133,7 @@ const ALL_EXERCISES = [
     reward: 50,
     level: 2,
     premium: false,
-    skill: 'убедительность',
+    skill: 'харизма и юмор',
   },
 
   // LEVEL 3 (AI)
@@ -152,7 +153,7 @@ const ALL_EXERCISES = [
     reward: 100,
     level: 3,
     premium: true,
-    skill: 'импровизация',
+    skill: 'коммуникация',
   },
   {
     alias: 'ai-icebreaker',
@@ -161,7 +162,7 @@ const ALL_EXERCISES = [
     reward: 100,
     level: 3,
     premium: true,
-    skill: 'small talk',
+    skill: 'коммуникация',
   },
   {
     alias: 'ai-tribune',
@@ -170,15 +171,15 @@ const ALL_EXERCISES = [
     reward: 100,
     level: 3,
     premium: true,
-    skill: 'дикция',
+    skill: 'убедительность',
   },
 ]
 
 const seedDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI)
-    await DailyTask.deleteMany({})
-    await DailyTask.insertMany(ALL_EXERCISES)
+    await Task.deleteMany({})
+    await Task.insertMany(ALL_EXERCISES)
     console.log(
       '✅ База успешно обновлена упражнениями всех 3-х уровней!',
     )

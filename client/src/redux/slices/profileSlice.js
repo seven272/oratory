@@ -1,8 +1,21 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+  createSlice,
+  createAsyncThunk,
+  isAnyOf,
+} from '@reduxjs/toolkit'
 
 import axiosInstance from '../../utils/axiosInstance'
+
+import { fetchSubmitChallengeReport } from './challengeSlice'
+// Импортируем Thunk обычного тренажера
 import { fetchCompleteExercise } from './exerciseSlice'
-import { fetchGetMe } from './authSlice'
+// Импортируем Thunk-экшены завершения ИИ-тренажеров
+import {
+  fetchFinishDebate,
+  fetchFinishInterview,
+  fetchFinishIcebreaker,
+  fetchFinishTribune
+} from './aiExerciseSlice'
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
@@ -27,11 +40,12 @@ const initialState = {
     level: 3,
     coins: 23,
     streak: 3,
-    xp: 0, 
+    xp: 0,
+    lifetimeXp: 0,
     achievements: [],
     inventory: [],
     levelProgressPercent: 57,
-    completed_days: ["2026-05-18", "2026-05-17", "2026-05-19"],
+    completed_days: ['2026-05-18', '2026-05-17', '2026-05-19'],
     isPremium: true,
   },
   skills: [
@@ -78,39 +92,27 @@ const profileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ПОДПИСКА НА ЗАВЕРШЕНИЕ УПРАЖНЕНИЯ
-      .addCase(fetchCompleteExercise.fulfilled, (state, action) => {
-        // action.payload — это то, что прислал бэкенд (res.status(200).json)
-        // В твоем контроллере это объект с earnedXp, isLevelUp и объектом stats
-        if (state.user) {
-          // Обновляем основные показатели профиля
-          state.user.level = action.payload.stats.level
-          state.user.xp = action.payload.stats.xp
-          state.user.coins = action.payload.stats.coins
-          state.user.streak = action.payload.stats.streak
-          state.user.completed_days = action.payload.stats.completed_days 
-          // ЛОГИКА АЧИВОК
-          if (
-            action.payload.newAchievements &&
-            action.payload.newAchievements.length > 0
-          ) {
-            // 1. Сохраняем в lastAwarded для всплывающего окна
-            // Если ачивок несколько, берем первую (или можно передать весь массив)
-            state.lastAwarded = action.payload.newAchievements[0]
-
-            // 2. Добавляем в общий список в профиле, чтобы они сразу появились в Dashboard
-            if (!state.user.achievements) {
-              state.user.achievements = []
+      //подписка на завершения челленджа
+      .addCase(
+        fetchSubmitChallengeReport.fulfilled,
+        (state, action) => {
+          // Проверяем структуру вашего стейта профиля (ориентируемся на user или profile)
+          if (state.user) {
+            state.user.coins = action.payload.data.user.coins
+            state.user.level = action.payload.data.user.level
+            state.user.xp = action.payload.data.user.xp
+            state.user.lifetimeXp =
+              action.payload.data.user.lifetimeXp
+            // 🔥 Записываем новые ачивки в стейт профиля.
+            if (
+              action.payload.data.user.newAchievements?.length > 0
+            ) {
+              state.lastAwarded =
+                action.payload.data.user.newAchievements[0]
             }
-            state.user.achievements.push(
-              ...action.payload.newAchievements,
-            )
           }
-        }
-        // Помечаем данные как "устаревшие", чтобы при переходе на страницу
-        // Dashboard мы знали, что нужно обновить паутинку (skillsData)
-        state.isStale = true
-      })
+        },
+      )
       .addCase(fetchProfileData.pending, (state) => {
         state.loading = true
         state.error = null
@@ -127,6 +129,50 @@ const profileSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
+       // Глобальный слушатель для ЛЮБОГО успешно завершенного тренажера
+      .addMatcher(
+        isAnyOf(
+          fetchCompleteExercise.fulfilled,
+          fetchFinishDebate.fulfilled,
+          fetchFinishInterview.fulfilled,
+          fetchFinishIcebreaker.fulfilled,
+          fetchFinishTribune.fulfilled
+        ),
+        (state, action) => {
+          // Защита: если сессия завершилась без оценки, stats будет отсутствовать
+          if (!action.payload || !action.payload.stats) return
+
+          if (state.user) {
+            // Атомарно обновляем показатели профиля
+            state.user.level = action.payload.stats.level
+            state.user.xp = action.payload.stats.xp
+            state.user.coins = action.payload.stats.coins
+            state.user.streak = action.payload.stats.streak
+            state.user.completed_days =
+              action.payload.stats.completed_days
+
+            // ЛОГИКА АЧИВОК (Поздравляем строго с ОДНИМ достижением)
+            if (
+              action.payload.newAchievements &&
+              action.payload.newAchievements.length > 0
+            ) {
+              // берем только самую первую ачивку из массива
+              state.lastAwarded = action.payload.newAchievements[0]
+
+              if (!state.user.achievements) {
+                state.user.achievements = []
+              }
+              state.user.achievements.push(
+                ...action.payload.newAchievements,
+              )
+            }
+          }
+
+          // Помечаем данные как "устаревшие" для обновления радарной карты
+          state.isStale = true
+        },
+      )
+
   },
 })
 
@@ -134,7 +180,7 @@ export const {
   updateCoins,
   clearLastAwarded,
   updateCoinsAndInventory,
-  setTotalPoints
+  setTotalPoints,
 } = profileSlice.actions
 export { fetchProfileData }
 export default profileSlice.reducer

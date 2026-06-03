@@ -35,7 +35,7 @@ const leaderboardSlice = createSlice({
     builder
       .addCase(fetchLeaderboard.pending, (state) => {
         state.status = 'loading'
-        state.error = null
+        state.error = null 
       })
       .addCase(fetchLeaderboard.fulfilled, (state, action) => {
         state.status = 'succeeded'

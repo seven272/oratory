@@ -14,6 +14,8 @@ import exerciseRoutes from './routes/exerciseRoutes.js'
 import dailyTaskRoutes from './routes/dailyTaskRoutes.js'
 import leaderboardRoutes from './routes/leaderboardRoutes.js'
 import shopRoutes from './routes/shopRoutes.js'
+import challengeRoutes from './routes/challengeRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 
 dotenv.config()
 
@@ -37,11 +39,13 @@ app.use('/api/exercises', exerciseRoutes)
 app.use('/api/daily-tasks', dailyTaskRoutes)
 app.use('/api/leaderboard', leaderboardRoutes)
 app.use('/api/shop', shopRoutes)
+app.use('/api/challenges', challengeRoutes)
+app.use('/api/admin', adminRoutes)
 
 const start = async () => {
   try {
     await connectDB()
-    initCronJobs()//автоматическая ф-я обновления недельного рейтинга пользователей
+    initCronJobs() //автоматическая ф-я обновления недельного рейтинга пользователей
     app.listen(PORT, () => {
       console.log(`Сервер успешно запущен на порту ${PORT}`)
     })

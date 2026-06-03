@@ -1,6 +1,7 @@
 import gigachatAxiosClient from '../utils/gigachatAxiosClient.js'
 
 import AiExercise from '../models/AiExercise.js'
+import { checkAchievements } from '../utils/achievementService.js'
 
 //контроллеры для упражненич ДЕБАТЫ
 const startDebate = async (req, res) => {
@@ -218,7 +219,7 @@ const finishDebate = async (req, res) => {
         max_tokens: 700,
       },
     )
-
+ 
     const rawResult = response.data.choices[0].message.content
     // Пытаемся распарсить JSON (GigaChat иногда может добавить лишний текст, стоит подстраховаться)
     const jsonMatch = rawResult.match(/\{[\s\S]*\}/)
@@ -232,6 +233,9 @@ const finishDebate = async (req, res) => {
       feedback: evaluation.feedback,
       criteria: evaluation.criteria, // Map в схеме подхватит этот объект
     }
+
+    //проверка на ачивку за набор очков в этом упражнении
+    const newAwards = checkAchievements(userId, false, evaluation.totalScore, 'ai-debate');
 
     await session.save()
 
@@ -741,6 +745,7 @@ const finishIcebreaker = async (req, res) => {
       .json({ message: 'Не удалось завершить упражнение Ледокол' })
   }
 }
+
 //контроллеры для упражнения ТРИБУНА
 const startTribune = async (req, res) => {
   try {

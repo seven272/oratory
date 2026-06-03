@@ -42,7 +42,6 @@ const DashboardPage = ({ id }) => {
   return (
     <Panel id={id}>
       <Header />
-      <h1>Привет, {user?.displayName}!</h1>
       <Dashboard
         user={user}
         skills={skills}

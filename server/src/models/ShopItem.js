@@ -7,7 +7,7 @@ const shopItemSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   category: {
     type: String,
-    enum: ['utility', 'theme', 'title'],
+    enum: ['utility', 'theme', 'achievement',  'merch'],
     required: true,
   },
   icon: { type: String }, // Техническое имя иконки для фронтенда

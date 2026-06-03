@@ -6,7 +6,7 @@ const aiExercisesSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-    },
+    }, 
 
     // Тип тренажера: 'debate', 'pitch', 'interview'
     exerciseType: {

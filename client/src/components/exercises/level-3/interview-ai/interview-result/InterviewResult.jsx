@@ -10,7 +10,7 @@ const dictianory = {
   diplomacy: 'Дипломатичность',
 }
 
-const InterviewResult = ({ onCloseExercise }) => {
+const InterviewResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
     (state) => state.aiExercise.exercises.interview,
   )
@@ -53,7 +53,7 @@ const InterviewResult = ({ onCloseExercise }) => {
         <div className={styles.btn_group}>
           <button
             className={styles.btn_restart}
-            onClick={() => window.location.reload()}
+            onClick={onRestartExercise}
           >
             Начать заново
           </button>

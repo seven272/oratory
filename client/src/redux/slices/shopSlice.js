@@ -18,10 +18,14 @@ const fetchShopItems = createAsyncThunk(
 
 const fetchPurchaseItem = createAsyncThunk(
   'shop/fetchPurchaseItem',
-  async (itemCode, { dispatch, rejectWithValue }) => {
+  async (
+    { itemCode, deliveryAddress },
+    { dispatch, rejectWithValue },
+  ) => {
     try {
       const res = await axiosInstance.post('/shop/buy-item', {
         itemCode,
+        deliveryAddress,
       })
 
       // Магия: при успешном ответе обновляем кошелек и инвентарь в profileSlice

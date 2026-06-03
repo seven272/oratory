@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 
 import styles from './Achievements.module.css'
 import { ALL_ACHIEVEMENTS } from '../../../constants/achievements'
+import Achievement from './achievement/Achievement'
 
 const Achievements = () => {
   const userAchievements = useSelector(
@@ -13,7 +14,17 @@ const Achievements = () => {
     <div className={styles.container}>
       <h3 className={styles.title}>Достижения</h3>
       <div className={styles.grid}>
-        {ALL_ACHIEVEMENTS.map((ach) => {
+        {ALL_ACHIEVEMENTS.map((ach, inx) => {
+          return (
+            <Achievement
+              key={inx}
+              userAchievements={userAchievements}
+              achievement={ach}
+            />
+          )
+        })}
+
+        {/* {ALL_ACHIEVEMENTS.map((ach) => {
           const isUnlocked = userAchievements.some(
             (ua) => ua.code === ach.code,
           )
@@ -32,7 +43,7 @@ const Achievements = () => {
               <span className={styles.label}>{ach.title}</span>
             </div>
           )
-        })}
+        })} */}
       </div>
     </div>
   )

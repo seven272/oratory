@@ -1,10 +1,10 @@
-import express from 'express';
-import { completeExercise } from '../controllers/exerciseController.js';
+import express from 'express'
+import { completeExercise } from '../controllers/exerciseController.js'
 
 import { checkAuth } from '../middlewares/authMiddleware.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/complete', checkAuth, completeExercise);
+router.post('/complete', checkAuth, completeExercise)
 
-export default router;
+export default router

@@ -1,44 +1,55 @@
 import express from 'express'
+
+import { checkAuth } from '../middlewares/authMiddleware.js'
 import {
   startDebate,
   generateDebateResponse,
   finishDebate,
-  startInterView,
+} from '../controllers/ai-exercises/debateController.js'
+import {
+  startInterview,
   generateInterviewResponse,
   finishInterview,
+} from '../controllers/ai-exercises/interviewController.js'
+import {
   startIcebreaker,
   generateIcebreakerResponse,
   finishIcebreaker,
+} from '../controllers/ai-exercises/icebreakerController.js'
+import {
   startTribune,
   responseTribune,
-  finishTribune
-} from '../controllers/aiExerciseController.js'
+  finishTribune,
+} from '../controllers/ai-exercises/tribuneController.js'
 
 const router = express.Router()
+
 //роутеры упражнения Дебаты
-//@route   POST /api/ai/start
-//@desc    Инициализация  тренажера дебаты
-router.post('/start-debate', startDebate)
-//@route   POST /api/ai/user-response
-//@desc    Отправка сообщения пользователя и получение ответа от ИИ дебаты
-router.post('/response-debate', generateDebateResponse)
-//@route   POST /api/ai/finish-debate
-//@desc    Завершение дебатов и получение оценки от ИИ
-router.post('/finish-debate', finishDebate)
+router.post('/start-debate', checkAuth, startDebate)
+router.post('/response-debate', checkAuth, generateDebateResponse)
+router.post('/finish-debate', checkAuth, finishDebate)
 
 //роутеры упражнения Интервью
-router.post('/start-interview', startInterView)
-router.post('/response-interview', generateInterviewResponse)
-router.post('/finish-interview', finishInterview)
+router.post('/start-interview', checkAuth, startInterview)
+router.post(
+  '/response-interview',
+  checkAuth,
+  generateInterviewResponse,
+)
+router.post('/finish-interview', checkAuth, finishInterview)
 
 //роутеры упражнения Ледокол
-router.post('/start-icebreaker', startIcebreaker)
-router.post('/response-icebreaker', generateIcebreakerResponse)
-router.post('/finish-icebreaker', finishIcebreaker)
+router.post('/start-icebreaker', checkAuth, startIcebreaker)
+router.post(
+  '/response-icebreaker',
+  checkAuth,
+  generateIcebreakerResponse,
+)
+router.post('/finish-icebreaker', checkAuth, finishIcebreaker)
 
 //роутеры упражнения Трибуна
-router.post('/start-tribune', startTribune)
-router.post('/response-tribune', responseTribune)
-router.post('/finish-tribune', finishTribune)
+router.post('/start-tribune', checkAuth, startTribune)
+router.post('/response-tribune', checkAuth, responseTribune)
+router.post('/finish-tribune', checkAuth, finishTribune)
 
 export default router

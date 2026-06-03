@@ -6,13 +6,13 @@ import { ScreenSpinner } from '@vkontakte/vkui'
 import styles from './TribuneResult.module.css'
 
 const dictianory = {
-  structure: 'Структура',
+  structure: 'Структура', 
   conciseness: 'Лаконичность',
   persuasiveness: 'Убедительность',
   garbage: 'Словесный мусор',
 }
 
-const TribuneResult = ({ onCloseExercise }) => {
+const TribuneResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
     (state) => state.aiExercise.exercises.tribune,
   )
@@ -55,7 +55,7 @@ const TribuneResult = ({ onCloseExercise }) => {
         <div className={styles.btn_group}>
           <button
             className={styles.btn_restart}
-            onClick={() => window.location.reload()}
+            onClick={onRestartExercise}
           >
             Начать заново
           </button>

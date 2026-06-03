@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { fetchLeaderboard } from '../../redux/slices/leaderboardSlice' // Твой Thunk, принимающий параметр
+import { fetchLeaderboard } from '../../redux/slices/leaderboardSlice'
 import styles from './Leaderboard.module.css'
 import LeaderboardList from './leaderboard-list/LeaderboardList'
 
@@ -13,7 +13,6 @@ const Leaderboard = () => {
   )
 
   useEffect(() => {
-    // Передаем текущую вкладку в асинхронный запрос
     dispatch(fetchLeaderboard(activeTab))
   }, [dispatch, activeTab])
 
@@ -45,6 +44,7 @@ const Leaderboard = () => {
         </div>
       ) : (
         <>
+          {/* Главный список ТОП-10 */}
           <div className={styles.list}>
             {list.map((user) => (
               <LeaderboardList
@@ -56,12 +56,15 @@ const Leaderboard = () => {
             ))}
           </div>
 
+          {/* Карточка текущего пользователя, если он не попал в ТОП-10 */}
           {!isUserInTopTen && currentUser && (
             <>
               <div className={styles.user_divider}>
-                Вы на этой неделе
+                {activeTab === 'weekly'
+                  ? 'Ваш результат за неделю'
+                  : 'Ваш глобальный результат'}
               </div>
-              <div className={styles.list}>
+              <div className={styles.currentUserStickyWrapper}>
                 <LeaderboardList
                   user={currentUser}
                   isCurrent={true}

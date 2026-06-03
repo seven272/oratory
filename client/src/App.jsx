@@ -7,6 +7,7 @@ import MainView from './views/MainView'
 import AchievementModal from './components/achievement-modal/AchievementModal'
 import { fetchGetMe } from './redux/slices/authSlice'
 import { fetchProfileData } from './redux/slices/profileSlice'
+import { fetchLeaderboard } from './redux/slices/leaderboardSlice'
 
 const App = () => {
   const { panel, view } = useActiveVkuiLocation()
@@ -15,6 +16,7 @@ const App = () => {
   useEffect(() => {
     dispatch(fetchGetMe())
     dispatch(fetchProfileData())
+    dispatch(fetchLeaderboard())
   }, [dispatch])
 
   return (

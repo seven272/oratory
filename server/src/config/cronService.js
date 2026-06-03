@@ -1,5 +1,6 @@
 import cron from 'node-cron'
 import User from '../models/User.js'
+import UserChallenge from '../models/UserChallenge.js'
 
 const initCronJobs = () => {
   // Выражение '0 0 * * 1' означает: Ровно в 00:00, каждый понедельник (1)
@@ -19,6 +20,12 @@ const initCronJobs = () => {
 
         console.log(
           `✅ [Cron]: Недельный рейтинг успешно сброшен. Обновлено пользователей: ${result.modifiedCount}`,
+        )
+
+        // 2. 🔥 Очищаем таблицу выполненных челленджей, делая их доступными заново
+        const challengeResult = await UserChallenge.deleteMany({})
+        console.log(
+          `✅ [Cron]: Статусы еженедельных челленджей очищены. Удалено записей: ${challengeResult.deletedCount}`,
         )
       } catch (error) {
         console.error(

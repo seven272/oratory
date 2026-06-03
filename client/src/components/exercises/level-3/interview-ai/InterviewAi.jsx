@@ -34,7 +34,7 @@ const TIME_ROUND = 15
 //   (window.SpeechRecognition || window.webkitSpeechRecognition)
 // )
 
-const InterviewAi = ({ alias }) => {
+const InterviewAi = ({ alias, isDaily }) => {
   const {
     transcript,
     startListening,
@@ -57,7 +57,7 @@ const InterviewAi = ({ alias }) => {
   const { messages, exStatus, aiStatus } = exerciseState
   const isLoading = exStatus === 'loading'
 
-  // Инициализация темы дебатов
+  // Инициализация темы интервью
   useEffect(() => {
     const { selectedItem, newPool } = getRandomObjTask(
       [],
@@ -120,11 +120,11 @@ const InterviewAi = ({ alias }) => {
     }, 100)
   }
 
-  const handleFinishDebate = () => {
+  const handleFinishExercise = () => {
     // меняем экран на финальный
     setScreenStatus(SCREEN_STATUS.FINISHED)
     // диспатч на получение оценки,
-    dispatch(fetchFinishInterview())
+    dispatch(fetchFinishInterview({ isDaily }))
   }
 
   const handleAutoSubmit = () => {
@@ -147,7 +147,12 @@ const InterviewAi = ({ alias }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetExerciseState(EXERCISE_NAME))
-    routerNavigator.push('/')
+    routerNavigator.push('/exercises/level3')
+  }
+
+  const handleRestartExercise = () => {
+    dispatch(resetExerciseState(EXERCISE_NAME))
+    setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
   if (!randomInterview) return <ScreenSpinner />
@@ -178,14 +183,17 @@ const InterviewAi = ({ alias }) => {
             aiStatus={aiStatus}
             onStopRecording={handleStopRecording}
             onStartRecording={handleStartRecording}
-            onFinishDebate={handleFinishDebate}
+            onFinishExercise={handleFinishExercise}
             onAutoFinish={handleAutoSubmit}
             isAiThinking={isLoading}
           />
         )}
 
         {screenStatus === SCREEN_STATUS.FINISHED && (
-          <InterviewResult onCloseExercise={handleCloseExercise} />
+          <InterviewResult
+            onCloseExercise={handleCloseExercise}
+            onRestartExercise={handleRestartExercise}
+          />
         )}
       </div>
       <Modal active={showModal} onClose={() => setShowModal(false)}>

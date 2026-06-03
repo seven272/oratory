@@ -11,13 +11,12 @@ import { AI_STATUS } from '../../../../../constants/exercises'
 
 const InterviewProcess = ({
   numberRounds,
-  topic,
   messages,
   timeLimit,
   aiStatus, 
   onStopRecording,
   onStartRecording,
-  onFinishDebate,
+  onFinishExercise,
   isAiThinking,
 }) => {
   const dispatch = useDispatch()
@@ -132,7 +131,7 @@ const InterviewProcess = ({
 
         {aiStatus === AI_STATUS.FINISHED && (
           <button
-            onClick={onFinishDebate}
+            onClick={onFinishExercise}
             className={styles.debate_finish_btn}
           >
             Завершить и проанализировать <TbScoreboard size={25} />
