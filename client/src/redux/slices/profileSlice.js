@@ -10,12 +10,11 @@ import { fetchSubmitChallengeReport } from './challengeSlice'
 // Импортируем Thunk обычного тренажера
 import { fetchCompleteExercise } from './exerciseSlice'
 // Импортируем Thunk-экшены завершения ИИ-тренажеров
-import {
-  fetchFinishDebate,
-  fetchFinishInterview,
-  fetchFinishIcebreaker,
-  fetchFinishTribune
-} from './aiExerciseSlice'
+import { fetchFinishDebate } from './ai-exercises/debateSlice'
+import { fetchFinishIcebreaker } from './ai-exercises/icebreakerSlice'
+import { fetchFinishInterview } from './ai-exercises/interviewSlice'
+import { fetchFinishTribune } from './ai-exercises/tribuneSlice'
+
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(

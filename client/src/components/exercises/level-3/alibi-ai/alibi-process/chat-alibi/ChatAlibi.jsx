@@ -1,11 +1,11 @@
 import { useRef, useEffect } from 'react'
 import { RiRobot2Fill } from 'react-icons/ri'
 
-import styles from './ChatDebate.module.css'
+import styles from './ChatAlibi.module.css'
 import { AI_STATUS } from '../../../../../../constants/exercises'
 
 
-const ChatDebate = ({ messages, aiStatus, isAiThinking }) => {
+const ChatAlibi = ({ messages, aiStatus, isAiThinking }) => {
   const chatEndRef = useRef(null)
   // Автопрокрутка чата
   useEffect(() => {
@@ -79,4 +79,4 @@ const ChatDebate = ({ messages, aiStatus, isAiThinking }) => {
   )
 }
 
-export default ChatDebate
+export default ChatAlibi

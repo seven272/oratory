@@ -2,6 +2,8 @@ import gigachatAxiosClient from '../../utils/gigachatAxiosClient.js'
 import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
+import { parseAiResponse } from '../../utils/aiJsonParser.js'
+import { transcribeLongAudio } from '../../utils/salutSpeechAxiosClient.js'
 
 const startTribune = async (req, res) => {
   try {
@@ -32,9 +34,27 @@ const startTribune = async (req, res) => {
 
 const responseTribune = async (req, res) => {
   const userId = req.userId
-  const { userMessage } = req.body
+  let userMessage = req.body.userMessage // Берем текст из body, если он пришел (для совместимости)
+
   try {
-    // Ищем активную сессию именно для icebreaker
+    // 1. Если фронтенд прислал аудиофайл, распознаем его через SalutSpeech API
+    if (req.file) {
+      try {
+        userMessage = await transcribeLongAudio(req.file.buffer)
+      } catch (speechError) {
+        console.error(
+          'Ошибка распознавания SalutSpeech в трибуне:',
+          speechError,
+        )
+        return res.status(500).json({
+          message:
+            'Не удалось распознать аудиозапись. Попробуйте еще раз.',
+          error: speechError.message,
+        })
+      }
+    }
+
+    // 2. Ищем активную сессию именно для tribune (исправили ошибку с icebreaker)
     let session = await AiExercise.findOne({
       userId,
       exerciseType: 'tribune',
@@ -45,8 +65,12 @@ const responseTribune = async (req, res) => {
       return res.status(400).json({ message: 'Сессия не найдена.' })
     }
 
-    // Обработка пустого ответа
-    if (!userMessage || userMessage.includes('нечего сказать')) {
+    // 3. Обработка пустого ответа или промалчивания
+    if (
+      !userMessage ||
+      !userMessage.trim() ||
+      userMessage.includes('нечего сказать')
+    ) {
       session.messages.push({
         role: 'user',
         text: 'Пользователь промолчал',
@@ -60,19 +84,23 @@ const responseTribune = async (req, res) => {
       })
     }
 
+    // 4. Сохраняем успешно распознанный (или пришедший текстом) месседж в историю
     session.messages.push({
       role: 'user',
-      text: userMessage,
+      text: userMessage.trim(),
     })
     await session.save()
 
+    // Возвращаем распознанный текст (user_transcript) обратно на фронтенд,
+    // чтобы мобильное приложение мгновенно отобразило пользователю, что именно он наговорил.
     return res.status(200).json({
+      user_transcript: userMessage.trim(),
       answer: 'Текст получен, готов приступать к разбору!',
       isFinished: true,
       isError: false,
     })
   } catch (error) {
-    console.error('Error in startExercise:', error)
+    console.error('Error in responseTribune:', error)
     res.status(500).json({
       message: `Ошибка сервера при обработке сообщения упражнения Трибуна`,
       error: error.message,
@@ -122,7 +150,6 @@ const finishTribune = async (req, res) => {
           'Речь не была произнесена, оценить выступление невозможно.',
         criteria: {
           structure: 0,
-          conciseness: 0,
           persuasiveness: 0,
           garbage: 0,
         },
@@ -150,9 +177,8 @@ const finishTribune = async (req, res) => {
 
        Оцени по 100-балльной шкале следующие критерии:
         1. "Структура" (structure): 100 баллов, если есть четкое вступление (крючок), основной тезис и призыв к действию (финал). Снижай баллы за хаотичность мыслей.
-        2. "Лаконичность" (conciseness): Оцени плотность смысла. 100 баллов, если нет "воды" и пустых вводных фраз. Снижай за повторы одной и той же мысли разными словами.
-        3. "Убедительность" (persuasiveness): Ищи глаголы действия, факты, цифры или сильные метафоры. 100 баллов за высокую энергию текста и четкую позицию.
-        4. "Словесный мусор" (garbage): 100 баллов, если в тексте НЕТ слов-паразитов (ну, как бы, это), канцеляризмов (вследствие того что, осуществляется деятельность) и заезженных штампов.
+        2. "Убедительность" (persuasiveness): Ищи глаголы действия, факты, цифры или сильные метафоры. 100 баллов за высокую энергию текста и четкую позицию.
+        3. "Словесный мусор" (garbage): 100 баллов, если в тексте НЕТ слов-паразитов (ну, как бы, это), канцеляризмов (вследствие того что, осуществляется деятельность) и заезженных штампов.
 
       Проанализируй текст и верни СТРОГО JSON:
       {
@@ -160,7 +186,6 @@ const finishTribune = async (req, res) => {
         "feedback": "<общий разбор: сильные и слабые стороны. 3-4 предложения>",
         "criteria": {
           "structure": <0-100>,
-          "conciseness": <0-100>,
           "persuasiveness": <0-100>,
           "garbage": <0-100>
         }
@@ -170,66 +195,53 @@ const finishTribune = async (req, res) => {
         - Не ставь лишних запятых.
         - КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО использовать одинарные кавычки (') и любые переносы строк внутри JSON-ответа. Если нужно выделить слово, используй кавычки-елочки «».`
 
-    const response = await gigachatAxiosClient.post(
-      '/chat/completions',
-      {
-        model: 'GigaChat-2',
-        messages: [
-          { role: 'system', content: PROMPT },
-          { role: 'user', content: userSpeechText },
-        ],
-      },
-    )
+    let evaluation // объявляем переменную сверху
 
-    const rawResult = response.data.choices[0].message.content
-    console.log(rawResult)
-    const jsonMatch = rawResult.match(/\{[\s\S]*\}/)
-    console.log(jsonMatch)
+    try {
+      const response = await gigachatAxiosClient.post(
+        '/chat/completions',
+        {
+          model: 'GigaChat-2',
+          messages: [
+            { role: 'system', content: PROMPT },
+            { role: 'user', content: userSpeechText },
+          ],
+        },
+      )
 
-    let evaluation
+      const aiJsonResult = response.data.choices[0]?.message?.content
 
-    if (jsonMatch) {
-      let jsonString = jsonMatch[0] // Берем найденную строку
+      console.log('🗣️ Сырой ответ от GigaChat:', aiJsonResult) // Отличный лог для дебага
 
-      // 1. Убираем любые переносы строк, которые GigaChat вставляет ВНУТРИ текста
-      jsonString = jsonString.replace(/\n/g, ' ').replace(/\r/g, ' ')
-
-      // 2. Исправляем проблему с одинарными кавычками внутри слов (как в вашем примере)
-      // Мы заменяем одинарные кавычки на безопасные « » или просто убираем их
-      jsonString = jsonString.replace(/(\w)'(\w)/g, '$1$2')
-
-      try {
-        evaluation = JSON.parse(jsonString)
-      } catch (e) {
-        console.error(
-          'Ошибка парсинга после очистки. Пробуем агрессивную замену кавычек.',
-        )
-        try {
-          // Если не помогло, заменяем все одинарные кавычки на кавычки-елочки
-          const safeJson = jsonString.replace(/'/g, '«')
-          evaluation = JSON.parse(safeJson)
-        } catch (e2) {
-          console.error('JSON окончательно невалиден')
-        }
-      }
+      // Вызываем парсер. Если он вернет null/undefined, сработает ваш if ниже
+      evaluation = parseAiResponse(aiJsonResult, {
+        structure: 50,
+        persuasiveness: 50,
+        garbage: 50,
+      })
+    } catch (apiError) {
+      console.error(
+        'Сбой сети GigaChat (ECONNRESET):',
+        apiError.message,
+      )
+      // Оставляем evaluation пустым, чтобы управление перешло в ваш аварийный блок
     }
 
-    // Аварийный выход, если ИИ выдал невалидный JSON
+    // Аварийный выход, если ИИ выдал невалидный JSON или упала сеть
     if (!evaluation) {
       evaluation = {
-        totalScore: 70,
+        totalScore: 50,
         feedback:
           'Ваше выступление сохранено, но ИИ не смог сформировать детальный отчет. Попробуйте еще раз позже.',
         criteria: {
-          structure: 70,
-          conciseness: 70,
-          persuasiveness: 70,
-          garbage: 70,
+          structure: 50,
+          persuasiveness: 50,
+          garbage: 50,
         },
       }
     }
 
-    // 4. Обновляем сессию в БД
+    //  Обновляем сессию в БД
     session.status = 'completed'
     session.score = evaluation.totalScore
     session.result = {

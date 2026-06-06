@@ -9,51 +9,43 @@ import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
 import TribuneIdle from './tribune-idle/TribuneIdle'
 import TribuneProcess from './tribune-process/TribuneProcess'
 import TribuneResult from './tribune-result/TribuneResult'
-import { useSpeech } from '../../../../hooks/useSpeech'
+import { useSpeechSber } from '../../../../hooks/useSpeechSber'
 import {
   SCREEN_STATUS,
   AI_STATUS,
 } from '../../../../constants/exercises'
+
 import {
-  setActiveExercise,
-  resetExerciseState,
-  setAiStatus,
+  setTribuneAiStatus,
+  resetTribuneState,
   fetchStartTribune,
   fetchResponseTribune,
   fetchFinishTribune,
-} from '../../../../redux/slices/aiExerciseSlice'
+} from '../../../../redux/slices/ai-exercises/tribuneSlice'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
-const EXERCISE_NAME = 'tribune'
 const TOTAL_ROUNDS = 1
-const TIME_ROUND = 60
-
-// const isSpeechSupported = !!(
-//   typeof window !== 'undefined' &&
-//   (window.SpeechRecognition || window.webkitSpeechRecognition)
-// )
+const TIME_ROUND = 40
 
 const TribuneAi = ({ alias, isDaily }) => {
+  // ИСПРАВЛЕНИЕ 1: Обязательно достаем audioBlob из нашего нового хука
   const {
-    transcript,
     startListening,
     stopListening,
-    // isListening,
+    audioBlob,
     resetTranscript,
-  } = useSpeech('ru-RU')
+  } = useSpeechSber()
+
   const dispatch = useDispatch()
   const routerNavigator = useRouteNavigator()
-  // --- СОСТОЯНИЕ КОМПОНЕНТА (ТОЛЬКО UI-состояние) ---
+
   const [randomTribune, setRandomTribune] = useState(null)
   const [poolTribune, setPoolTribune] = useState([])
   const [screenStatus, setScreenStatus] = useState(SCREEN_STATUS.IDLE)
   const [showModal, setShowModal] = useState(false)
 
-  // --- СОСТОЯНИЕ ИЗ REDUX (ГЛОБАЛЬНОЕ) ---
-  const exerciseState = useSelector(
-    (state) => state.aiExercise.exercises.tribune,
-  )
+  const exerciseState = useSelector((state) => state.tribune)
   const { messages, exStatus, aiStatus } = exerciseState
   const isLoading = exStatus === 'loading'
 
@@ -65,12 +57,29 @@ const TribuneAi = ({ alias, isDaily }) => {
     )
     setRandomTribune(selectedItem)
     setPoolTribune(newPool)
-    dispatch(setActiveExercise(EXERCISE_NAME))
-    // Очистка при размонтировании компонента
     return () => {
-      dispatch(resetExerciseState(EXERCISE_NAME))
+      dispatch(resetTribuneState())
     }
   }, [dispatch])
+
+  // ИСПРАВЛЕНИЕ 2: Реактивный триггер отправки файла.
+  // Как только асинхронный MediaRecorder закончил запись и сформировал blob — отправляем его на бэк!
+  useEffect(() => {
+    if (!audioBlob || audioBlob.size === 0) return
+
+    // 1. Ставим статус "ИИ думает"
+    dispatch(setTribuneAiStatus(AI_STATUS.AI_THINKING))
+
+    // 2. Отправляем строго готовый бинарник
+    dispatch(
+      fetchResponseTribune({
+        audioBlob: audioBlob,
+      }),
+    ).then(() => {
+      // 3. Сбрасываем блоб в хуке, чтобы подготовиться к новой записи
+      resetTranscript()
+    })
+  }, [audioBlob, dispatch, resetTranscript])
 
   const handleStartInerview = () => {
     if (!randomTribune) return
@@ -78,70 +87,34 @@ const TribuneAi = ({ alias, isDaily }) => {
     setScreenStatus(SCREEN_STATUS.RUNNING)
   }
 
-  const handleSendUserResponse = (userText) => {
-    if (!userText.trim() || isLoading) return
-
-    dispatch(
-      fetchResponseTribune({
-        tribuneData: randomTribune,
-        userMessage: userText,
-      }),
-    )
-    // resetTranscript(); // Очистку речи можно оставить здесь или при старте нового интервью
-  }
-
   const handleStartRecording = () => {
-    resetTranscript() // Очистить старый текст
-    // Переключаем статус, чтобы UI мгновенно отобразил пульсацию и счетчик
-    dispatch(setAiStatus(AI_STATUS.RECORDING))
+    resetTranscript()
+    dispatch(setTribuneAiStatus(AI_STATUS.RECORDING))
     startListening()
   }
 
   const handleStopRecording = () => {
-    // 1. Останавливаем микрофон (это вызовет setIsListening(false) внутри хука)
+    // Просто даем команду на остановку.
+    // Браузер асинхронно соберет чанки, обновит audioBlob, и сработает useEffect сверху.
     stopListening()
-    // 2. Берем финальный текст или заглушку
-    const userText = transcript.trim() || 'Мне нечего сказать'
-
-    setTimeout(() => {
-      // 3. Ставим статус "ИИ думает"
-      dispatch(setAiStatus(AI_STATUS.AI_THINKING))
-
-      // 4. Отправляем на сервер
-      dispatch(
-        fetchResponseTribune({
-          tribuneData: randomTribune,
-          userMessage: userText,
-        }),
-      ).then(() => {
-        // 5. Очищаем текст в хуке после успешного или неуспешного диспатча
-        resetTranscript()
-      })
-    }, 100)
   }
 
   const handleFinishTribune = () => {
-    // 1. Ставим статус "ИИ думает" для красивой анимации внутри TribuneProcess
-    dispatch(setAiStatus(AI_STATUS.AI_THINKING))
+    dispatch(setTribuneAiStatus(AI_STATUS.AI_THINKING))
 
-    // 2. Запускаем получение оценки от GigaChat
     dispatch(fetchFinishTribune({ isDaily }))
-      .unwrap() // Позволяет дождаться успешного выполнения промиса
+      .unwrap()
       .then(() => {
-        // 3. Только КОГДА данные уже в Redux и exStatus стал 'succeeded' — открываем финальный экран!
         setScreenStatus(SCREEN_STATUS.FINISHED)
       })
       .catch((err) => {
         console.error('Ошибка при получении аналитики трибуны:', err)
-        // В случае форс-мажора все равно пускаем на экран, там сработает наш фоллбек
         setScreenStatus(SCREEN_STATUS.FINISHED)
       })
   }
 
   const handleAutoSubmit = () => {
-    const userText =
-      transcript || 'Вы нечего не сказали. Время истекло'
-    handleSendUserResponse(userText)
+    handleStopRecording()
   }
 
   const handleRefreshTopic = () => {
@@ -151,18 +124,16 @@ const TribuneAi = ({ alias, isDaily }) => {
     )
     setRandomTribune(selectedItem)
     setPoolTribune(newPool)
-    // При смене темы сбрасываем состояние упражнения в сторе
-    dispatch(resetExerciseState(EXERCISE_NAME))
+    dispatch(resetTribuneState())
   }
 
   const handleCloseExercise = () => {
-    dispatch(resetExerciseState(EXERCISE_NAME))
+    dispatch(resetTribuneState())
     routerNavigator.push('/exercises/level3')
   }
 
   const handleRestartExercise = () => {
-    dispatch(resetExerciseState(EXERCISE_NAME))
-    // dispatch(fetchStartTribune(randomTribune))
+    dispatch(resetTribuneState())
     setScreenStatus(SCREEN_STATUS.IDLE)
   }
 

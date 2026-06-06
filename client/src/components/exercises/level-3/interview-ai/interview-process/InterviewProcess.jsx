@@ -6,14 +6,14 @@ import { useDispatch } from 'react-redux'
 
 import styles from './InterviewProcess.module.css'
 import ChatInterview from './chat-interview/ChatInterview'
-import { setAiStatus } from '../../../../../redux/slices/aiExerciseSlice'
+import { setInterviewAiStatus } from '../../../../../redux/slices/ai-exercises/interviewSlice'
 import { AI_STATUS } from '../../../../../constants/exercises'
 
 const InterviewProcess = ({
   numberRounds,
   messages,
   timeLimit,
-  aiStatus, 
+  aiStatus,
   onStopRecording,
   onStartRecording,
   onFinishExercise,
@@ -33,7 +33,7 @@ const InterviewProcess = ({
       aiStatus !== AI_STATUS.FINISHED
     ) {
       // Здесь логика завершения или переключения на экран результатов
-      dispatch(setAiStatus(AI_STATUS.FINISHED))
+      dispatch(setInterviewAiStatus(AI_STATUS.FINISHED))
     }
   }, [currentRound, numberRounds, aiStatus])
 

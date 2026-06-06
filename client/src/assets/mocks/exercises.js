@@ -19,6 +19,7 @@ import IconEx15 from '../images/card-icons/ai-debate.png'
 import IconEx16 from '../images/card-icons/ai-inrerview.png'
 import IconEx17 from '../images/card-icons/ai-icebreaker.png'
 import IconEx18 from '../images/card-icons/ai-tribune.png'
+import IconEx19 from '../images/card-icons/ai-alibi.png'
 
 
 
@@ -227,6 +228,17 @@ const All_EXERCISES = {
       description: 'Выскажись по теме и получи анализ текста',
       reward: 100,
       icon: IconEx18,
+      skill: 'Убедительность',
+      minLevel: 1,
+      premium: true,
+    },
+     {
+      id: '19',
+      alias: 'ai-alibi',
+      title: 'Железное алиби',
+      description: 'Убеди прокурора в своей невиновности',
+      reward: 100,
+      icon: IconEx19,
       skill: 'Убедительность',
       minLevel: 1,
       premium: true,

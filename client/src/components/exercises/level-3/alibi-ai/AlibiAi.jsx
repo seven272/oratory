@@ -3,12 +3,13 @@ import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
-import styles from './InterviewAi.module.css'
-import { aiInterviewSnenarios } from '../../../../assets/mocks/aiData'
+import styles from './AlibiAi.module.css'
+import { alibiScenarios } from '../../../../assets/data/scenarios/alibiScenarios'
+// import { aiIcebreakerScenarios } from '../../../../assets/mocks/aiData'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
-import InterviewIdle from './interview-idle/InterviewIdle'
-import InterviewProcess from './interview-process/InterviewProcess'
-import InterviewResult from './interview-result/InterviewResult'
+import AlibiIdle from './alibi-idle/AlibiIdle'
+import AlibiProcess from './alibi-process/AlibiProcess'
+import AlibiResult from './alibi-result/AlibiResult'
 import { useSpeechSber } from '../../../../hooks/useSpeechSber'
 import {
   SCREEN_STATUS,
@@ -16,100 +17,93 @@ import {
 } from '../../../../constants/exercises'
 
 import {
-  setInterviewAiStatus,
-  resetInterviewState,
-  fetchStartInterview,
-  fetchResponseInterview,
-  fetchFinishInterview,
-} from '../../../../redux/slices/ai-exercises/interviewSlice'
+  setIcebreakerAiStatus,
+  resetIcebreakerState,
+  fetchStartIcebreaker,
+  fetchResponseIcebreaker,
+  fetchFinishIcebreaker,
+} from '../../../../redux/slices/ai-exercises/icebreakerSlice'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
+const TOTAL_ROUNDS = 7
+const TIME_ROUND = 10
 
-const TOTAL_ROUNDS = 3
-const TIME_ROUND = 15
-
-// const isSpeechSupported = !!(
-//   typeof window !== 'undefined' &&
-//   (window.SpeechRecognition || window.webkitSpeechRecognition)
-// )
-
-const InterviewAi = ({ alias, isDaily }) => {
- const { startListening, stopListening, resetTranscript } =
-     useSpeechSber()
+const AlibiAi = ({ alias, isDaily }) => {
+  const { startListening, stopListening, resetTranscript } =
+    useSpeechSber()
   const dispatch = useDispatch()
   const routerNavigator = useRouteNavigator()
   // --- СОСТОЯНИЕ КОМПОНЕНТА (ТОЛЬКО UI-состояние) ---
-  const [randomInterview, setRandomInterview] = useState(null)
-  const [poolInterview, setPoolInterview] = useState([])
+  const [randomSituation, setRandomSituation] = useState(null)
+  const [poolSituation, setPoolSituation] = useState([])
   const [screenStatus, setScreenStatus] = useState(SCREEN_STATUS.IDLE)
   const [showModal, setShowModal] = useState(false)
 
   // --- СОСТОЯНИЕ ИЗ REDUX (ГЛОБАЛЬНОЕ) ---
-  const exerciseState = useSelector(
-    (state) => state.interview,
-  )
-  const { messages, exStatus, aiStatus } = exerciseState
+  const exerciseState = useSelector((state) => state.icebreaker)
+  const { messages, exStatus, aiStatus, warmth } = exerciseState
   const isLoading = exStatus === 'loading'
 
-  // Инициализация темы интервью
+  // Инициализация темы разговора
   useEffect(() => {
     const { selectedItem, newPool } = getRandomObjTask(
       [],
-      aiInterviewSnenarios,
+      alibiScenarios,
     )
-    setRandomInterview(selectedItem)
-    setPoolInterview(newPool)
+    setRandomSituation(selectedItem)
+    setPoolSituation(newPool)
+
     // Очистка при размонтировании компонента
     return () => {
-      dispatch(resetInterviewState())
+      dispatch(resetIcebreakerState())
     }
   }, [dispatch])
 
-  const handleStartInerview = () => {
-    if (!randomInterview) return
-    dispatch(fetchStartInterview(randomInterview))
+  const handleStartExercise = () => {
+    if (!randomSituation) return
+    dispatch(fetchStartIcebreaker(randomSituation))
     setScreenStatus(SCREEN_STATUS.RUNNING)
   }
-
 
   const handleStartRecording = () => {
     resetTranscript() // Очистить старый текст
     // Переключаем статус, чтобы UI мгновенно отобразил пульсацию и счетчик
-    dispatch(setInterviewAiStatus(AI_STATUS.RECORDING))
+    dispatch(setIcebreakerAiStatus(AI_STATUS.RECORDING))
     startListening()
   }
 
- const handleStopRecording = () => {
-    // ЖЕЛЕЗОБЕТОННАЯ ЗАЩИТА: Блокируем повторную отправку при двойных триггерах таймера
+  const handleStopRecording = () => {
+    // ЗАЩИТА: Блокируем повторные вызовы от таймеров, если ИИ уже обрабатывает реплику
     if (isLoading || aiStatus === AI_STATUS.AI_THINKING) return
 
-    // Передаем колбэк: сработает строго тогда, когда файл WAV полностью собран в памяти
+    // Передаем колбэк: он выполнится СТРОГО один раз, когда файл собран в памяти
     stopListening((readyBlob) => {
       if (!readyBlob || readyBlob.size === 0) {
-        console.warn('Микрофон выдал пустой буфер в интервью')
+        console.warn('Микрофон выдал пустой буфер в ледоколе')
         return
       }
 
       // 1. Включаем статус анимации мышления
-      dispatch(setInterviewAiStatus(AI_STATUS.AI_THINKING))
+      dispatch(setIcebreakerAiStatus(AI_STATUS.AI_THINKING))
 
-      // 2. Отправляем единственный бинарный файл на бэк
+      // 2. Отправляем единственный бинарный файл на бэкенд
       dispatch(
-        fetchResponseInterview({
+        fetchResponseIcebreaker({
           audioBlob: readyBlob,
         }),
       ).then(() => {
-        // 3. Сбрасываем внутренние буферы хука для следующего раунда
+        // 3. Сбрасываем внутренние буферы хука для следующего хода
         resetTranscript()
       })
     })
   }
-  const handleFinishExercise = () => {
+
+  const handleFinishDialog = () => {
     // меняем экран на финальный
     setScreenStatus(SCREEN_STATUS.FINISHED)
     // диспатч на получение оценки,
-    dispatch(fetchFinishInterview({ isDaily }))
+    dispatch(fetchFinishIcebreaker({ isDaily }))
   }
 
   const handleAutoSubmit = () => {
@@ -118,61 +112,60 @@ const InterviewAi = ({ alias, isDaily }) => {
 
   const handleRefreshTopic = () => {
     const { selectedItem, newPool } = getRandomObjTask(
-      poolInterview,
-      aiInterviewSnenarios,
+      poolSituation,
+      alibiScenarios,
     )
-    setRandomInterview(selectedItem)
-    setPoolInterview(newPool)
+    setRandomSituation(selectedItem)
+    setPoolSituation(newPool)
     // При смене темы сбрасываем состояние упражнения в сторе
-    dispatch(resetInterviewState())
+    dispatch(resetIcebreakerState())
   }
 
   const handleCloseExercise = () => {
-    dispatch(resetInterviewState())
+    dispatch(resetIcebreakerState())
     routerNavigator.push('/exercises/level3')
   }
 
   const handleRestartExercise = () => {
-    dispatch(resetInterviewState())
+    dispatch(resetIcebreakerState())
     setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
-  if (!randomInterview) return <ScreenSpinner />
+  if (!randomSituation) return <ScreenSpinner />
 
   return (
-    <div className={styles.main_interview}>
-      <h2 className={styles.title}>Неудобный вопрос</h2>
-      <p className={styles.descr}>
-        Формат острого телеинтервью с ИИ в роли ведущего
-      </p>
+    <div className={styles.main_icebreaker}>
+      <h2 className={styles.title}>Железное алиби</h2>
+      <p className={styles.descr}>Убеди прокурора в своей невиновности</p>
 
       <div className={styles.screen}>
         {screenStatus === SCREEN_STATUS.IDLE && (
-          <InterviewIdle
+          <AlibiIdle
             onRefreshTopic={() => handleRefreshTopic()}
             onShowTheory={() => setShowModal(true)}
-            interviewData={randomInterview}
-            onStart={handleStartInerview}
+            situationData={randomSituation}
+            onStart={handleStartExercise}
           />
         )}
 
         {screenStatus === SCREEN_STATUS.RUNNING && (
-          <InterviewProcess
+          <AlibiProcess
             numberRounds={TOTAL_ROUNDS}
-            interview={randomInterview}
+            situation={randomSituation}
             messages={messages}
+            warmthProgress={warmth}
             timeLimit={TIME_ROUND}
             aiStatus={aiStatus}
             onStopRecording={handleStopRecording}
             onStartRecording={handleStartRecording}
-            onFinishExercise={handleFinishExercise}
+            onFinishDialog={handleFinishDialog}
             onAutoFinish={handleAutoSubmit}
             isAiThinking={isLoading}
           />
         )}
 
         {screenStatus === SCREEN_STATUS.FINISHED && (
-          <InterviewResult
+          <AlibiResult
             onCloseExercise={handleCloseExercise}
             onRestartExercise={handleRestartExercise}
           />
@@ -186,6 +179,6 @@ const InterviewAi = ({ alias, isDaily }) => {
       </Modal>
     </div>
   )
-} 
+}
 
-export default InterviewAi
+export default AlibiAi

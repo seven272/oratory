@@ -22,6 +22,7 @@ const SKILLS_MAP = {
     'science-translator', // Просто о сложном
     'ai-debate', // Дебат-клуб (с ИИ)
     'ai-tribune', // Трибуна
+    'ai-alibi', // Железное алиби
   ],
   коммуникация: [
     'ai-icebreaker', // Ледокол (умение завязать разговор)

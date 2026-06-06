@@ -6,7 +6,8 @@ import { useDispatch } from 'react-redux'
 
 import styles from './IcebreakerProcess.module.css'
 import ChatIcebreaker from './chat-icebreaker/ChatIcebreaker'
-import { setAiStatus } from '../../../../../redux/slices/aiExerciseSlice'
+import { setIcebreakerAiStatus } from '../../../../../redux/slices/ai-exercises/icebreakerSlice'
+
 import { AI_STATUS } from '../../../../../constants/exercises'
 
 const IcebreakerProcess = ({
@@ -34,7 +35,7 @@ const IcebreakerProcess = ({
       aiStatus !== AI_STATUS.FINISHED
     ) {
       // Здесь логика завершения или переключения на экран результатов
-      dispatch(setAiStatus(AI_STATUS.FINISHED))
+      dispatch(setIcebreakerAiStatus(AI_STATUS.FINISHED))
     }
   }, [currentRound, numberRounds, aiStatus])
 
@@ -58,8 +59,6 @@ const IcebreakerProcess = ({
     }
     return () => clearInterval(interval)
   }, [aiStatus, timer])
-
-  
 
   return (
     <div className={styles.screen_running}>

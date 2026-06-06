@@ -2,6 +2,8 @@ import gigachatAxiosClient from '../../utils/gigachatAxiosClient.js'
 import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
+import { parseAiResponse } from '../../utils/aiJsonParser.js'
+import { transcribeShortAudio } from '../../utils/salutSpeechAxiosClient.js'
 
 const startInterview = async (req, res) => {
   try {
@@ -34,11 +36,12 @@ const startInterview = async (req, res) => {
 
 const generateInterviewResponse = async (req, res) => {
   try {
-    const { interviewData, userMessage } = req.body
+     let userMessage = null
+
 
     // Ищем сессию, созданную при старте дебатов
     let session = await AiExercise.findOne({
-      userId: req.userId,
+      userId: req.userId, 
       exerciseType: 'interview',
       status: 'active',
     }).sort({ createdAt: -1 })
@@ -49,15 +52,30 @@ const generateInterviewResponse = async (req, res) => {
       })
     }
 
+     // Защита: извлекаем метаданные сценария напрямую из БД, не завязываясь на req.body при FormData
+    const { role, topic, context } = session.exerciseData
+
+     // 2. Если фронтенд прислал аудиозапись — мгновенно расшифровываем быстрым методом Сбера
+    if (req.file) {
+      try {
+        userMessage = await transcribeShortAudio(req.file.buffer)
+      } catch (speechError) {
+        console.error('Ошибка синхронного SalutSpeech в интервью:', speechError)
+        return res.status(500).json({
+          message: 'Не удалось распознать вашу речь ведущего. Пожалуйста, повторите запись.',
+          error: speechError.message,
+        })
+      }
+    }
+
     // Считаем, сколько раз пользователь УЖЕ что-то отправлял (любое сообщение)
     const attemptsCount = session.messages.filter(
       (m) => m.role === 'user',
     ).length
     const isLastAttempt = attemptsCount >= 2 // Если это 3-й раз
 
-    // 2. Если ответ ПУСТОЙ
-    if (!userMessage || userMessage.includes('нечего сказать')) {
-      // СОХРАНЯЕМ пустую строку, чтобы зафиксировать ход в истории
+   // Обработка пустого ответа или промалчивания
+    if (!userMessage || typeof userMessage !== 'string' || !userMessage.trim() || userMessage.includes('нечего сказать')) {
       session.messages.push({
         role: 'user',
         text: 'Пользователь промолчал',
@@ -70,12 +88,15 @@ const generateInterviewResponse = async (req, res) => {
         isError: true,
       })
     }
-    const PROMPT = `Ты — опытный и язвительный ведущий. Берешь интервью у ${interviewData.role} на тему "${interviewData.topic}". Стало известно, что  ${interviewData.context}.
-    Пользователь утверждает: "${userMessage}".
-    Твоя задача: задай ОДИН провокационный вопрос.
-    Вопрос должен быть коротким (2-4 предложения), острым, по теме."`
 
-    // 3. Отправляем в GigaChat
+    const cleanUserMessage = userMessage.trim()
+
+    const PROMPT = `Ты — опытный и язвительный ведущий. Берешь интервью у ${role} на тему "${topic}". Стало известно, что ${context}.
+    Пользователь утверждает: "${cleanUserMessage}".
+    Твоя задача: задай ОДИН провокационный вопрос.
+    Вопрос должен быть коротким (2-4 предложения), острым, по теме.`
+
+    // 4. Запрос к GigaChat
     const response = await gigachatAxiosClient.post(
       '/chat/completions',
       {
@@ -85,50 +106,38 @@ const generateInterviewResponse = async (req, res) => {
       },
     )
 
-    // Логируем для отладки, если данных нет
-    if (!response.data || !response.data.choices) {
-      console.log(
-        'Неожиданный формат ответа:',
-        JSON.stringify(response.data),
-      )
-    }
-    // console.log(
-    //   'Ответ от GigaChat получен:',
-    //   response.data.choices[0].message.content,
-    // )
+    // Безопасное извлечение ответа GigaChat с указанием индекса [0] массива choices
+    const aiAnswer = response.data.choices?.[0]?.message?.content
 
-    const aiAnswer = response.data.choices[0].message.content
-    // 3. Создаем объект для нового сообщения пользователя
-    const newUserMessage = {
+    if (!aiAnswer) {
+      console.error('❌ [BACK-DEBUG] GigaChat вернул пустой ответ в интервью')
+      throw new Error('Empty GigaChat response')
+    }
+
+    // cохраняем в историю чата в БД оба сообщения (в виде чистого текста)
+    session.messages.push({
       role: 'user',
-      text: userMessage,
-    }
-    // 4. Создаем объект для ответа ИИ
-    const newAiMessage = {
+      text: cleanUserMessage,
+    })
+    session.messages.push({
       role: 'assistant',
-      text: aiAnswer,
-    }
-
-    // 4. Сохраняем в БД оба сообщения
-    session.messages.push(newUserMessage)
-    session.messages.push(newAiMessage)
+      text: aiAnswer.trim(),
+    })
 
     await session.save()
 
-    // 1. Создаем инструмент для паузы (в самом верху файла)
-    const sleep = (ms) =>
-      new Promise((resolve) => setTimeout(resolve, ms))
+    // Имитация естественной паузы раздумий ИИ-ведущего телешоу
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+    const randomDelay = Math.floor(Math.random() * (3000 - 1500 + 1)) + 1500
+    await sleep(randomDelay)
 
-    // 2. Внутри контроллера используем его
-    const randomDelay =
-      Math.floor(Math.random() * (3000 - 1500 + 1)) + 1500
-
-    await sleep(randomDelay) // Код просто подождет здесь
-
-    res.json({
-      answer: aiAnswer,
+    // Возвращаем фронтенду результат диалога
+    return res.json({
+      user_transcript: cleanUserMessage, 
+      answer: aiAnswer.trim(),
       isInterviewFinished: isLastAttempt,
     })
+
   } catch (error) {
     console.error(
       'Ошибка при вызове GigaChat из sendUserResponse:',
@@ -227,47 +236,52 @@ const finishInterview = async (req, res) => {
 - Если пользователь встречно атакует журналиста — это повышает токсичность.
 - Если пользователь сохраняет иронию и отвечает по существу — это идеальный результат.`
 
-    // 3. Запрос к GigaChat для оценки
-    const response = await gigachatAxiosClient.post(
-      '/chat/completions',
-      {
-        model: 'GigaChat-2',
-        messages: [
-          { role: 'system', content: EVALUATION_PROMPT }, // Тот самый промпт выше
-          {
-            role: 'user',
-            content: `Проанализируй этот диалог:\n${chatHistory}`,
-          }, // История диалога
-        ],
-        max_tokens: 700,
-      },
-    )
+    let evaluation = null
 
-    // Безопасный каскадный парсинг JSON с защитой от крашей сервера
-    let evaluation
     try {
-      let rawResult = response.data.choices[0].message.content
-      rawResult = rawResult
-        .replace(/```json/g, '')
-        .replace(/```/g, '')
-        .trim()
-      const jsonMatch = rawResult.match(/\{[\s\S]*\}/)
-      const jsonString = jsonMatch ? jsonMatch[0] : rawResult
-      evaluation = JSON.parse(jsonString)
-    } catch (parseError) {
-      console.error(
-        'Ошибка парсинга JSON в Интервью:',
-        parseError.message,
+      // Изолируем запрос к ИИ от сетевых сбросов ECONNRESET
+      const response = await gigachatAxiosClient.post(
+        '/chat/completions',
+        {
+          model: 'GigaChat-2',
+          messages: [
+            { role: 'system', content: EVALUATION_PROMPT },
+            {
+              role: 'user',
+              content: `Проанализируй этот диалог:\n${chatHistory}`,
+            },
+          ],
+          max_tokens: 700,
+        },
       )
+      const aiJsonResult = response.data.choices[0].message.content
+
+      // Вызываем универсальный парсер одной строкой
+      evaluation = parseAiResponse(aiJsonResult, {
+        toxicity: 30,
+        diplomacy: 50,
+      })
+    } catch (apiError) {
+      console.error(
+        'Сбой сети GigaChat (ECONNRESET) в Интервью:',
+        apiError.message,
+      )
+    }
+
+    // Аварийный выход на дефолты при сбое сети или парсинга
+    if (!evaluation) {
       evaluation = {
         totalScore: 50,
         feedback:
-          'Не удалось разобрать подробную аналитику ИИ из-за сбоя формата, начислены базовые баллы.',
-        criteria: { toxicity: 30, diplomacy: 50 },
+          'Ваше интервью сохранено, но ИИ не смог сформировать детальный отчет из-за сбоя связи. Начислены базовые баллы.',
+        criteria: {
+          toxicity: 30,
+          diplomacy: 50,
+        },
       }
     }
 
-    // 4. Обновляем сессию в БД
+    //  Обновляем сессию в БД
     session.status = 'completed'
     session.score = evaluation.totalScore
     session.result = {
@@ -278,7 +292,7 @@ const finishInterview = async (req, res) => {
 
     await session.save()
 
-    // 5. Запуск сквозной геймификации, стриков и наград.
+    // Запуск сквозной геймификации, стриков и наград.
     // Передаем точный алиас с опечаткой 'ai-inrerview' для 100% совпадения со SKILLS_MAP!
     // Движок сам положит очки в exerciseStats, что динамически прокачает ветку "коммуникация"
     const gamificationResult = await applyAiGamificationProgress(
@@ -289,7 +303,6 @@ const finishInterview = async (req, res) => {
       isDaily,
     )
 
-    // 6. Отдаем клиенту синхронизированный ответ для Redux
     res.status(200).json({
       message: 'Упражнение успешно сохранено',
       session,
@@ -297,7 +310,9 @@ const finishInterview = async (req, res) => {
     })
   } catch (error) {
     console.error('Ошибка финализации:', error)
-    res.status(500).json({ message: 'Не удалось завершить упражнение Интервью' })
+    res
+      .status(500)
+      .json({ message: 'Не удалось завершить упражнение Интервью' })
   }
 }
 

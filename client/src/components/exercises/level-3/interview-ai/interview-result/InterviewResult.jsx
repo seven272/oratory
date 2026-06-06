@@ -12,7 +12,7 @@ const dictianory = {
 
 const InterviewResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
-    (state) => state.aiExercise.exercises.interview,
+    (state) => state.interview,
   )
 
   if (!verdict) return <ScreenSpinner />

@@ -13,7 +13,7 @@ const dictianory = {
 
 const IcebreakerResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
-    (state) => state.aiExercise.exercises.icebreaker,
+    (state) => state.icebreaker,
   )
 
   if (!verdict) return <ScreenSpinner />

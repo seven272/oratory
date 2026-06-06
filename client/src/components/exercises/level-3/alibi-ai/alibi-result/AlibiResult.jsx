@@ -3,24 +3,24 @@ import { IoMdShare } from 'react-icons/io'
 import { useSelector } from 'react-redux'
 import { ScreenSpinner } from '@vkontakte/vkui'
 
-import styles from './TribuneResult.module.css'
+import styles from './AlibiResult.module.css'
 
 const dictianory = {
-  structure: 'Структура', 
-  persuasiveness: 'Убедительность',
-  garbage: 'Словесный мусор',
+  empathy: 'Эмпатия',
+  openness: 'Открытость',
+  initiative: 'Инициативность',
 }
 
-const TribuneResult = ({ onCloseExercise, onRestartExercise }) => {
+const AlibiResult = ({ onCloseExercise, onRestartExercise }) => {
   const { verdict } = useSelector(
-    (state) => state.tribune,
+    (state) => state.icebreaker,
   )
 
   if (!verdict) return <ScreenSpinner />
   return (
     <div className={styles.screen_finished}>
       <div className={styles.finish_card}>
-        <h3 className={styles.finish_title}>Упражение завершено</h3>
+        <h3 className={styles.finish_title}>Диалог завершен</h3>
 
         {/* Общий балл в круге */}
         <div className={styles.score_circle}>
@@ -77,4 +77,4 @@ const TribuneResult = ({ onCloseExercise, onRestartExercise }) => {
   )
 }
 
-export default TribuneResult
+export default AlibiResult

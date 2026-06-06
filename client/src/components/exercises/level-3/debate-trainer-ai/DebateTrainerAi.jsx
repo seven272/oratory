@@ -13,38 +13,30 @@ import DebateIdle from './debate-idle/DebateIdle'
 import DebateProcess from './debate-process/DebateProcess'
 import DebateResult from './debate-result/DebateResult'
 import styles from './DebateTrainerAi.module.css'
-import { useSpeech } from '../../../../hooks/useSpeech'
+
+// Подключаем наш новый хук Сбера для записи WAV
+import { useSpeechSber } from '../../../../hooks/useSpeechSber'
+
 import {
-  setActiveExercise,
-  resetExerciseState,
-  setAiStatus,
+  setDebateAiStatus,
+  resetDebateState,
   fetchStartDebate,
   fetchSendUserResponseDebate,
   fetchFinishDebate,
-} from '../../../../redux/slices/aiExerciseSlice'
+} from '../../../../redux/slices/ai-exercises/debateSlice'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
-const EXERCISE_NAME = 'debate'
 const TOTAL_ROUNDS = 3
 const TIME_ROUND = 15
 
-const isSpeechSupported = !!(
-  typeof window !== 'undefined' &&
-  (window.SpeechRecognition || window.webkitSpeechRecognition)
-)
-
 const DebateTrainerAi = ({ alias, isDaily }) => {
-  const {
-    transcript,
-    startListening,
-    stopListening,
-    isListening,
-    resetTranscript,
-  } = useSpeech('ru-RU')
+  const { startListening, stopListening, resetTranscript } =
+    useSpeechSber()
+
   const dispatch = useDispatch()
   const routerNavigator = useRouteNavigator()
-  // --- СОСТОЯНИЕ КОМПОНЕНТА (ТОЛЬКО UI-состояние) ---
+
   const [randomTopic, setRandomTopic] = useState(null)
   const [poolTopic, setPoolTopic] = useState([])
   const [userPosition, setUserPosition] = useState('')
@@ -52,10 +44,7 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
   const [screenStatus, setScreenStatus] = useState(SCREEN_STATUS.IDLE)
   const [showModal, setShowModal] = useState(false)
 
-  // --- СОСТОЯНИЕ ИЗ REDUX (ГЛОБАЛЬНОЕ) ---
-  const exerciseState = useSelector(
-    (state) => state.aiExercise.exercises.debate,
-  )
+  const exerciseState = useSelector((state) => state.debate)
   const { messages, exStatus, aiStatus } = exerciseState
   const isLoading = exStatus === 'loading'
 
@@ -68,12 +57,13 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
     setRandomTopic(selectedItem)
     setPoolTopic(newPool)
     setUserTopic(selectedItem.topic)
-    dispatch(setActiveExercise(EXERCISE_NAME))
-    // Очистка при размонтировании компонента
     return () => {
-      dispatch(resetExerciseState(EXERCISE_NAME))
+      dispatch(resetDebateState())
     }
   }, [dispatch])
+
+  // 💡 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Мы полностью УДАЛИЛИ старый useEffect,
+  // который дублировал запросы и вызывал гонку условий на сервере!
 
   const handleStartDebate = () => {
     if (!userTopic || !userPosition) return
@@ -83,61 +73,49 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
     setScreenStatus(SCREEN_STATUS.RUNNING)
   }
 
-  const handleSendUserResponse = (userText) => {
-    if (!userText.trim() || isLoading) return
-
-    dispatch(
-      fetchSendUserResponseDebate({
-        topic: userTopic,
-        position: userPosition,
-        userMessage: userText,
-      }),
-    )
-    // resetTranscript(); // Очистку речи можно оставить здесь или в хуке useEffect выше
-  }
-
   const handleStartRecording = () => {
-    resetTranscript() // Очистить старый текст
-    // Переключаем статус, чтобы UI мгновенно отобразил пульсацию и счетчик
-    dispatch(setAiStatus(AI_STATUS.RECORDING))
+    resetTranscript()
+    dispatch(setDebateAiStatus(AI_STATUS.RECORDING))
     startListening()
   }
 
   const handleStopRecording = () => {
-    // 1. Останавливаем микрофон (это вызовет setIsListening(false) внутри хука)
-    stopListening()
-    // 2. Берем финальный текст или заглушку
-    const userText = transcript.trim() || 'Мне нечего сказать'
+    // ЖЕЛЕЗОБЕТОННАЯ ЗАЩИТА: Если ИИ уже обрабатывает реплику,
+    // полностью игнорируем любые повторные вызовы от таймеров или кнопок
+    if (
+      isLoading ||
+      aiStatus === AI_STATUS.AI_THINKING ||
+      aiStatus === AI_STATUS.PROCESSING
+    ) {
+      return
+    }
 
-    setTimeout(() => {
-      // 3. Ставим статус "ИИ думает"
-      dispatch(setAiStatus(AI_STATUS.AI_THINKING))
+    stopListening((readyBlob) => {
+      if (!readyBlob || readyBlob.size === 0) {
+        console.warn('Микрофон выдал пустой буфер. Отмена отправки.')
+        return
+      }
 
-      // 4. Отправляем на сервер
+      // 1. Мгновенно блокируем статус
+      dispatch(setDebateAiStatus(AI_STATUS.AI_THINKING))
+
+      // 2. Шлем единственный валидный файл
       dispatch(
-        fetchSendUserResponseDebate({
-          topic: userTopic,
-          position: userPosition,
-          userMessage: userText,
-        }),
+        fetchSendUserResponseDebate({ audioBlob: readyBlob }),
       ).then(() => {
-        // 5. Очищаем текст в хуке после успешного или неуспешного диспатча
         resetTranscript()
       })
-    }, 600)
+    })
   }
 
   const handleFinishDebate = (evt) => {
     evt.preventDefault()
-    // меняем экран на финальный
     setScreenStatus(SCREEN_STATUS.FINISHED)
-    // диспатч на получение оценки,
     dispatch(fetchFinishDebate({ isDaily }))
   }
 
   const handleAutoSubmit = () => {
-    const userText = transcript || 'Пропуск хода (время истекло)'
-    handleSendUserResponse(userText)
+    handleStopRecording()
   }
 
   const handleRefreshTopic = () => {
@@ -149,17 +127,16 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
     setPoolTopic(newPool)
     setUserTopic(selectedItem.topic)
     setUserPosition('')
-    // При смене темы сбрасываем состояние упражнения в сторе
-    dispatch(resetExerciseState(EXERCISE_NAME))
+    dispatch(resetDebateState())
   }
 
   const handleCloseExercise = () => {
-    dispatch(resetExerciseState(EXERCISE_NAME))
+    dispatch(resetDebateState())
     routerNavigator.push('/exercises/level3')
   }
 
   const handleRestartExercise = () => {
-    dispatch(resetExerciseState(EXERCISE_NAME))
+    dispatch(resetDebateState())
     setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
@@ -169,7 +146,8 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
     <div className={styles.main_debate}>
       <h2 className={styles.title}>Дебат-клуб</h2>
       <p className={styles.descr}>
-        Докажи свою точку зрезиня в споре с ИИ
+        {' '}
+        Докажи свою точку зрения в споре с ИИ{' '}
       </p>
 
       <div className={styles.screen}>

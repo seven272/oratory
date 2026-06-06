@@ -2,6 +2,8 @@ import gigachatAxiosClient from '../../utils/gigachatAxiosClient.js'
 import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
+import { parseAiResponse } from '../../utils/aiJsonParser.js'
+import { transcribeShortAudio } from '../../utils/salutSpeechAxiosClient.js'
 
 const startDebate = async (req, res) => {
   try {
@@ -32,11 +34,12 @@ const startDebate = async (req, res) => {
 
 const generateDebateResponse = async (req, res) => {
   try {
-    const { topic, position, userMessage } = req.body
+    let userMessage = req.body.userMessage
 
-    // Ищем сессию, созданную при старте дебатов
+    // 1. Ищем активную сессию строго для упражнения Дебаты
     let session = await AiExercise.findOne({
       userId: req.userId,
+      exerciseType: 'debate', // Защита от пересечения с другими тренажерами
       status: 'active',
     }).sort({ createdAt: -1 })
 
@@ -44,6 +47,26 @@ const generateDebateResponse = async (req, res) => {
       return res.status(400).json({
         message: 'Активная сессия не найдена. Начните сначала.',
       })
+    }
+
+    // Извлекаем тему и позицию из БД, чтобы не зависеть от полей req.body при multipart/form-data
+    const { topic, position } = session.exerciseData
+
+    // Если фронтенд прислал аудиозапись — расшифровываем быстрым синхронным методом Сбера
+    if (req.file) {
+      try {
+        userMessage = await transcribeShortAudio(req.file.buffer)
+      } catch (speechError) {
+        console.error(
+          'Ошибка синхронного SalutSpeech в дебатах:',
+          speechError,
+        )
+        return res.status(500).json({
+          message:
+            'Не удалось распознать реплику. Пожалуйста, повторите запись.',
+          error: speechError.message,
+        })
+      }
     }
 
     // Считаем, сколько раз пользователь УЖЕ что-то отправлял (любое сообщение)
@@ -67,6 +90,9 @@ const generateDebateResponse = async (req, res) => {
         isError: true,
       })
     }
+
+    const cleanUserMessage = userMessage.trim()
+
     const PROMPT = `Ты — опытный и язвительный оппонент в дебатах на тему: "${topic}".
 Пользователь утверждает: "${userMessage}".
 Твоя задача: приведи ОДИН сильный контраргумент или задай провокационный вопрос. 
@@ -90,11 +116,13 @@ const generateDebateResponse = async (req, res) => {
       )
     }
 
-    const aiAnswer = response.data.choices[0].message.content
+    const aiAnswer = response.data.choices?.[0]?.message?.content
+
+    
     // 3. Создаем объект для нового сообщения пользователя
     const newUserMessage = {
       role: 'user',
-      text: userMessage,
+      text: cleanUserMessage,
     }
     // 4. Создаем объект для ответа ИИ
     const newAiMessage = {
@@ -119,6 +147,7 @@ const generateDebateResponse = async (req, res) => {
     await sleep(randomDelay) // Код просто подождет здесь
 
     res.json({
+      user_transcript: cleanUserMessage,
       answer: aiAnswer,
       isDebateFinished: isLastAttempt,
     })
@@ -217,27 +246,54 @@ const finishDebate = async (req, res) => {
       }
     }`
 
-    // 3. Запрос к GigaChat для оценки
-    const response = await gigachatAxiosClient.post(
-      '/chat/completions',
-      {
-        model: 'GigaChat-2',
-        messages: [
-          { role: 'system', content: EVALUATION_PROMPT },
-          {
-            role: 'user',
-            content: `Проанализируй этот диалог:\n${chatHistory}`,
-          },
-        ],
-        max_tokens: 700,
-      },
-    )
+    let evaluation = null
 
-    const rawResult = response.data.choices[0].message.content
-    // Пытаемся распарсить JSON (GigaChat иногда может добавить лишний текст, стоит подстраховаться)
-    const jsonMatch = rawResult.match(/\{[\s\S]*\}/)
-    const jsonString = jsonMatch ? jsonMatch[0] : rawResult
-    const evaluation = JSON.parse(jsonString)
+    try {
+      // Изолируем сетевой запрос к Сберу от ошибок ECONNRESET
+      const response = await gigachatAxiosClient.post(
+        '/chat/completions',
+        {
+          model: 'GigaChat-2',
+          messages: [
+            { role: 'system', content: EVALUATION_PROMPT },
+            {
+              role: 'user',
+              content: `Проанализируй этот диалог:\n${chatHistory}`,
+            },
+          ],
+          max_tokens: 700,
+        },
+      )
+
+      const aiJsonResult = response.data.choices[0].message.content
+
+      // Вызываем универсальный парсер одной строкой, передавая дефолты для Дебатов
+      evaluation = parseAiResponse(aiJsonResult, {
+        logic: 50,
+        convincingness: 50,
+        counterargumentation: 50,
+      })
+    } catch (apiError) {
+      console.error(
+        'Сбой сети GigaChat (ECONNRESET) в Дебатах:',
+        apiError.message,
+      )
+    }
+
+    // Железобетонный аварийный выход на дефолты при сбое сети или парсинга
+    if (!evaluation) {
+      evaluation = {
+        totalScore: 50,
+        feedback:
+          'Ваши дебаты сохранены, но ИИ не смог сформировать детальный отчет из-за сбоя связи. Начислены базовые баллы.',
+        criteria: {
+          logic: 50,
+          convincingness: 50,
+          counterargumentation: 50,
+        },
+      }
+    }
+
     // 4. Обновляем сессию в БД
     session.status = 'completed'
     session.score = evaluation.totalScore
@@ -249,14 +305,13 @@ const finishDebate = async (req, res) => {
 
     await session.save()
 
-    // 6. Передаем управление общему движку геймификации.
-    // Он САМ обновит user.stats.exerciseStats для 'ai-debate', что прокачает ветку "убедительность" в SKILLS_MAP!
+    // Передаем управление общему движку геймификации.
     const gamificationResult = await applyAiGamificationProgress(
       user,
       evaluation.totalScore,
       'ai-debate',
       'Дебаты с ИИ',
-      isDaily, // Передаем состояние квеста дня
+      isDaily,
     )
 
     res.status(200).json({

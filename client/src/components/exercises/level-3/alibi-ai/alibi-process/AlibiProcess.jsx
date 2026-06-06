@@ -4,20 +4,21 @@ import { TbScoreboard } from 'react-icons/tb'
 import { FaStopCircle } from 'react-icons/fa'
 import { useDispatch } from 'react-redux'
 
-import styles from './DebateProcess.module.css'
-import ChatDebate from './chat-debate/ChatDebate'
-// import { setAiStatus } from '../../../../../redux/slices/aiExerciseSlice'
-import { setDebateAiStatus } from '../../../../../redux/slices/ai-exercises/debateSlice'
+import styles from './AlibiProcess.module.css'
+import ChatAlibi from './chat-alibi/ChatAlibi'
+import { setIcebreakerAiStatus } from '../../../../../redux/slices/ai-exercises/icebreakerSlice'
+
 import { AI_STATUS } from '../../../../../constants/exercises'
 
-const DebateProcess = ({
+const AlibiProcess = ({
   numberRounds,
   messages,
+  warmthProgress,
   timeLimit,
   aiStatus,
   onStopRecording,
   onStartRecording,
-  onFinishDebate,
+  onFinishDialog,
   isAiThinking,
 }) => {
   const dispatch = useDispatch()
@@ -34,7 +35,7 @@ const DebateProcess = ({
       aiStatus !== AI_STATUS.FINISHED
     ) {
       // Здесь логика завершения или переключения на экран результатов
-      dispatch(setDebateAiStatus(AI_STATUS.FINISHED))
+      dispatch(setIcebreakerAiStatus(AI_STATUS.FINISHED))
     }
   }, [currentRound, numberRounds, aiStatus])
 
@@ -47,25 +48,22 @@ const DebateProcess = ({
 
   // таймер раунда
   useEffect(() => {
-    if (aiStatus !== AI_STATUS.RECORDING) return
-
-    if (timer === 0) {
-      onStopRecording()
-      return
+    let interval
+    // Таймер тикает ТОЛЬКО когда идет запись
+    if (aiStatus === AI_STATUS.RECORDING && timer > 0) {
+      interval = setInterval(() => setTimer((prev) => prev - 1), 1000)
     }
-
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1)
-    }, 1000)
-
+    // Авто-стоп по истечении времени
+    if (timer === 0 && aiStatus === AI_STATUS.RECORDING) {
+      onStopRecording() // Функция, которая меняет статус на PROCESSING
+    }
     return () => clearInterval(interval)
-  }, [aiStatus, timer, onStopRecording])
+  }, [aiStatus, timer])
 
   return (
     <div className={styles.screen_running}>
       {/* Прогресс-бар*/}
       <div className={styles.debate_header}>
-        {/* <span className={styles.debate_header_text}>{topic}</span> */}
         <div className={styles.progress_container}>
           <div className={styles.progress_text}>
             <div>
@@ -85,9 +83,24 @@ const DebateProcess = ({
             </div>
           </div>
         </div>
+        <div className={styles.progress_container}>
+          <div className={styles.progress_text}>
+            <span>Душевность беседы {warmthProgress} из 100</span>
+            {/* Серый фон бара */}
+            <div className={styles.progress_bar_bg}>
+              {/* динамическая заливка прогресса */}
+              <div
+                className={styles.warmth_bar_fill}
+                style={{
+                  width: `${warmthProgress}%`,
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <ChatDebate
+      <ChatAlibi
         messages={messages}
         aiStatus={aiStatus}
         isAiThinking={isAiThinking}
@@ -110,7 +123,6 @@ const DebateProcess = ({
             <button
               onClick={onStopRecording}
               className={styles.stop_btn}
-              disabled={isAiThinking}
             >
               <FaStopCircle size={45} />
             </button>
@@ -135,7 +147,7 @@ const DebateProcess = ({
 
         {aiStatus === AI_STATUS.FINISHED && (
           <button
-            onClick={onFinishDebate}
+            onClick={onFinishDialog}
             className={styles.debate_finish_btn}
           >
             Завершить и проанализировать <TbScoreboard size={25} />
@@ -146,4 +158,4 @@ const DebateProcess = ({
   )
 }
 
-export default DebateProcess
+export default AlibiProcess

@@ -48,7 +48,7 @@ const fetchFinishDebate = createAsyncThunk(
     try {
       const res = await axiosInstance.post('/ai/finish-debate', {
         isDaily,
-      }) // путь к вашему новому контроллеру
+      })
       return res.data // Ожидаем объект с totalScore, feedback и criteria
     } catch (error) {
       console.log(error)

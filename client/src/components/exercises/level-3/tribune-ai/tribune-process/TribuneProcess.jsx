@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { CiMicrophoneOn } from 'react-icons/ci'
 import { TbScoreboard } from 'react-icons/tb'
 import { FaStopCircle } from 'react-icons/fa'
-import { useDispatch } from 'react-redux'
 
 import styles from './TribuneProcess.module.css'
 import ChatInterview from './chat-interview/ChatInterview'
-import { setAiStatus } from '../../../../../redux/slices/aiExerciseSlice'
+
 import { AI_STATUS } from '../../../../../constants/exercises'
 
 const TribuneProcess = ({
   numberRounds,
-  topic,
   messages,
   timeLimit,
   aiStatus, 
@@ -20,7 +18,7 @@ const TribuneProcess = ({
   onFinishTribune,
   isAiThinking,
 }) => {
-  const dispatch = useDispatch()
+
   const [timer, setTimer] = useState(timeLimit)
   const [currentRound, setCurrentRound] = useState(0)
   const userMessagesCount = messages.filter(
