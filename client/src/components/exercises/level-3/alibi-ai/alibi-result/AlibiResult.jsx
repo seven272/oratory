@@ -5,22 +5,22 @@ import { ScreenSpinner } from '@vkontakte/vkui'
 
 import styles from './AlibiResult.module.css'
 
-const dictianory = {
-  empathy: 'Эмпатия',
-  openness: 'Открытость',
-  initiative: 'Инициативность',
+// Словарь критериев адаптирован под блок "Убедительность" и детективный сценарий
+const dictionary = {
+  logic: 'Логика и структура',
+  consistency: 'Непротиворечивость фактов',
+  confidence: 'Устойчивость под давлением',
 }
 
 const AlibiResult = ({ onCloseExercise, onRestartExercise }) => {
-  const { verdict } = useSelector(
-    (state) => state.icebreaker,
-  )
+  const { verdict } = useSelector((state) => state.alibi)
 
   if (!verdict) return <ScreenSpinner />
+
   return (
     <div className={styles.screen_finished}>
       <div className={styles.finish_card}>
-        <h3 className={styles.finish_title}>Диалог завершен</h3>
+        <h3 className={styles.finish_title}>Допрос завершен</h3>
 
         {/* Общий балл в круге */}
         <div className={styles.score_circle}>
@@ -35,7 +35,7 @@ const AlibiResult = ({ onCloseExercise, onRestartExercise }) => {
           {Object.entries(verdict.criteria).map(([name, value]) => (
             <div key={name} className={styles.criteria_item}>
               <span>
-                {dictianory[name]}:{value}
+                {dictionary[name] || name}: {value}
               </span>
               <div className={styles.mini_bar}>
                 <div style={{ width: `${value}%` }}></div>
@@ -51,6 +51,7 @@ const AlibiResult = ({ onCloseExercise, onRestartExercise }) => {
           </h4>
           <p className={styles.verdict_text}>{verdict.feedback}</p>
         </div>
+
         <div className={styles.btn_group}>
           <button
             className={styles.btn_restart}

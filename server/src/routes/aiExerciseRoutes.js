@@ -8,21 +8,30 @@ import {
   generateDebateResponse,
   finishDebate,
 } from '../controllers/ai-exercises/debateController.js'
+
 import {
   startInterview,
   generateInterviewResponse,
   finishInterview,
 } from '../controllers/ai-exercises/interviewController.js'
+
 import {
   startIcebreaker,
   generateIcebreakerResponse,
   finishIcebreaker,
 } from '../controllers/ai-exercises/icebreakerController.js'
+
 import {
   startTribune,
   responseTribune,
   finishTribune,
 } from '../controllers/ai-exercises/tribuneController.js'
+
+import {
+  startAlibi,
+  generateAlibiResponse,
+  finishAlibi,
+} from '../controllers/ai-exercises/alibiController.js'
 
 const router = express.Router()
 
@@ -71,5 +80,15 @@ router.post(
   responseTribune,
 )
 router.post('/finish-tribune', checkAuth, finishTribune)
+
+//роутеры упражнения Алиби
+router.post('/start-alibi', checkAuth, startAlibi)
+router.post(
+  '/response-alibi',
+  checkAuth,
+  upload.single('audio'),
+  generateAlibiResponse,
+)
+router.post('/finish-alibi', checkAuth, finishAlibi)
 
 export default router

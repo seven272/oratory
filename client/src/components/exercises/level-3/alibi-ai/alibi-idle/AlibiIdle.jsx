@@ -29,7 +29,7 @@ const AlibiIdle = ({
           <strong>Происшествие:</strong> {situationData.situation}
         </span>
         <span className={styles.idle_text}>
-          {situationData.legend}
+            {situationData.legend}
         </span>
       </div>
 

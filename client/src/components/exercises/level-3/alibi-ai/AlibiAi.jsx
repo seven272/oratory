@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import styles from './AlibiAi.module.css'
 import { alibiScenarios } from '../../../../assets/data/scenarios/alibiScenarios'
-// import { aiIcebreakerScenarios } from '../../../../assets/mocks/aiData'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
 import AlibiIdle from './alibi-idle/AlibiIdle'
 import AlibiProcess from './alibi-process/AlibiProcess'
@@ -17,17 +16,17 @@ import {
 } from '../../../../constants/exercises'
 
 import {
-  setIcebreakerAiStatus,
-  resetIcebreakerState,
-  fetchStartIcebreaker,
-  fetchResponseIcebreaker,
-  fetchFinishIcebreaker,
-} from '../../../../redux/slices/ai-exercises/icebreakerSlice'
+  setAlibiAiStatus,
+  resetAlibiState,
+  fetchStartAlibi,
+  fetchResponseAlibi,
+  fetchFinishAlibi
+} from '../../../../redux/slices/ai-exercises/alibiSlice'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
-const TOTAL_ROUNDS = 7
-const TIME_ROUND = 10
+const TOTAL_ROUNDS = 3
+const TIME_ROUND = 20
 
 const AlibiAi = ({ alias, isDaily }) => {
   const { startListening, stopListening, resetTranscript } =
@@ -41,9 +40,10 @@ const AlibiAi = ({ alias, isDaily }) => {
   const [showModal, setShowModal] = useState(false)
 
   // --- СОСТОЯНИЕ ИЗ REDUX (ГЛОБАЛЬНОЕ) ---
-  const exerciseState = useSelector((state) => state.icebreaker)
-  const { messages, exStatus, aiStatus, warmth } = exerciseState
-  const isLoading = exStatus === 'loading'
+ const exerciseState = useSelector((state) => state.alibi) 
+const { messages, exStatus, aiStatus, credibility } = exerciseState 
+const isLoading = exStatus === 'loading'
+
 
   // Инициализация темы разговора
   useEffect(() => {
@@ -56,20 +56,20 @@ const AlibiAi = ({ alias, isDaily }) => {
 
     // Очистка при размонтировании компонента
     return () => {
-      dispatch(resetIcebreakerState())
+      dispatch(resetAlibiState())
     }
   }, [dispatch])
 
   const handleStartExercise = () => {
     if (!randomSituation) return
-    dispatch(fetchStartIcebreaker(randomSituation))
+    dispatch(fetchStartAlibi(randomSituation))
     setScreenStatus(SCREEN_STATUS.RUNNING)
   }
 
   const handleStartRecording = () => {
     resetTranscript() // Очистить старый текст
     // Переключаем статус, чтобы UI мгновенно отобразил пульсацию и счетчик
-    dispatch(setIcebreakerAiStatus(AI_STATUS.RECORDING))
+    dispatch(setAlibiAiStatus(AI_STATUS.RECORDING))
     startListening()
   }
 
@@ -85,11 +85,11 @@ const AlibiAi = ({ alias, isDaily }) => {
       }
 
       // 1. Включаем статус анимации мышления
-      dispatch(setIcebreakerAiStatus(AI_STATUS.AI_THINKING))
+      dispatch(setAlibiAiStatus(AI_STATUS.AI_THINKING))
 
       // 2. Отправляем единственный бинарный файл на бэкенд
       dispatch(
-        fetchResponseIcebreaker({
+        fetchResponseAlibi({
           audioBlob: readyBlob,
         }),
       ).then(() => {
@@ -103,7 +103,7 @@ const AlibiAi = ({ alias, isDaily }) => {
     // меняем экран на финальный
     setScreenStatus(SCREEN_STATUS.FINISHED)
     // диспатч на получение оценки,
-    dispatch(fetchFinishIcebreaker({ isDaily }))
+    dispatch(fetchFinishAlibi({ isDaily }))
   }
 
   const handleAutoSubmit = () => {
@@ -118,23 +118,23 @@ const AlibiAi = ({ alias, isDaily }) => {
     setRandomSituation(selectedItem)
     setPoolSituation(newPool)
     // При смене темы сбрасываем состояние упражнения в сторе
-    dispatch(resetIcebreakerState())
+    dispatch(resetAlibiState())
   }
 
   const handleCloseExercise = () => {
-    dispatch(resetIcebreakerState())
+    dispatch(resetAlibiState())
     routerNavigator.push('/exercises/level3')
   }
 
   const handleRestartExercise = () => {
-    dispatch(resetIcebreakerState())
+    dispatch(resetAlibiState())
     setScreenStatus(SCREEN_STATUS.IDLE)
   }
 
   if (!randomSituation) return <ScreenSpinner />
 
   return (
-    <div className={styles.main_icebreaker}>
+    <div className={styles.main_alibi}>
       <h2 className={styles.title}>Железное алиби</h2>
       <p className={styles.descr}>Убеди прокурора в своей невиновности</p>
 
@@ -153,7 +153,7 @@ const AlibiAi = ({ alias, isDaily }) => {
             numberRounds={TOTAL_ROUNDS}
             situation={randomSituation}
             messages={messages}
-            warmthProgress={warmth}
+            credibilityProgress={credibility}
             timeLimit={TIME_ROUND}
             aiStatus={aiStatus}
             onStopRecording={handleStopRecording}

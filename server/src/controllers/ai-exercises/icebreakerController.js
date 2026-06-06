@@ -15,7 +15,7 @@ const startIcebreaker = async (req, res) => {
 
     const question = `Вот тебе маленькая подсказка, пример первого вопроса, - "${exerciseData.firstMessage}" Можешь начать с него, а лучше придумай свой.`
 
-    // Создаем сессию в БД
+    // Создаем сессию в БД 
     await AiExercise.create({
       userId,
       exerciseType: 'icebreaker',

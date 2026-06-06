@@ -12,7 +12,7 @@ const aiExercisesSchema = new mongoose.Schema(
     exerciseType: {
       type: String,
       required: true,
-      enum: ['debate', 'interview', 'icebreaker', 'tribune'],
+      enum: ['debate', 'interview', 'icebreaker', 'tribune', 'alibi'],
     },
 
     exerciseData: {

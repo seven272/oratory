@@ -6,26 +6,28 @@ import {
   setAiRejected,
 } from '../../utils/baseAiState'
 
-const fetchStartIcebreaker = createAsyncThunk(
-  'aiExercise/fetchStartIcebreaker',
+const fetchStartAlibi = createAsyncThunk(
+  'aiExercise/fetchStartAlibi',
   async (exerciseData, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/ai/start-icebreaker', {
+      const res = await axiosInstance.post('/ai/start-alibi', {
         exerciseData,
       })
+
+      console.log(res.data)
 
       return res.data
     } catch (error) {
       const errorMsg =
         error.response?.data?.message ||
-        'Ошибка сервера при старте Ледакола'
+        'Ошибка сервера при старте Железного алиби'
       return rejectWithValue(errorMsg)
     }
   },
 )
 
-const fetchResponseIcebreaker = createAsyncThunk(
-  'aiExercise/fetchResponseIcebreaker',
+const fetchResponseAlibi = createAsyncThunk(
+  'aiExercise/fetchResponseAlibi',
   async ({ audioBlob }, { rejectWithValue }) => {
     try {
       const formData = new FormData()
@@ -34,7 +36,7 @@ const fetchResponseIcebreaker = createAsyncThunk(
         formData.append('audio', audioBlob, 'speech.wav') // Шлем эталонный WAV для синхронного STT
       }
       const res = await axiosInstance.post(
-        '/ai/response-icebreaker',
+        '/ai/response-alibi',
         formData,
         {
           headers: {
@@ -47,17 +49,17 @@ const fetchResponseIcebreaker = createAsyncThunk(
     } catch (error) {
       const errorMsg =
         error.response?.data?.message ||
-        'Ошибка сервера при проведении интервью'
+        'Ошибка сервера в процессе допроса'
       return rejectWithValue(errorMsg)
     }
   },
 )
 
-const fetchFinishIcebreaker = createAsyncThunk(
-  'aiExercise/fetchFinishIcebreaker',
+const fetchFinishAlibi = createAsyncThunk(
+  'aiExercise/fetchFinishAlibi',
   async ({ isDaily }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/ai/finish-icebreaker', {
+      const res = await axiosInstance.post('/ai/finish-alibi', {
         isDaily,
       })
 
@@ -65,49 +67,50 @@ const fetchFinishIcebreaker = createAsyncThunk(
     } catch (error) {
       const errorMsg =
         error.response?.data?.message ||
-        'Ошибка сервера при завершении Ледокола'
+        'Ошибка сервера при завершении допроса'
       return rejectWithValue(errorMsg)
     }
   },
 )
 
-const icebreakerSlice = createSlice({
-  name: 'icebreaker',
-  initialState: createBaseAiState({ warmth: 0 }), // Расширяем базовый стейт шкалой тепла!
+const alibiSlice = createSlice({
+  name: 'alibi',
+  // Расширяем базовый стейт шкалой доверия/правдоподобности (credibility)
+  initialState: createBaseAiState({ credibility: 50 }),
   reducers: {
-    setIcebreakerAiStatus: (state, action) => {
+    setAlibiAiStatus: (state, action) => {
       state.aiStatus = action.payload
     },
-    resetIcebreakerState: () => {
-      return createBaseAiState({ warmth: 0 }) // Сброс вернет warmth в 0
+    resetAlibiState: () => {
+      return createBaseAiState({ credibility: 50 }) // Сброс вернет доверие на базовую медиану
     },
   },
   extraReducers: (builder) => {
     builder
       // Старт
-      .addCase(fetchStartIcebreaker.pending, setAiPending)
-      .addCase(fetchStartIcebreaker.fulfilled, (state, action) => {
+      .addCase(fetchStartAlibi.pending, setAiPending)
+      .addCase(fetchStartAlibi.fulfilled, (state, action) => {
         state.exStatus = 'succeeded'
-        state.warmth = 0
+        state.credibility = 50
         state.messages = [
           { role: 'assistant', text: action.payload.preview },
           { role: 'assistant', text: action.payload.question },
         ]
       })
-      .addCase(fetchStartIcebreaker.rejected, setAiRejected)
+      .addCase(fetchStartAlibi.rejected, setAiRejected)
 
       // Диалог
-      .addCase(fetchResponseIcebreaker.pending, (state) => {
+      .addCase(fetchResponseAlibi.pending, (state) => {
         setAiPending(state)
       })
-      .addCase(fetchResponseIcebreaker.fulfilled, (state, action) => {
+      .addCase(fetchResponseAlibi.fulfilled, (state, action) => {
         state.exStatus = 'succeeded'
-        const { answer, isFinished, warmth, user_transcript } =
+        const { answer, isFinished, credibility, user_transcript } =
           action.payload
 
-        state.warmth = warmth // Обновляем динамическую шкалу тепла
+        state.credibility = credibility // Обновляем динамическую шкалу доверия ИИ к алиби
 
-        // Если была аудиозапись — вставляем распознанный Сбером текст перед репликой ИИ
+        // Если была аудиозапись — вставляем распознанный текст перед репликой ИИ
         if (user_transcript) {
           state.messages.push({
             role: 'user',
@@ -125,31 +128,27 @@ const icebreakerSlice = createSlice({
           state.aiStatus = 'idle'
         }
       })
-      .addCase(fetchResponseIcebreaker.rejected, (state, action) => {
+      .addCase(fetchResponseAlibi.rejected, (state, action) => {
         state.exStatus = 'idle'
         if (state.messages.at(-1)?.role === 'user')
           state.messages.pop()
         state.error = action.payload
       })
- 
+
       // Финиш
-      .addCase(fetchFinishIcebreaker.pending, setAiPending)
-      .addCase(fetchFinishIcebreaker.fulfilled, (state, action) => {
+      .addCase(fetchFinishAlibi.pending, setAiPending)
+      .addCase(fetchFinishAlibi.fulfilled, (state, action) => {
         state.exStatus = 'succeeded'
         state.aiStatus = 'finished'
         if (action.payload?.session?.result) {
           state.verdict = action.payload.session.result
         }
       })
-      .addCase(fetchFinishIcebreaker.rejected, setAiRejected)
+      .addCase(fetchFinishAlibi.rejected, setAiRejected)
   },
 })
 
-export const { setIcebreakerAiStatus, resetIcebreakerState } =
-  icebreakerSlice.actions
-export {
-  fetchStartIcebreaker,
-  fetchResponseIcebreaker,
-  fetchFinishIcebreaker,
-}
-export default icebreakerSlice.reducer
+export const { setAlibiAiStatus, resetAlibiState } =
+  alibiSlice.actions
+export { fetchStartAlibi, fetchResponseAlibi, fetchFinishAlibi }
+export default alibiSlice.reducer
