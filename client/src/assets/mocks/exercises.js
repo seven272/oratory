@@ -20,6 +20,8 @@ import IconEx16 from '../images/card-icons/ai-inrerview.png'
 import IconEx17 from '../images/card-icons/ai-icebreaker.png'
 import IconEx18 from '../images/card-icons/ai-tribune.png'
 import IconEx19 from '../images/card-icons/ai-alibi.png'
+import IconEx20 from '../images/card-icons/ai-bargain.png'
+import IconEx21 from '../images/card-icons/ai-knockout.png'
 
 
 
@@ -240,6 +242,30 @@ const All_EXERCISES = {
       reward: 100,
       icon: IconEx19,
       skill: 'Убедительность',
+      minLevel: 1,
+      premium: true,
+    },
+
+    {
+      id: '20',
+      alias: 'ai-bagrain',
+      title: 'Торг уместен',
+      description: 'Сбей цену у неуступчевого продавца',
+      reward: 100,
+      icon: IconEx20,
+      skill: 'коммуникация',
+      minLevel: 1,
+      premium: true,
+    },
+
+    {
+      id: '21',
+      alias: 'ai-knockout',
+      title: 'Остроумный нокаут',
+      description: 'Не дай хейтеру испортить выступление',
+      reward: 100,
+      icon: IconEx21,
+      skill: 'харизма и юмор',
       minLevel: 1,
       premium: true,
     },

@@ -14,7 +14,8 @@ import { fetchFinishDebate } from './ai-exercises/debateSlice'
 import { fetchFinishIcebreaker } from './ai-exercises/icebreakerSlice'
 import { fetchFinishInterview } from './ai-exercises/interviewSlice'
 import { fetchFinishTribune } from './ai-exercises/tribuneSlice'
-
+import { fetchFinishAlibi } from './ai-exercises/alibiSlice'
+import { fetchFinishBargain } from './ai-exercises/bargainSlice'
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
@@ -128,14 +129,16 @@ const profileSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
-       // Глобальный слушатель для ЛЮБОГО успешно завершенного тренажера
+      // Глобальный слушатель для ЛЮБОГО успешно завершенного тренажера
       .addMatcher(
         isAnyOf(
           fetchCompleteExercise.fulfilled,
           fetchFinishDebate.fulfilled,
           fetchFinishInterview.fulfilled,
           fetchFinishIcebreaker.fulfilled,
-          fetchFinishTribune.fulfilled
+          fetchFinishTribune.fulfilled,
+          fetchFinishAlibi.fulfilled,
+          fetchFinishBargain.fulfilled
         ),
         (state, action) => {
           // Защита: если сессия завершилась без оценки, stats будет отсутствовать
@@ -171,7 +174,6 @@ const profileSlice = createSlice({
           state.isStale = true
         },
       )
-
   },
 })
 

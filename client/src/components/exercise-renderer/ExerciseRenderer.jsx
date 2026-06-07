@@ -23,6 +23,8 @@ import InterviewAi from '../exercises/level-3/interview-ai/InterviewAi'
 import IcebreakerAi from '../exercises/level-3/icebreaker-ai/IcebreakerAi'
 import TribuneAi from '../exercises/level-3/tribune-ai/TribuneAi'
 import AlibiAi from '../exercises/level-3/alibi-ai/AlibiAi'
+import BargainAi from '../exercises/level-3/bargain-ai/BargainAi'
+import KnockoutAi from '../exercises/level-3/knockout-ai/KnockoutAi'
 
 const ExerciseRenderer = ({ exercise, isDaily }) => {
   // Определяем, какой компонент отрисовать на основе типа из конфига
@@ -75,6 +77,10 @@ const ExerciseRenderer = ({ exercise, isDaily }) => {
       return <TribuneAi alias={exercise.alias} isDaily={isDaily} />
     case 'ai-alibi':
       return <AlibiAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-bagrain':
+      return <BargainAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-knockout':
+      return <KnockoutAi alias={exercise.alias} isDaily={isDaily} />
 
     default:
       return (

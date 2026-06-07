@@ -1,13 +1,13 @@
 import { useRef, useEffect } from 'react'
 import { RiRobot2Fill } from 'react-icons/ri'
 
-import styles from './ChatAlibi.module.css'
+import styles from './ChatKnockout.module.css'
 import { AI_STATUS } from '../../../../../../constants/exercises'
 
-
-const ChatAlibi = ({ messages, aiStatus, isAiThinking }) => {
+const ChatKnockout = ({ messages, aiStatus, isAiThinking }) => {
   const chatEndRef = useRef(null)
-  // Автопрокрутка чата
+
+  // Автопрокрутка к последней шутке в баттле
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isAiThinking])
@@ -17,28 +17,30 @@ const ChatAlibi = ({ messages, aiStatus, isAiThinking }) => {
       case AI_STATUS.IDLE:
         return (
           <span className={styles.status_fade}>
-            Жду вашего слова...
+            Зал затих. Ваша очередь шутить...
           </span>
         )
       case AI_STATUS.RECORDING:
         return (
-          <span className={styles.status_active}>Слушаю вас...</span>
+          <span className={styles.status_active}>
+            Микрофон включен. Выдавайте панч!
+          </span>
         )
       case AI_STATUS.PROCESSING:
         return (
           <span className={styles.status_loading}>
-            Расшифровываю запись...
+            Звукорежиссер обрабатывает аудио...
           </span>
         )
       case AI_STATUS.AI_THINKING:
         return (
           <div className={styles.typing_dots_small}>
-            Готовлю аргументы...
+            Ведущий ищет, к чему придраться...
           </div>
         )
       default:
         return null
-    } 
+    }
   }
 
   return (
@@ -52,20 +54,17 @@ const ChatAlibi = ({ messages, aiStatus, isAiThinking }) => {
         </div>
       ))}
 
-      {/* ПОСТОЯННЫЙ БЛОК ИИ (виден всегда, пока дебаты не закончены) */}
+      {/* Аватарка и статус ИИ-оппонента на сцене */}
       {aiStatus !== AI_STATUS.FINISHED && (
         <div className={styles.ai_wrapper}>
-          {/* Элегантная обертка иконки */}
           <div className={styles.ai_avatar_wrapper}>
             <RiRobot2Fill className={styles.ai_icon} />
-            {/* Точка активности появляется, когда ИИ "занят" процессом */}
             {(aiStatus === AI_STATUS.RECORDING ||
               aiStatus === AI_STATUS.AI_THINKING) && (
               <div className={styles.pulse_dot} />
             )}
           </div>
 
-          {/* Бабл со статусом */}
           <div
             className={`${styles.bubble} ${styles.ai} ${styles.status_bubble}`}
           >
@@ -79,4 +78,4 @@ const ChatAlibi = ({ messages, aiStatus, isAiThinking }) => {
   )
 }
 
-export default ChatAlibi
+export default ChatKnockout

@@ -33,6 +33,18 @@ import {
   finishAlibi,
 } from '../controllers/ai-exercises/alibiController.js'
 
+import {
+  startBargain,
+  generateBargainResponse,
+  finishBargain,
+} from '../controllers/ai-exercises/bargainController.js'
+
+import {
+  startKnockout,
+  generateKnockoutResponse,
+  finishKnockout,
+} from '../controllers/ai-exercises/knockoutController.js'
+
 const router = express.Router()
 
 // Настройка multer для удержания аудио в оперативной памяти (Buffer)
@@ -90,5 +102,25 @@ router.post(
   generateAlibiResponse,
 )
 router.post('/finish-alibi', checkAuth, finishAlibi)
+
+//роутеры упражнения Торг уместен
+router.post('/start-bargain', checkAuth, startBargain)
+router.post(
+  '/response-bargain',
+  checkAuth,
+  upload.single('audio'),
+  generateBargainResponse,
+)
+router.post('/finish-bargain', checkAuth, finishBargain)
+
+//роутеры упражнения Остроумный нокаут
+router.post('/start-knockout', checkAuth, startKnockout)
+router.post(
+  '/response-knockout',
+  checkAuth,
+  upload.single('audio'),
+  generateKnockoutResponse,
+)
+router.post('/finish-knockout', checkAuth, finishKnockout)
 
 export default router

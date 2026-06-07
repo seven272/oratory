@@ -6,13 +6,21 @@ const aiExercisesSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-    }, 
+    },
 
     // Тип тренажера: 'debate', 'pitch', 'interview'
     exerciseType: {
       type: String,
       required: true,
-      enum: ['debate', 'interview', 'icebreaker', 'tribune', 'alibi'],
+      enum: [
+        'debate',
+        'interview',
+        'icebreaker',
+        'tribune',
+        'alibi',
+        'bargain',
+        'knockout',
+      ],
     },
 
     exerciseData: {
@@ -44,7 +52,7 @@ const aiExercisesSchema = new mongoose.Schema(
     },
 
     // Гибкий объект для результатов
-    result: { 
+    result: {
       totalScore: Number,
       feedback: String,
       // Специфичные критерии через Map (логика, харизма и т.д.)

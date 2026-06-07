@@ -14,8 +14,6 @@ const fetchStartAlibi = createAsyncThunk(
         exerciseData,
       })
 
-      console.log(res.data)
-
       return res.data
     } catch (error) {
       const errorMsg =
