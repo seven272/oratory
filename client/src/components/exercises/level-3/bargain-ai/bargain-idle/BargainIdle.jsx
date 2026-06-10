@@ -7,7 +7,7 @@ import styles from './BargainIdle.module.css'
 const BargainIdle = ({
   onRefreshTopic,
   onShowTheory,
-  situationData,
+  situationData, 
   onStart,
 }) => {
   return (

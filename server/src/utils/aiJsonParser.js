@@ -18,7 +18,7 @@ const parseAiResponse = (rawText, defaultCriteria) => {
       .replace(/```/g, '')
       .trim()
 
-    // 💡 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Если GigaChat обернул значение поля feedback в ёлочки «...»,
+    // Если GigaChat обернул значение поля feedback в ёлочки «...»,
     // превращаем их в валидные двойные кавычки для JSON
     jsonString = jsonString.replace(/:\s*«([\s\S]*?)»/g, ': "$1"')
 
@@ -33,14 +33,17 @@ const parseAiResponse = (rawText, defaultCriteria) => {
       .replace(/\n/g, '\\n')
       .replace(/\r/g, '\\r')
 
-    // 4. Восстанавливаем служебный синтаксис JSON вокруг скобок, запятых и двоеточий
+    // 4. ИСПРАВЛЕНИЕ: Добавляем \s* ПОСЛЕ \\n, чтобы пробелы форматирования GigaChat не ломали синтаксис
     jsonString = jsonString.replace(/,\s*\\n\s*"/g, ',\n"')
     jsonString = jsonString.replace(/\{\s*\\n\s*"/g, '{\n"')
     jsonString = jsonString.replace(/:\s*\{\s*\\n\s*"/g, ':{\n"')
     jsonString = jsonString.replace(/"\s*\\n\s*\}/g, '"\n}')
     jsonString = jsonString.replace(/\}\s*\\n\s*\}/g, '}\n}')
+    // Новое лечащее правило для форматированного JSON с отступами пробелами от GigaChat:
+    jsonString = jsonString.replace(/\\n\s*"/g, '\n"') 
+    jsonString = jsonString.replace(/,\s*\}/g, '}') // Удаление висячих запятых, если они будут
 
-    // 5. Убираем одинарные кавычки внутри английских слов (например, English's -> Englishs)
+    // 5. Убираем одинарные кавычки внутри английских слов
     jsonString = jsonString.replace(/(\w)'(\w)/g, '$1$2')
 
     // Избавляемся от лишних пробелов/табов между ключами и значениями
@@ -55,9 +58,10 @@ const parseAiResponse = (rawText, defaultCriteria) => {
     )
 
     try {
-      // 6. Агрессивный фоллбек: если ИИ тотально сломал кавычки,
-      // заменяем все ёлочки на двойные кавычки (так как значения полей важнее)
-      let safeJson = rawText
+      // 6. ИСПРАВЛЕНИЕ: Защищаем от undefined, принудительно приводя к строке
+      const safeRawText = String(rawText || '')
+
+      let safeJson = safeRawText
         .replace(/[«»]/g, '"')
         .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
 
@@ -69,6 +73,7 @@ const parseAiResponse = (rawText, defaultCriteria) => {
       finalFallbackString = finalFallbackString
         .replace(/\r?\n|\r/g, ' ')
         .replace(/\s+/g, ' ')
+        .replace(/,\s*\}/g, '}')
 
       evaluation = JSON.parse(finalFallbackString)
     } catch (fallbackError) {

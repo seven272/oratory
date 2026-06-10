@@ -16,6 +16,10 @@ import { fetchFinishInterview } from './ai-exercises/interviewSlice'
 import { fetchFinishTribune } from './ai-exercises/tribuneSlice'
 import { fetchFinishAlibi } from './ai-exercises/alibiSlice'
 import { fetchFinishBargain } from './ai-exercises/bargainSlice'
+import { fetchFinishMetaphor } from './ai-exercises/metaphorSlice'
+import { fetchFinishPoemTongue } from './ai-exercises/poemTongueSlice'
+import { fetchFinishStopWord } from './ai-exercises/stopWordSlice'
+import { fetchFinishPoemActing } from './ai-exercises/poemActingSlice'
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
@@ -138,7 +142,11 @@ const profileSlice = createSlice({
           fetchFinishIcebreaker.fulfilled,
           fetchFinishTribune.fulfilled,
           fetchFinishAlibi.fulfilled,
-          fetchFinishBargain.fulfilled
+          fetchFinishBargain.fulfilled,
+          fetchFinishMetaphor.fulfilled,
+          fetchFinishPoemTongue.fulfilled,
+          fetchFinishStopWord.fulfilled,
+          fetchFinishPoemActing.fulfilled,
         ),
         (state, action) => {
           // Защита: если сессия завершилась без оценки, stats будет отсутствовать

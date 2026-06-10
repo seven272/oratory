@@ -1,39 +1,42 @@
 import { useRef, useEffect } from 'react'
 import { RiRobot2Fill } from 'react-icons/ri'
 
-import styles from './ChatInterview.module.css'
+import styles from './ChatPoemRap.module.css' // Изолированные стили чата
 import { AI_STATUS } from '../../../../../../constants/exercises'
 
-
-const ChatInterview = ({ messages, aiStatus, isAiThinking }) => {
+const ChatPoemRap = ({ messages, aiStatus, isAiThinking }) => {
   const chatEndRef = useRef(null)
-  // Автопрокрутка чата
+
+  // Плавная автопрокрутка к последней реплике или статусу
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isAiThinking])
 
+  // Кастомные музыкальные статусы ИИ-продюсера для рэп-тренажера
   const renderAiStatusText = () => {
     switch (aiStatus) {
       case AI_STATUS.IDLE:
         return (
           <span className={styles.status_fade}>
-            Жду вашего слова...
+            Бит на паузе. Жду твоего флоу...
           </span>
         )
       case AI_STATUS.RECORDING:
         return (
-          <span className={styles.status_active}>Слушаю вас...</span>
+          <span className={styles.status_active}>
+            Запись пошла! Качай этот микрофон...
+          </span>
         )
       case AI_STATUS.PROCESSING:
         return (
           <span className={styles.status_loading}>
-            Расшифровываю запись...
+            Оцифровую аудиодорожку...
           </span>
         )
       case AI_STATUS.AI_THINKING:
         return (
           <div className={styles.typing_dots_small}>
-            Готовлю аргументы...
+            Проверяю попадание в такт...
           </div>
         )
       default:
@@ -43,6 +46,7 @@ const ChatInterview = ({ messages, aiStatus, isAiThinking }) => {
 
   return (
     <div className={styles.chat_container}>
+      {/* Список реплик и расшифровок из истории */}
       {messages.map((msg, i) => (
         <div
           key={i}
@@ -52,20 +56,17 @@ const ChatInterview = ({ messages, aiStatus, isAiThinking }) => {
         </div>
       ))}
 
-      {/* ПОСТОЯННЫЙ БЛОК ИИ (виден всегда, пока дебаты не закончены) */}
+      {/* Постоянный интерактивный блок ИИ-продюсера */}
       {aiStatus !== AI_STATUS.FINISHED && (
         <div className={styles.ai_wrapper}>
-          {/* Элегантная обертка иконки */}
           <div className={styles.ai_avatar_wrapper}>
             <RiRobot2Fill className={styles.ai_icon} />
-            {/* Точка активности появляется, когда ИИ "занят" процессом */}
             {(aiStatus === AI_STATUS.RECORDING ||
               aiStatus === AI_STATUS.AI_THINKING) && (
               <div className={styles.pulse_dot} />
             )}
           </div>
 
-          {/* Бабл со статусом */}
           <div
             className={`${styles.bubble} ${styles.ai} ${styles.status_bubble}`}
           >
@@ -79,4 +80,4 @@ const ChatInterview = ({ messages, aiStatus, isAiThinking }) => {
   )
 }
 
-export default ChatInterview
+export default ChatPoemRap

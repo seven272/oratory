@@ -4,7 +4,7 @@ import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
 import styles from './TribuneAi.module.css'
-import { aiTribuneScenarios } from '../../../../assets/mocks/aiData'
+import aiTribuneScenarios from '../../../../assets/data/scenarios/tribuneScenarios'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
 import TribuneIdle from './tribune-idle/TribuneIdle'
 import TribuneProcess from './tribune-process/TribuneProcess'

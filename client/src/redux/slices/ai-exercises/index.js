@@ -5,6 +5,11 @@ import tribuneSlice from './tribuneSlice'
 import alibiSlice from './alibiSlice'
 import bargainSlice from './bargainSlice'
 import knockoutSlice from './knockoutSlice'
+import metaphorSlice from './metaphorSlice'
+import poemTongueSlice from './poemTongueSlice'
+import poemActingSlice from './poemActingSlice'
+import poemRapSlice from './poemRapSlice'
+import stopWordSlice from './stopWordSlice'
 
 // Экспортируем единый объект со всеми ИИ-редюсерами
 const aiSlices = {
@@ -15,6 +20,11 @@ const aiSlices = {
   alibi: alibiSlice,
   bargain: bargainSlice,
   knockout: knockoutSlice,
+  metaphor: metaphorSlice,
+  poemTongue: poemTongueSlice,
+  poemActing: poemActingSlice,
+  poemRap: poemRapSlice,
+  stopWord: stopWordSlice,
 }
 
 export default aiSlices

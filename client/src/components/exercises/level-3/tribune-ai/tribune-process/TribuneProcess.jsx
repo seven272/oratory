@@ -4,7 +4,7 @@ import { TbScoreboard } from 'react-icons/tb'
 import { FaStopCircle } from 'react-icons/fa'
 
 import styles from './TribuneProcess.module.css'
-import ChatInterview from './chat-interview/ChatInterview'
+import ChatTribune from './chat-tribune/ChatTribune'
 
 import { AI_STATUS } from '../../../../../constants/exercises'
 
@@ -87,7 +87,7 @@ const TribuneProcess = ({
         </div>
       </div>
 
-      <ChatInterview
+      <ChatTribune
         messages={messages}
         aiStatus={aiStatus}
         isAiThinking={isAiThinking}

@@ -22,8 +22,13 @@ import IconEx18 from '../images/card-icons/ai-tribune.png'
 import IconEx19 from '../images/card-icons/ai-alibi.png'
 import IconEx20 from '../images/card-icons/ai-bargain.png'
 import IconEx21 from '../images/card-icons/ai-knockout.png'
-
-
+import IconEx22 from '../images/card-icons/ai-metaphor.png'
+import IconEx23 from '../images/card-icons/ai-poem-tongue.png'
+import IconEx24 from '../images/card-icons/ai-poem-acting.png'
+import IconEx25 from '../images/card-icons/ai-poem-rap.png'
+import IconEx26 from '../images/card-icons/ai-radio-host.png'
+import IconEx27 from '../images/card-icons/ai-stop-word.png'
+import IconEx28 from '../images/card-icons/ai-random-word.png'
 
 const All_EXERCISES = {
   level1: [
@@ -234,7 +239,7 @@ const All_EXERCISES = {
       minLevel: 1,
       premium: true,
     },
-     {
+    {
       id: '19',
       alias: 'ai-alibi',
       title: 'Железное алиби',
@@ -248,7 +253,7 @@ const All_EXERCISES = {
 
     {
       id: '20',
-      alias: 'ai-bagrain',
+      alias: 'ai-bargain',
       title: 'Торг уместен',
       description: 'Сбей цену у неуступчевого продавца',
       reward: 100,
@@ -269,6 +274,88 @@ const All_EXERCISES = {
       minLevel: 1,
       premium: true,
     },
+
+    {
+      id: '22',
+      alias: 'ai-metaphor',
+      title: 'Трудный переводчик',
+      description: 'Объясни так, чтобы понял даже ребенок',
+      reward: 100,
+      icon: IconEx22,
+      skill: 'находчивость',
+      minLevel: 1,
+      premium: true,
+    }, 
+    {
+      id: '23',
+      alias: 'ai-poem-tongue',
+      title: 'Тяжелая дикция',
+      description:
+        'Прокачай артикуляцию и речевую опору на коварных текстах',
+      reward: 100,
+      icon: IconEx23,
+      skill: 'техника речи',
+      minLevel: 1,
+      premium: true,
+    },
+    {
+    id: '24',
+    alias: 'ai-poem-acting',
+    title: 'Мастер дубляжа',
+    description: 'Озвучивай известные стихи в самых неожиданных и безумных ролях',
+    reward: 100,
+    icon: IconEx24,
+    skill: 'харизма и юмор',
+    minLevel: 1,
+    premium: true,
+  },
+
+  {
+    id: '25',
+    alias: 'ai-poem-rap',
+    title: 'Рэп-манифест',
+    description: 'Преврати классическую поэзию в хип-хоп трек с жестким ритмом',
+    reward: 100,
+    icon: IconEx25,
+    skill: 'техника речи',
+    minLevel: 1,
+    premium: true,
+  },
+
+  {
+    id: '26',
+    alias: 'ai-radio-host',
+    title: 'Радиоведущий',
+    description: 'Проведи прямой эфир утреннего шоу без единой секунды молчания',
+    reward: 100,
+    icon: IconEx26,
+    skill: 'техника речи',
+    minLevel: 1,
+    premium: true,
+  },
+  {
+    id: '27',
+    alias: 'ai-stop-word',
+    title: 'Анти-слова',
+    description: 'Попробуй красочно описать ситуацию, обходя хитрые табу и стоп-слова',
+    reward: 100,
+    icon: IconEx27,
+    skill: 'находчивость',
+    minLevel: 1,
+    premium: true,
+  },
+
+  {
+    id: '28',
+    alias: 'ai-random-word',
+    title: 'Слово из шляпы',
+    description: 'Выдай спич на заданную тему, вплетая в него случайный предмет',
+    reward: 100,
+    icon: IconEx28,
+    skill: 'находчивость',
+    minLevel: 1,
+    premium: true,
+  },
   ],
 }
 

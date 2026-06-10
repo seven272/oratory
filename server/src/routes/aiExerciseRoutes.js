@@ -45,6 +45,36 @@ import {
   finishKnockout,
 } from '../controllers/ai-exercises/knockoutController.js'
 
+import {
+  startMetaphor,
+  generateMetaphorResponse,
+  finishMetaphor,
+} from '../controllers/ai-exercises/metaphorController.js'
+
+import {
+  startPoemTongue,
+  responsePoemTongue,
+  finishPoemTongue,
+} from '../controllers/ai-exercises/poemTongueController.js'
+
+import {
+  startStopWord,
+  responseStopWord,
+  finishStopWord,
+} from '../controllers/ai-exercises/stopWordController.js'
+
+import {
+  startPoemActing,
+  responsePoemActing,
+  finishPoemActing,
+} from '../controllers/ai-exercises/poemActingController.js'
+
+import {
+  startPoemRap,
+  responsePoemRap,
+  finishPoemRap,
+} from '../controllers/ai-exercises/poemRapController.js'
+
 const router = express.Router()
 
 // Настройка multer для удержания аудио в оперативной памяти (Buffer)
@@ -122,5 +152,55 @@ router.post(
   generateKnockoutResponse,
 )
 router.post('/finish-knockout', checkAuth, finishKnockout)
+
+//роутеры упражнения Трудный переводчик
+router.post('/start-metaphor', checkAuth, startMetaphor)
+router.post(
+  '/response-metaphor',
+  checkAuth,
+  upload.single('audio'),
+  generateMetaphorResponse,
+)
+router.post('/finish-metaphor', checkAuth, finishMetaphor)
+
+//роутеры упражнения Тяжелая дикиция
+router.post('/start-tongue', checkAuth, startPoemTongue)
+router.post(
+  '/response-tongue',
+  checkAuth,
+  upload.single('audio'),
+  responsePoemTongue,
+)
+router.post('/finish-tongue', checkAuth, finishPoemTongue)
+
+//роутеры упражнения Анти-слова
+router.post('/start-stop-word', checkAuth, startStopWord)
+router.post(
+  '/response-stop-word',
+  checkAuth,
+  upload.single('audio'),
+  responseStopWord,
+)
+router.post('/finish-stop-word', checkAuth, finishStopWord)
+
+// Роутеры упражнения «Мастер дубляжа»
+router.post('/start-acting', checkAuth, startPoemActing)
+router.post(
+  '/response-acting',
+  checkAuth,
+  upload.single('audio'),
+  responsePoemActing,
+)
+router.post('/finish-acting', checkAuth, finishPoemActing)
+
+// Роутеры упражнения «Рэп-манифест»
+router.post('/start-rap', checkAuth, startPoemRap)
+router.post(
+  '/response-rap',
+  checkAuth,
+  upload.single('audio'),
+  responsePoemRap,
+)
+router.post('/finish-rap', checkAuth, finishPoemRap)
 
 export default router

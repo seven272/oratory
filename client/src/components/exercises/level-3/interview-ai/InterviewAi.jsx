@@ -4,7 +4,7 @@ import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
 import styles from './InterviewAi.module.css'
-import { aiInterviewSnenarios } from '../../../../assets/mocks/aiData'
+import aiInterviewSnenarios from '../../../../assets/data/scenarios/interviewSnenarios'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
 import InterviewIdle from './interview-idle/InterviewIdle'
 import InterviewProcess from './interview-process/InterviewProcess'
@@ -25,7 +25,6 @@ import {
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
 
-
 const TOTAL_ROUNDS = 3
 const TIME_ROUND = 15
 
@@ -35,8 +34,8 @@ const TIME_ROUND = 15
 // )
 
 const InterviewAi = ({ alias, isDaily }) => {
- const { startListening, stopListening, resetTranscript } =
-     useSpeechSber()
+  const { startListening, stopListening, resetTranscript } =
+    useSpeechSber()
   const dispatch = useDispatch()
   const routerNavigator = useRouteNavigator()
   // --- СОСТОЯНИЕ КОМПОНЕНТА (ТОЛЬКО UI-состояние) ---
@@ -46,9 +45,7 @@ const InterviewAi = ({ alias, isDaily }) => {
   const [showModal, setShowModal] = useState(false)
 
   // --- СОСТОЯНИЕ ИЗ REDUX (ГЛОБАЛЬНОЕ) ---
-  const exerciseState = useSelector(
-    (state) => state.interview,
-  )
+  const exerciseState = useSelector((state) => state.interview)
   const { messages, exStatus, aiStatus } = exerciseState
   const isLoading = exStatus === 'loading'
 
@@ -72,7 +69,6 @@ const InterviewAi = ({ alias, isDaily }) => {
     setScreenStatus(SCREEN_STATUS.RUNNING)
   }
 
-
   const handleStartRecording = () => {
     resetTranscript() // Очистить старый текст
     // Переключаем статус, чтобы UI мгновенно отобразил пульсацию и счетчик
@@ -80,7 +76,7 @@ const InterviewAi = ({ alias, isDaily }) => {
     startListening()
   }
 
- const handleStopRecording = () => {
+  const handleStopRecording = () => {
     // ЖЕЛЕЗОБЕТОННАЯ ЗАЩИТА: Блокируем повторную отправку при двойных триггерах таймера
     if (isLoading || aiStatus === AI_STATUS.AI_THINKING) return
 
@@ -186,6 +182,6 @@ const InterviewAi = ({ alias, isDaily }) => {
       </Modal>
     </div>
   )
-} 
+}
 
 export default InterviewAi

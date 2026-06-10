@@ -20,6 +20,11 @@ const aiExercisesSchema = new mongoose.Schema(
         'alibi',
         'bargain',
         'knockout',
+        'metaphor',
+        'poem-tongue',
+        'stop-word',
+        'poem-acting',
+        'poem-rap',
       ],
     },
 

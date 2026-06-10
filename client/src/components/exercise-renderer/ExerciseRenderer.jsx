@@ -25,6 +25,10 @@ import TribuneAi from '../exercises/level-3/tribune-ai/TribuneAi'
 import AlibiAi from '../exercises/level-3/alibi-ai/AlibiAi'
 import BargainAi from '../exercises/level-3/bargain-ai/BargainAi'
 import KnockoutAi from '../exercises/level-3/knockout-ai/KnockoutAi'
+import MetaphorAi from '../exercises/level-3/metaphor-ai/MetaphorAi'
+import PoemTongueAi from '../exercises/level-3/poem-tongue-ai/PoemTongueAi'
+import StopWordAi from '../exercises/level-3/stop-word-ai/StopWordAi'
+import PoemActingAi from '../exercises/level-3/poem-acting-ai/PoemActingAi'
 
 const ExerciseRenderer = ({ exercise, isDaily }) => {
   // Определяем, какой компонент отрисовать на основе типа из конфига
@@ -77,10 +81,18 @@ const ExerciseRenderer = ({ exercise, isDaily }) => {
       return <TribuneAi alias={exercise.alias} isDaily={isDaily} />
     case 'ai-alibi':
       return <AlibiAi alias={exercise.alias} isDaily={isDaily} />
-    case 'ai-bagrain':
+    case 'ai-bargain':
       return <BargainAi alias={exercise.alias} isDaily={isDaily} />
     case 'ai-knockout':
       return <KnockoutAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-metaphor':
+      return <MetaphorAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-poem-tongue':
+      return <PoemTongueAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-poem-acting':
+      return <PoemActingAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-stop-word':
+      return <StopWordAi alias={exercise.alias} isDaily={isDaily} />
 
     default:
       return (

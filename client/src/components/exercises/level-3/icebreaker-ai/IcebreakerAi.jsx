@@ -4,7 +4,7 @@ import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
 import styles from './IcebreakerAi.module.css'
-import { aiIcebreakerScenarios } from '../../../../assets/mocks/aiData'
+import aiIcebreakerScenarios from '../../../../assets/data/scenarios/icebreakerScenarios'
 import { getRandomObjTask } from '../../../../utils/getRandomObjTask'
 import IcebreakerIdle from './icebreaker-idle/IcebreakerIdle'
 import IcebreakerProcess from './icebreaker-process/IcebreakerProcess'
