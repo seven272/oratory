@@ -9,7 +9,9 @@ import metaphorSlice from './metaphorSlice'
 import poemTongueSlice from './poemTongueSlice'
 import poemActingSlice from './poemActingSlice'
 import poemRapSlice from './poemRapSlice'
+import radioHostSlice from './radioHostSlice'
 import stopWordSlice from './stopWordSlice'
+import randomWordSlice from './randomWordSlice'
 
 // Экспортируем единый объект со всеми ИИ-редюсерами
 const aiSlices = {
@@ -24,7 +26,9 @@ const aiSlices = {
   poemTongue: poemTongueSlice,
   poemActing: poemActingSlice,
   poemRap: poemRapSlice,
+  radioHost: radioHostSlice,
   stopWord: stopWordSlice,
+  randomWord: randomWordSlice,
 }
 
 export default aiSlices

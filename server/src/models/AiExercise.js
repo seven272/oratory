@@ -25,6 +25,8 @@ const aiExercisesSchema = new mongoose.Schema(
         'stop-word',
         'poem-acting',
         'poem-rap',
+        'radio-host',
+        'random-word'
       ],
     },
 

@@ -27,8 +27,11 @@ import BargainAi from '../exercises/level-3/bargain-ai/BargainAi'
 import KnockoutAi from '../exercises/level-3/knockout-ai/KnockoutAi'
 import MetaphorAi from '../exercises/level-3/metaphor-ai/MetaphorAi'
 import PoemTongueAi from '../exercises/level-3/poem-tongue-ai/PoemTongueAi'
-import StopWordAi from '../exercises/level-3/stop-word-ai/StopWordAi'
 import PoemActingAi from '../exercises/level-3/poem-acting-ai/PoemActingAi'
+import StopWordAi from '../exercises/level-3/stop-word-ai/StopWordAi'
+import PoemRapAi from '../exercises/level-3/poem-rap-ai/PoemRapAi'
+import RadioHostAi from '../exercises/level-3/radio-host-ai/RadioHostAi'
+import RandomWordAi from '../exercises/level-3/random-word-ai/RandomWordAi'
 
 const ExerciseRenderer = ({ exercise, isDaily }) => {
   // Определяем, какой компонент отрисовать на основе типа из конфига
@@ -91,8 +94,14 @@ const ExerciseRenderer = ({ exercise, isDaily }) => {
       return <PoemTongueAi alias={exercise.alias} isDaily={isDaily} />
     case 'ai-poem-acting':
       return <PoemActingAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-poem-rap':
+      return <PoemRapAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-radio-host':
+      return <RadioHostAi alias={exercise.alias} isDaily={isDaily} />
     case 'ai-stop-word':
       return <StopWordAi alias={exercise.alias} isDaily={isDaily} />
+    case 'ai-random-word':
+      return <RandomWordAi alias={exercise.alias} isDaily={isDaily} />
 
     default:
       return (

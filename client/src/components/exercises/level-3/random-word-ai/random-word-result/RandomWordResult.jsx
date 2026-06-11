@@ -3,25 +3,24 @@ import { IoMdShare } from 'react-icons/io'
 import { useSelector } from 'react-redux'
 import { ScreenSpinner } from '@vkontakte/vkui'
 
-import styles from './PoemRapResult.module.css'
+import styles from './RandomWordResult.module.css' // Используем исходные стили результатов трибуны
 
-// Специализированный словарь локализации для музыкального рэп-жюри
 const dictionary = {
-  rhythm: 'Ритмика',
-  articulation: 'Четкость слогов',
-  drive: 'Драйв',
+  integration: 'Органичность интеграции',
+  logic: 'Логика и связность',
+  charisma: 'Харизма и юмор',
 }
 
-const PoemRapResult = ({ onCloseExercise, onRestartExercise }) => {
-  // Вытаскиваем вердикт из Redux-состояния рэп-манифеста
-  const { verdict } = useSelector((state) => state.poemRap)
+const RandomWordResult = ({ onCloseExercise, onRestartExercise }) => {
+  // Достаем вердикт ИИ-жюри из правильного слайса импровизации
+  const { verdict } = useSelector((state) => state.randomWord)
 
   if (!verdict) return <ScreenSpinner />
 
   return (
     <div className={styles.screen_finished}>
       <div className={styles.finish_card}>
-        <h3 className={styles.finish_title}>Трек записан</h3>
+        <h3 className={styles.finish_title}>Упражнение завершено</h3>
 
         {/* Общий балл в круге */}
         <div className={styles.score_circle}>
@@ -31,7 +30,7 @@ const PoemRapResult = ({ onCloseExercise, onRestartExercise }) => {
           <span className={styles.score_label}>баллов</span>
         </div>
 
-        {/* Детализация оценок по флоу */}
+        {/* Детализация оценок по критериям импровизации */}
         <div className={styles.criteria_list}>
           {Object.entries(verdict.criteria).map(([name, value]) => (
             <div key={name} className={styles.criteria_item}>
@@ -45,21 +44,19 @@ const PoemRapResult = ({ onCloseExercise, onRestartExercise }) => {
           ))}
         </div>
 
-        {/* Вердикт ИИ-продюсера */}
+        {/* Текстовый вердикт */}
         <div className={styles.verdict_box}>
           <h4 className={styles.verdict_subtitle}>
-            Рецензия ИИ-продюсера:
+            Вердикт ИИ-судьи:
           </h4>
           <p className={styles.verdict_text}>{verdict.feedback}</p>
         </div>
-
-        {/* Навигационные кнопки управления */}
         <div className={styles.btn_group}>
           <button
             className={styles.btn_restart}
             onClick={onRestartExercise}
           >
-            Записать еще дубль
+            Начать заново
           </button>
           <button
             className={styles.btn_close}
@@ -72,7 +69,7 @@ const PoemRapResult = ({ onCloseExercise, onRestartExercise }) => {
             className={styles.btn_share}
             onClick={() => console.log('vk share')}
           >
-            <IoMdShare size={15} /> Поделиться треком
+            <IoMdShare size={15} /> Поделиться результатом
           </button>
         </div>
       </div>
@@ -80,4 +77,4 @@ const PoemRapResult = ({ onCloseExercise, onRestartExercise }) => {
   )
 }
 
-export default PoemRapResult
+export default RandomWordResult

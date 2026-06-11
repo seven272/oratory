@@ -75,6 +75,18 @@ import {
   finishPoemRap,
 } from '../controllers/ai-exercises/poemRapController.js'
 
+import {
+  startRadioHost,
+  responseRadioHost,
+  finishRadioHost,
+} from '../controllers/ai-exercises/radioHostController.js'
+
+import {
+  startRandomWord,
+  responseRandomWord,
+  finishRandomWord
+} from '../controllers/ai-exercises/randomWordController.js'
+
 const router = express.Router()
 
 // Настройка multer для удержания аудио в оперативной памяти (Buffer)
@@ -202,5 +214,20 @@ router.post(
   responsePoemRap,
 )
 router.post('/finish-rap', checkAuth, finishPoemRap)
+
+// Роутеры упражнения «Радиоведущий»
+router.post('/start-radio', checkAuth, startRadioHost)
+router.post(
+  '/response-radio',
+  checkAuth,
+  upload.single('audio'), 
+  responseRadioHost,
+)
+router.post('/finish-radio', checkAuth, finishRadioHost)
+
+// Роутеры упражнения Слово из шляпы
+router.post('/start-random-word', checkAuth, startRandomWord)
+router.post('/response-random-word', checkAuth, upload.single('audio'), responseRandomWord)
+router.post('/finish-random-word', checkAuth, finishRandomWord)
 
 export default router

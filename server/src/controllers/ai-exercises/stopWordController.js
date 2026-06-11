@@ -194,7 +194,7 @@ const finishStopWord = async (req, res) => {
         criteria: {
           tabooControl: 50,
           vocabulary: 50,
-          speechPurity: 50,
+          speechPurity: 50, 
         },
       }
     }

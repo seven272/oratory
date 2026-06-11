@@ -211,7 +211,8 @@ const finishPoemRap = async (req, res) => {
         },
       )
 
-      const aiJsonResult = response.data.choices?.message?.content
+
+      const aiJsonResult = response.data.choices[0]?.message?.content
       console.log('🗣️ Сырой ответ от GigaChat (Рэп):', aiJsonResult)
 
       evaluation = parseAiResponse(aiJsonResult, {
