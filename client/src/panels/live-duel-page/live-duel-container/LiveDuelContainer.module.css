@@ -1,0 +1,9 @@
+.container_wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}

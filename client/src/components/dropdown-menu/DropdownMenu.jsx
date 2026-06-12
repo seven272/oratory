@@ -34,6 +34,10 @@ const DropdownMenu = () => {
       alias: 'challenges',
     },
     {
+      title: 'живая дуэль',
+      alias: 'live-duel',
+    },
+    {
       title: 'админ',
       alias: 'admin',
     },
@@ -53,6 +57,7 @@ const DropdownMenu = () => {
       'exercises-daily',
       'leaderboard',
       'challenges',
+      'live-duel',
       'admin',
     ]
 

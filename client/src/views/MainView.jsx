@@ -13,6 +13,7 @@ import ExercisesLevelPage from '../panels/exercises-level-page/ExercisesLevelPag
 import LeaderboardPage from '../panels/leaderboard-page/LeaderboardPage'
 import ChallengesPage from '../panels/challenges-page/ChallengesPage'
 import AdminPage from '../panels/admin-page/AdminPage'
+import LiveDuelPage from '../panels/live-duel-page/LiveDuelPage'
 
 const MainView = ({ activePanel, id }) => {
   return (
@@ -26,8 +27,9 @@ const MainView = ({ activePanel, id }) => {
       <ExercisesAllPage id="exercises-all-panel" />
       <ExercisesLevelPage id="exercises-level-panel" />
       <LeaderboardPage id="leaderboard-panel" />
-      <ChallengesPage id="challenges-panel"/>
-      <AdminPage id="admin-panel"/>
+      <ChallengesPage id="challenges-panel" />
+      <AdminPage id="admin-panel" />
+      <LiveDuelPage id="live-duel-panel" />
     </View>
   )
 }
