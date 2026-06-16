@@ -1,0 +1,214 @@
+.available_slots_section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slots_title {
+  font: var(--font-m);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  margin: 0;
+  padding-left: 4px;
+}
+
+.no_slots_text {
+  font: var(--font-s);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 20px;
+  background-color: var(--color-white);
+  border: 1px dashed var(--color-secondary);
+  border-radius: 12px;
+  margin: 0;
+}
+
+.slots_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.slot_card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  box-sizing: border-box;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.slot_card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.slot_info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.slot_user {
+  font: var(--font-m);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.slot_time {
+  font: var(--font-s);
+  color: var(--color-blue-vk);
+  font-weight: 500;
+}
+
+.slot_topic {
+  font: var(--font-s);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.book_slot_btn {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+  font: var(--font-s);
+  font-weight: 500;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.book_slot_btn:active {
+  background-color: var(--color-blue-dark);
+}
+
+.user_profile_meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.avatar_mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-secondary);
+}
+
+/* --- Базовые дополнения для разметки шапки --- */
+.meta_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 12px;
+}
+
+.user_profile_meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar_mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-secondary);
+}
+
+.badge_container {
+  display: flex;
+  gap: 6px;
+}
+
+/* --- Модификаторы карточек --- */
+
+/* Стилизация своего слота */
+.slot_card_own {
+  border-left: 4px solid var(--color-green) !important; /* Яркий акцент создателя */
+  background-color: #f9fff9; /* Легкий зеленый оттенок фона */
+}
+
+/* Стилизация слота, где вызов принят */
+.slot_card_accepted {
+  border-left: 4px solid var(--color-secondary) !important;
+  background-color: var(--color-bg); /* Приглушаем серым цветом */
+  opacity: 0.9;
+}
+
+/* --- Стилизация бейджей --- */
+.badge_own {
+  background-color: var(--color-green);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge_accepted {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* --- Текстовые статусы вместо кнопок --- */
+.action_block {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.status_text_pending {
+  font: var(--font-s);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.status_text_accepted {
+  font: var(--font-s);
+  color: var(--color-blue-vk);
+  font-weight: 600;
+  background: rgba(81, 129, 184, 0.08);
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Медиа-запрос для десктопных экранов (выстраиваем информацию и кнопку в ряд) */
+@media (min-width: 480px) {
+  .slot_card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .book_slot_btn {
+    width: auto;
+    white-space: nowrap;
+  }
+}

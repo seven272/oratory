@@ -1,6 +1,7 @@
 import cron from 'node-cron'
 import User from '../models/User.js'
 import UserChallenge from '../models/UserChallenge.js'
+import LiveRoom from '../models/LiveRoom.js'
 
 const initCronJobs = () => {
   // Выражение '0 0 * * 1' означает: Ровно в 00:00, каждый понедельник (1)
@@ -39,6 +40,28 @@ const initCronJobs = () => {
       timezone: 'Europe/Moscow', // Установите часовой пояс вашего основного пула пользователей
     },
   )
+
+  // НОВЫЙ КРОН: Запуск каждые 30 минут для очистки "протухших" комнат дуэлей
+  cron.schedule('*/30 * * * *', async () => {
+    try {
+      const halfHourAgo = new Date(Date.now() - 30 * 60 * 1000)
+
+      // Отменяем комнаты быстрого поиска или ссылок, которые висят в pending дольше 30 минут
+      const result = await LiveRoom.updateMany(
+        {
+          status: 'pending',
+          created_at: { $lt: halfHourAgo },
+        },
+        { $set: { status: 'canceled' } },
+      )
+
+      console.log(
+        `[Cron Log]: Очищено заброшенных комнат: ${result.modifiedCount}`,
+      )
+    } catch (error) {
+      console.error('[Cron Error]: Ошибка при очистке комнат:', error)
+    }
+  })
 }
 
 export { initCronJobs }

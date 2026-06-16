@@ -260,7 +260,7 @@ const finishTribune = async (req, res) => {
       'ai-tribune',
       'Трибуна',
       isDaily,
-    )
+    ) 
 
     // Отдаем клиенту правильную структуру для синхронизации Redux
     res.status(200).json({

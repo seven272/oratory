@@ -1,0 +1,187 @@
+.duel_room_container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header_card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.round_badge {
+  font: var(--font-submenu);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timer_display {
+  font: var(--font-xl);
+  color: var(--color-red);
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.topic_card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.topic_label {
+  font: var(--font-s);
+  color: var(--color-text-secondary);
+  margin: 0 0 6px 0;
+}
+
+.topic_title {
+  font: var(--font-title);
+  color: var(--color-black);
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.my_position_box {
+  font: var(--font-m);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-light);
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.side_highlight {
+  color: var(--color-blue-vk);
+  font: var(--font-ml);
+}
+
+.action_block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.turn_indicator {
+  width: 100%;
+  text-align: center;
+}
+
+.your_turn {
+  font: var(--font-ml);
+  color: var(--color-green);
+  background-color: rgba(52, 199, 89, 0.1);
+  padding: 14px;
+  border-radius: 12px;
+  margin: 0;
+}
+
+.opponent_turn {
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  padding: 14px;
+  border-radius: 12px;
+  margin: 0;
+}
+
+.blitz_turn {
+  font: var(--font-ml);
+  color: var(--color-yellow);
+  background-color: rgba(255, 189, 18, 0.1);
+  padding: 14px;
+  border-radius: 12px;
+  margin: 0;
+}
+
+.vk_call_btn {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+  font: var(--font-l);
+  text-decoration: none;
+  padding: 16px;
+  border-radius: 12px;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  font-weight: bold;
+  box-shadow: 0 4px 14px rgba(38, 136, 235, 0.4);
+  transition: transform 0.1s ease;
+}
+
+.vk_call_btn:active {
+  transform: scale(0.98);
+}
+
+.vk_hint {
+  font: var(--font-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 90%;
+  line-height: 1.3;
+}
+
+.feedback_block {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.feedback_title {
+  font: var(--font-title);
+  color: var(--color-black);
+  margin: 0 0 8px 0;
+}
+
+.feedback_description {
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.rating_buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.rating_btn {
+  flex: 1;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-secondary);
+  color: var(--color-text-primary);
+  font: var(--font-m);
+  padding: 12px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.rating_btn:active {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+}
+
+.success_vote {
+  font: var(--font-ml);
+  color: var(--color-green);
+}

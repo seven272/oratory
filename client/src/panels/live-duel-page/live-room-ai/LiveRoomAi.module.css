@@ -1,0 +1,217 @@
+.ai_room_container {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--color-bg);
+  box-sizing: border-box;
+}
+
+.info_header {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-secondary);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topic_info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 75%;
+}
+
+.info_badge {
+  font: var(--font-submenu);
+  color: var(--color-blue-vk);
+  text-transform: uppercase;
+}
+
+.topic_title_short {
+  font: var(--font-subtitle);
+  color: var(--color-black);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.turn_badge {
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-light);
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.turn_count {
+  font: var(--font-ml);
+  color: var(--color-text-primary);
+}
+
+.chat_window {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: var(--color-bg-light);
+}
+
+.message_user, .message_ai {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.message_user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message_ai {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message_bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font: var(--font-m);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.message_user .message_bubble {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+  border-bottom-right-radius: 4px;
+}
+
+.message_ai .message_bubble {
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--color-secondary);
+}
+
+.message_time {
+  font: var(--font-xs);
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.input_form {
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-secondary);
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.chat_input {
+  flex: 1;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-secondary);
+  color: var(--color-text-primary);
+  font: var(--font-m);
+  padding: 12px 16px;
+  border-radius: 24px;
+  outline: none;
+}
+
+.send_btn {
+  background-color: var(--color-blue-vk);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.send_btn:disabled {
+  background-color: var(--color-grey-light);
+  cursor: not-allowed;
+}
+
+/* Стили карточки оценки ИИ */
+.evaluation_card {
+  margin: 20px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eval_title {
+  font: var(--font-title);
+  color: var(--color-black);
+  text-align: center;
+  margin: 0;
+}
+
+.eval_feedback {
+  font: var(--font-m);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  background-color: var(--color-bg-light);
+  padding: 14px;
+  border-radius: 10px;
+  margin: 0;
+}
+
+.metrics_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metric_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.metric_name {
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+}
+
+.metric_val {
+  font: var(--font-ml);
+  color: var(--color-green);
+}
+
+.finish_btn {
+  background-color: var(--color-green);
+  color: var(--color-white);
+  font: var(--font-ml);
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+}
+
+.finish_btn:active {
+  opacity: 0.9;
+}

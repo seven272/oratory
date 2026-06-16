@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchFallbackToAiBot, fetchJoinLiveRoom } from '../../../redux/slices/liveDuelSlice'
+import { fetchFallbackToAiBot, fetchCheckRoomStatus } from '../../../redux/slices/liveDuelSlice'
 import styles from './LiveDuelMatching.module.css'
 
 const LiveDuelMatching = () => {
@@ -11,7 +11,7 @@ const LiveDuelMatching = () => {
   
   // Рефы для хранения актуального таймера и интервалов
   const countdownRef = useRef(null)
-  const pollingRef = useRef(null)
+  const pollingRef = useRef(null) 
 
   useEffect(() => {
     // 1. Таймер обратного отсчета (30 секунд)
@@ -22,7 +22,7 @@ const LiveDuelMatching = () => {
           clearInterval(pollingRef.current)
           // Время вышло -> бесшовно подключаем ИИ
           if (currentRoom?._id) {
-            dispatch(fetchFallbackToAiBot({ room_id: currentRoom._id }))
+            dispatch(fetchFallbackToAiBot({ roomId: currentRoom._id }))
           }
           return 0
         }
@@ -32,21 +32,22 @@ const LiveDuelMatching = () => {
 
     // 2. Пулл-запросы (Раз в 3 секунды проверяем, не зашел ли человек)
     pollingRef.current = setInterval(() => {
-      if (currentRoom?._id) {
-        dispatch(fetchJoinLiveRoom({ room_id: currentRoom._id }))
-          .unwrap()
-          .then((res) => {
-            // Если статус комнаты сменился на active, значит игрок Б найден!
-            if (res.room?.status === 'active' && !res.room?.is_ai_bot) {
-              clearInterval(countdownRef.current)
-              clearInterval(pollingRef.current)
-            }
-          })
-          .catch(() => {
-            // Ошибки пуллинга игнорируем, продолжаем искать до конца таймера
-          })
-      }
-    }, 3000)
+  if (currentRoom?._id) {
+    // ВАЖНО: Вызываем проверку статуса нашей конкретной комнаты
+    dispatch(fetchCheckRoomStatus({ roomId: currentRoom._id }))
+      .unwrap()
+      .then((res) => {
+        // Если кто-то подключился (человек или ИИ), статус станет active
+        if (res.room?.status === 'active') {
+          clearInterval(countdownRef.current)
+          clearInterval(pollingRef.current)
+        }
+      })
+      .catch(() => {
+        // Игнорируем ошибки пуллинга, чтобы экран не падал
+      })
+  }
+}, 3000)
 
     // Очистка таймеров при размонтировании экрана
     return () => {
@@ -58,7 +59,7 @@ const LiveDuelMatching = () => {
   // Рендеринг инвайт-ссылки, если выбран тип direct_link
   const isDirectLink = currentRoom?.creation_type === 'direct_link'
   const inviteUrl = isDirectLink 
-    ? `https://vk.com{currentRoom?.invite_token}` 
+    ? `https://vk.com/${currentRoom?.invite_token}` 
     : ''
 
   const handleCopyLink = () => {

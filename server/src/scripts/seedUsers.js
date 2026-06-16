@@ -214,6 +214,20 @@ const testUsers = [
       lifetimeXp: 150,
       exerciseStats: [{ alias: 'tongue-twister', title: 'Битва дикции', totalPoints: 150, completionsCount: 1 }]
     }
+  },
+   {
+    displayName: 'Евгений Тест1',
+    email: 'zhenya@test.com',
+    isPremium: false,
+    avatar: 'https://dicebear.com',
+    progression: { level: 1, xp: 150, coins: 0 },
+    streak: { current: 0 },
+    weeklyXp: 150,
+    stats: {
+      totalExercises: 1,
+      lifetimeXp: 150,
+      exerciseStats: [{ alias: 'tongue-twister', title: 'Битва дикции', totalPoints: 150, completionsCount: 1 }]
+    }
   }
 ]
 

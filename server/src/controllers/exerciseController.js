@@ -204,7 +204,7 @@ const completeExercise = async (req, res) => {
           .filter((item) => item.isCompleted === true)
           .map((item) => item.date),
       ),
-    ]
+    ] 
 
     // Запускаем внешнюю проверку на получение новых достижений/ачивок: (user, hasJustCompletedIrlChallenge, currentScore, currentExerciseAlias)
     const newAwards = checkAchievements(user, false, score, exAlias)

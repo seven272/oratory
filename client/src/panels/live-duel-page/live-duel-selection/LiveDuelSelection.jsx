@@ -1,99 +1,154 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCreateLiveRoom, fetchJoinLiveRoom} from '../../../redux/slices/liveDuelSlice'
+import { message } from 'antd'
+
+import {
+  fetchCreateLiveRoom,
+  fetchJoinLiveRoom,
+  fetchGetCalendarRooms,
+  fetchGetMyActiveSlots, // <-- Добавлено
+  fetchUpdateLiveRoomDate, // <-- Добавлено
+  fetchDeleteLiveRoom, // <-- Добавлено
+} from '../../../redux/slices/liveDuelSlice'
 import styles from './LiveDuelSelection.module.css'
+import DuelMenuActions from './duel-menu-actions/DuelMenuActions'
+import CalendarCreateSlot from './calendar-create-slot/CalendarCreateSlot'
+import CalendarSlotsList from './calendar-slots-list/CalendarSlotsList'
 
 const LiveDuelSelection = () => {
   const dispatch = useDispatch()
-  const { loading, error } = useSelector((state) => state.liveDuel)
-  
+  const {
+    loading,
+    error,
+    calendarRooms = [],
+    myActiveSlots = [],
+  } = useSelector((state) => state.liveDuel)
+
+  const { user } = useSelector((state) => state.auth)
+  const [showFormCreateSlot, setShowFormCreateSlot] = useState(false)
   const [showCalendar, setShowCalendar] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
 
-  // 1. Механика: Быстрый поиск пары
+  // При открытии общего списка — подгружаем доступные комнаты из базы
+  useEffect(() => {
+    if (showCalendar) {
+      dispatch(fetchGetCalendarRooms())
+    }
+  }, [showCalendar, dispatch])
+
+  // При открытии формы создания слота — подгружаем личные активные слоты
+  useEffect(() => {
+    if (showFormCreateSlot) {
+      dispatch(fetchGetMyActiveSlots())
+    }
+  }, [showFormCreateSlot, dispatch])
+
   const handleQuickSearch = () => {
-    dispatch(fetchCreateLiveRoom({ creation_type: 'quick_search' }))
+    dispatch(fetchCreateLiveRoom({ creationType: 'quick_search' }))
       .unwrap()
-      .then((data) => {
-        // После успешного создания комнаты бэкенд возвращает статус pending.
-        // Сразу запускаем поиск существующего игрока Б на этот инстанс
-        dispatch(fetchJoinLiveRoom({}))
-      })
+      .then(() => dispatch(fetchJoinLiveRoom({})))
   }
 
-  // 2. Механика: Генерация ссылки для друга / чата
   const handleDirectLink = () => {
-    dispatch(fetchCreateLiveRoom({ creation_type: 'direct_link' }))
+    dispatch(fetchCreateLiveRoom({ creationType: 'direct_link' }))
   }
 
-  // 3. Механика: Бронирование слота в календаре
-  const handleCalendarSubmit = (evt) => {
-    evt.preventDefault()
-    if (!selectedDate) return
+  const handleCalendarSubmit = async (selectedDate) => {
+    try {
+      await dispatch(
+        fetchCreateLiveRoom({
+          creationType: 'calendar',
+          scheduledAt: selectedDate,
+        }),
+      ).unwrap()
+      message.success(
+        'Ваш слот на дуэль успешно создан, он появится в общем списке!',
+      )
+      // Обновляем локально списки
+      dispatch(fetchGetMyActiveSlots())
+      dispatch(fetchGetCalendarRooms())
+    } catch (err) {
+      message.error(err || 'Произошла ошибка при создании слота.')
+    }
+  }
 
-    dispatch(fetchCreateLiveRoom({ 
-      creation_type: 'calendar', 
-      scheduled_at: selectedDate
-    }))
-    setShowCalendar(false)
+  const handleUpdateSlot = async (roomId, newDate) => {
+    try {
+      await dispatch(
+        fetchUpdateLiveRoomDate({ roomId, scheduledAt: newDate }),
+      ).unwrap()
+      message.success('Дата слота успешно изменена!')
+      dispatch(fetchGetCalendarRooms()) // Синхронизируем глобальную ленту
+    } catch (err) {
+      message.error(err || 'Не удалось обновить слот')
+    }
+  }
+
+  const handleCancelSlot = async (roomId) => {
+    try {
+      await dispatch(fetchDeleteLiveRoom({ roomId })).unwrap()
+      message.success('Слот успешно удален!')
+      dispatch(fetchGetCalendarRooms()) // Синхронизируем глобальную ленту
+    } catch (err) {
+      message.error(err || 'Не удалось удалить слот')
+    }
+  }
+
+  const handleBookSlot = (roomId) => {
+    dispatch(fetchJoinLiveRoom({ roomId }))
+      .unwrap()
+      .then(() => {
+        message.success(
+          'Вы успешно записались на дуэль! Ожидайте начала в назначенное время.',
+        )
+      })
+      .catch((err) => message.error(`Не удалось записаться: ${err}`))
   }
 
   return (
     <div className={styles.selection_container}>
       <h1 className={styles.main_title}>🎙️ Живые Дуэли</h1>
       <p className={styles.main_description}>
-        Практикуйте ораторское мастерство с реальными людьми или ИИ-тренером в режиме реального времени.
+        Практикуйте ораторское мастерство с реальными людьми или
+        ИИ-тренером в режиме реального времени.
       </p>
 
       {error && <div className={styles.error_banner}>{error}</div>}
 
-      <div className={styles.menu_list}>
-        {/* Кнопка: Быстрый поиск */}
-        <button 
-          className={styles.menu_button_primary} 
-          onClick={handleQuickSearch}
-          disabled={loading}
-        >
-          {loading ? 'Инициализация...' : '⚡ Быстрый поиск пары'}
-        </button>
+      <DuelMenuActions
+        loading={loading}
+        showForm={showFormCreateSlot}
+        showCalendar={showCalendar}
+        onQuickSearch={handleQuickSearch}
+        onDirectLink={handleDirectLink}
+        onToggleCalendar={() => {
+          setShowCalendar(!showCalendar)
+          if (showFormCreateSlot) setShowFormCreateSlot(false)
+        }}
+        onToggleFormCreateSlot={() => {
+          setShowFormCreateSlot(!showFormCreateSlot)
+          if (showCalendar) setShowCalendar(false)
+        }}
+      />
 
-        {/* Кнопка: Ссылка для друга */}
-        <button 
-          className={styles.menu_button_secondary} 
-          onClick={handleDirectLink}
-          disabled={loading}
-        >
-          🔗 Создать инвайт-ссылку
-        </button>
-
-        {/* Кнопка: Календарь слотов */}
-        <button 
-          className={styles.menu_button_secondary} 
-          onClick={() => setShowCalendar(!showCalendar)}
-          disabled={loading}
-        >
-          📅 Запланировать дуэль
-        </button>
-      </div>
-
-      {/* Выпадающий блок календаря */}
-      {showCalendar && (
-        <form className={styles.calendar_box} onSubmit={handleCalendarSubmit}>
-          <label className={styles.calendar_label}>Выберите дату и время:</label>
-          <input 
-            type="datetime-local" 
-            className={styles.calendar_input}
-            value={selectedDate}
-            onChange={(evt) => setSelectedDate(evt.target.value)}
-            required
+      <div className={styles.calendar_wrapper_block}>
+        {showFormCreateSlot && (
+          <CalendarCreateSlot
+            myActiveSlots={myActiveSlots}
+            onSubmitSlot={handleCalendarSubmit}
+            onUpdateSlot={handleUpdateSlot}
+            onDeleteSlot={handleCancelSlot}
           />
-          <button type="submit" className={styles.calendar_submit_btn}>
-            Подтвердить запись
-          </button>
-        </form>
-      )}
+        )}
+        {showCalendar && (
+          <CalendarSlotsList
+            calendarRooms={calendarRooms}
+            myActiveSlots={myActiveSlots}
+            currentUserId={user._id}
+            onBookSlot={handleBookSlot}
+          />
+        )}
+      </div>
     </div>
   )
 }
-
 export default LiveDuelSelection

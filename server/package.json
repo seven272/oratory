@@ -9,7 +9,8 @@
     "seed:tasks": "node ./src/scripts/seedTasks.js",
     "seed:users": "node ./src/scripts/seedUsers.js",
     "seed:shop": "node ./src/scripts/seedShop.js",
-    "test:salut": "node ./src/scripts/testSalutSpeech.js"
+    "test:salut": "node ./src/scripts/testSalutSpeech.js",
+    "test:live-room": "node ./src/scripts/testLiveRoutes.js"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.2.1",
-    "globals": "^17.5.0"
+    "globals": "^17.5.0",
+    "supertest": "^7.2.2"
   }
 }
