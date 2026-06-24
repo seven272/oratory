@@ -14,6 +14,7 @@ import Icon12 from '../assets/images/achievements/improv_king.png'
 import Icon13 from '../assets/images/achievements/iron_arguments.png'
 import Icon14 from '../assets/images/achievements/premium_club.png'
 import Icon15 from '../assets/images/achievements/marathon_runner.png'
+import Icon16 from '../assets/images/achievements/live_pioneer.png'
 
 const ALL_ACHIEVEMENTS = [
   {
@@ -76,38 +77,47 @@ const ALL_ACHIEVEMENTS = [
     code: 'thought_guru',
     title: 'Гуру Мысли',
     icon: Icon10,
-    descr: 'Эксклюзивное достижение, приобретенное в магазине за жетоны оратора.'
+    descr:
+      'Эксклюзивное достижение, приобретенное в магазине за жетоны оратора.',
   },
   {
     code: 'social_magnet',
     title: 'Магнит внимания',
     icon: Icon11,
-    descr: 'Набрать суммарно 1500 очков в категории «Коммуникация».'
+    descr: 'Набрать суммарно 1500 очков в категории «Коммуникация».',
   },
   {
     code: 'improv_king',
     title: 'Король экспромта',
     icon: Icon12,
-    descr: 'Набрать суммарно 1500 очков в категории «Находчивость».'
+    descr: 'Набрать суммарно 1500 очков в категории «Находчивость».',
   },
   {
     code: 'iron_arguments',
     title: 'Железные аргументы',
     icon: Icon13,
-    descr: 'Одержать победу в «Дебат-клубе» с ИИ, набрав более 95 баллов.'
+    descr:
+      'Одержать победу в «Дебат-клубе» с ИИ, набрав более 95 баллов.',
   },
   {
     code: 'premium_club',
     title: 'Закрытый клуб',
     icon: Icon14,
-    descr: 'Получить доступ к Premium-аккаунту платформы.'
+    descr: 'Получить доступ к Premium-аккаунту платформы.',
   },
   {
     code: 'marathon_runner',
     title: 'Марафонец',
     icon: Icon15,
-    descr: 'Набрать 25 000 глобальных очков опыта за все время тренировок.'
-  }
+    descr:
+      'Набрать 25 000 глобальных очков опыта за все время тренировок.',
+  },
+  {
+    code: 'live_pioneer',
+    title: 'Мастер дуэлей',
+    icon: Icon16,
+    descr: 'Поучавствовать в живой дуэли с реальным человеком',
+  },
 ]
 
 export { ALL_ACHIEVEMENTS }

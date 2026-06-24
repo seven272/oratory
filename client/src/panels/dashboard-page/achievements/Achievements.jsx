@@ -24,26 +24,6 @@ const Achievements = () => {
           )
         })}
 
-        {/* {ALL_ACHIEVEMENTS.map((ach) => {
-          const isUnlocked = userAchievements.some(
-            (ua) => ua.code === ach.code,
-          )
-          return (
-            <div
-              key={ach.code}
-              className={`${styles.item} ${!isUnlocked ? styles.locked : ''}`}
-            >
-              <div className={styles.iconBox}>
-                <img
-                  src={ach.icon}
-                  alt={ach.title}
-                  className={styles.icon}
-                />
-              </div>
-              <span className={styles.label}>{ach.title}</span>
-            </div>
-          )
-        })} */}
       </div>
     </div>
   )

@@ -216,7 +216,7 @@ const finishStopWord = async (req, res) => {
       'Анти-слова',
       isDaily,
     )
-
+ 
     res
       .status(200)
       .json({ message: 'Успешно', session, ...gamificationResult })

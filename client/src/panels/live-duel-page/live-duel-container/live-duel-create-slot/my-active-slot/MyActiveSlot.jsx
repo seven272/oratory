@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 
 import styles from './MyActiveSlot.module.css'
 
@@ -7,22 +7,28 @@ const MyActiveSlot = ({
   onDeleteSlot,
   onUpdateSlot
 }) => {
-const [editingSlotId, setEditingSlotId] = useState(null)
-const [editDate, setEditDate] = useState('')
+ 
+  const [editingSlotId, setEditingSlotId] = useState(null)
+  const [editDate, setEditDate] = useState('')
 
-const handleStartEdit = (room) => {
+  const handleStartEdit = (room) => {
     setEditingSlotId(room._id)
-    // Преобразуем дату в ISO формат без секунд для input type="datetime-local"
-    setEditDate(
-      new Date(room.scheduled_at).toISOString().slice(0, 16),
-    )
+    
+    // Корректное преобразование локального времени в формат YYYY-MM-DDTHH:mm без смещения UTC
+    const d = new Date(room.scheduledAt)
+    const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16)
+
+    setEditDate(localISO)
   }
 
-    const handleSaveEdit = (roomId) => {
+  const handleSaveEdit = (roomId) => {
     if (!editDate) return
     onUpdateSlot(roomId, editDate)
     setEditingSlotId(null)
   }
+
   return (
     <div className={styles.slot_card}>
       <div className={styles.slot_info}>
@@ -45,7 +51,7 @@ const handleStartEdit = (room) => {
               💾
             </button>
             <button
-                onClick={() => setEditingSlotId(null)}
+              onClick={() => setEditingSlotId(null)}
               className={styles.cancel_btn}
             >
               ❌
@@ -54,7 +60,7 @@ const handleStartEdit = (room) => {
         ) : (
           <span className={styles.slot_time}>
             ⏰{' '}
-            {new Date(room.scheduled_at).toLocaleString([], {
+            {new Date(room.scheduledAt).toLocaleString([], {
               month: 'short',
               day: 'numeric',
               hour: '2-digit',
@@ -63,23 +69,24 @@ const handleStartEdit = (room) => {
           </span>
         )}
       </div>
-{editingSlotId !== room._id && (
-      <div className={styles.slot_actions}>
-        <button
-          className={styles.edit_btn}
-          onClick={() => handleStartEdit(room)}
-        >
-          ✏️ Редактировать
-        </button>
 
-        <button
-          className={styles.delete_btn}
-          onClick={() => onDeleteSlot(room._id)}
-        >
-          🗑️ Удалить
-        </button>
-      </div>
-)}
+      {editingSlotId !== room._id && (
+        <div className={styles.slot_actions}>
+          <button
+            className={styles.edit_btn}
+            onClick={() => handleStartEdit(room)}
+          >
+            ✏️ Редактировать
+          </button> 
+
+          <button
+            className={styles.delete_btn}
+            onClick={() => onDeleteSlot(room._id)}
+          >
+            🗑️ Удалить
+          </button>
+        </div>
+      )}
     </div>
   )
 }

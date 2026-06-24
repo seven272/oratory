@@ -253,7 +253,7 @@ const finishRadioHost = async (req, res) => {
     // Алиас будет биндиться к категории «харизма и юмор» или «техника речи»
     const gamificationResult = await applyAiGamificationProgress(
       user,
-      evaluation.totalScore,
+      evaluation.totalScore, 
       'ai-radio-host',
       'Радиоведущий',
       isDaily,

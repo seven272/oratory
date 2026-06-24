@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { resetLiveDuelState } from '../../../redux/slices/liveDuelSlice'
+import { resetLiveDuelState } from '../../../../redux/slices/liveDuelSlice'
 import styles from './LiveRoomAi.module.css'
 
 const LiveRoomAi = () => {
@@ -56,28 +56,28 @@ const LiveRoomAi = () => {
     // Если это последний (3-й) ход пользователя, то запрашиваем финал и оценку
     if (currentTurn >= 3) {
       setIsFinished(true)
-      // Здесь будет отправка всего лога на дебат-контроллер бэкенда для оценки ИИ-судьи
-      // Имитируем успешный ответ ИИ-судьи с разбором
+      // Имитируем успешный ответ ИИ-судьи с разбором (ключи приведены к camelCase)
       setTimeout(() => {
         setAiEvaluation({
           logic: 85,
           convincingness: 78,
-          counterargumentation: 90,
+          counterArgumentation: 90, // Перевели в camelCase
           feedback: 'Отличная структурированная речь! Вы успешно парировали тезисы об автоматизации образования, однако стоит добавить больше статистических данных в аргументацию.'
         })
       }, 1500)
     } else {
-      // Обычный промежуточный ход — запрашиваем генерацию ответа ИИ
-      setCurrentTurn((prev) => prev + 1)
+      // Фиксируем следующий ход локально для избежания багов с асинхронным стейтом
+      const nextTurn = currentTurn + 1
+      setCurrentTurn(nextTurn)
       
-      // Имитируем ответ GigaChat (в реальном коде это вызов Thunk-экшена)
+      // Имитируем ответ GigaChat
       setTimeout(() => {
         setChatLog((prevLog) => [
           ...prevLog,
           {
             id: `ai_${Date.now()}`,
             sender: 'ai',
-            text: `Это интересный аргумент на ходу №${currentTurn + 1}. Однако учтите, что технологии развиваются экспоненциально, и человеческий фактор может стать узким горлышком системы. Что думаете на этот счет?`,
+            text: `Это интересный аргумент на ходу №${nextTurn}. Однако учтите, что технологии развиваются экспоненциально, и человеческий фактор может стать узким горлышком системы. Что думаете на этот счет?`,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }
         ])
@@ -86,7 +86,6 @@ const LiveRoomAi = () => {
   }
 
   const handleCloseSession = () => {
-    // Начисление опыта за тренировку с ИИ (100 XP вместо 250 XP за живого человека)
     alert('Тренировка с ИИ завершена! Вам начислено 100 XP для сохранения стрика активности.')
     dispatch(resetLiveDuelState())
   }
@@ -137,7 +136,7 @@ const LiveRoomAi = () => {
             </div>
             <div className={styles.metric_item}>
               <span className={styles.metric_name}>Контраргументы</span>
-              <strong className={styles.metric_val}>{aiEvaluation.counterargumentation}/100</strong>
+              <strong className={styles.metric_val}>{aiEvaluation.counterArgumentation}/100</strong>
             </div>
           </div>
 

@@ -175,7 +175,7 @@ const applyAiGamificationProgress = async (
   ]
 
   return {
-    earnedXp,
+    earnedXp, 
     earnedCoins,
     isLevelUp,
     newAchievements: newAwards || [],

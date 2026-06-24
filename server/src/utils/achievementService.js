@@ -41,7 +41,7 @@ const checkAchievements = (
 
   // 1. Техника речи (tongue-twister, fear-explosive)
   const techniqueStats = user.stats.exerciseStats.filter((s) =>
-    ['tongue-twister', 'fear-explosive'].includes(s.alias)
+    ['tongue-twister', 'fear-explosive'].includes(s.alias) 
   )
   const totalTechniquePoints = techniqueStats.reduce((sum, s) => sum + (s.totalPoints || 0), 0)
   if (totalTechniquePoints >= 1500) add('skill_max_technique', 'Золотой голос')
@@ -79,6 +79,11 @@ const checkAchievements = (
 
   // --- ЧЕЛЛЕНДЖИ РЕАЛЬНОГО МИРА ---
   if (hasJustCompletedIrlChallenge) add('irl_pioneer', 'Покоритель реальности')
+
+     // === ЖИВЫЕ ДУЭЛИ (Проверка по алиасу из вашего контроллера) ===
+  if (currentExerciseAlias === 'live-duel') {
+    add('live_pioneer', 'Мастер дуэлей')
+  }
 
   return newAchievements
 }

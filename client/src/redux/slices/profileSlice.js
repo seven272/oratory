@@ -23,6 +23,7 @@ import { fetchFinishPoemActing } from './ai-exercises/poemActingSlice'
 import { fetchFinishPoemRap } from './ai-exercises/poemRapSlice'
 import { fetchFinishRadioHost } from './ai-exercises/radioHostSlice'
 import {fetchFinishRandomWord} from './ai-exercises/randomWordSlice'
+import { fetchSubmitLiveRating } from './liveDuelSlice'
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
@@ -43,30 +44,29 @@ const fetchProfileData = createAsyncThunk(
 
 const initialState = {
   user: {
-    displayName: 'Tom',
-    level: 3,
-    coins: 23,
-    streak: 3,
+    displayName: '',
+    level: 0,
+    coins: 0,
+    streak: 0,
     xp: 0,
     lifetimeXp: 0,
     achievements: [],
     inventory: [],
-    levelProgressPercent: 57,
-    completed_days: ['2026-05-18', '2026-05-17', '2026-05-19'],
+    levelProgressPercent: 0,
+    completed_days: ['2000-01-15', '2000-01-16', '2000-01-17'],
     isPremium: true,
   },
   skills: [
-    { subject: 'Дикция', A: 80, fullMark: 100 },
-    { subject: 'Лаконичность', A: 65, fullMark: 100 },
-    { subject: 'Убедительность', A: 90, fullMark: 100 },
-    { subject: 'Чистота речи', A: 45, fullMark: 100 },
-    { subject: 'Эмоциональность', A: 70, fullMark: 100 },
-    { subject: 'Small Talk', A: 55, fullMark: 100 },
+    { subject: 'коммуникация', A: 80, fullMark: 100 },
+    { subject: 'харизма и юмор', A: 65, fullMark: 100 },
+    { subject: 'находчивость', A: 90, fullMark: 100 },
+    { subject: 'техника речи', A: 45, fullMark: 100 },
+    { subject: 'убедительность', A: 70, fullMark: 100 },
   ],
   weakPoint: {
-    skill: 'Small Talk',
-    score: 55,
-    recommendation: `Твой навык "Small Talk" требует внимания. Попробуй улучшить его!`,
+    skill: 'техника речи',
+    score: 45,
+    recommendation: `Твой навык "техника речи" требует внимания. Попробуй улучшить его!`,
   },
   recentActivity: [], //последние 5 сделанных упражнений
   totalExercises: 0,
@@ -152,7 +152,8 @@ const profileSlice = createSlice({
           fetchFinishPoemActing.fulfilled,
           fetchFinishPoemRap.fulfilled,
           fetchFinishRadioHost.fulfilled,
-          fetchFinishRandomWord.fulfilled
+          fetchFinishRandomWord.fulfilled,
+          fetchSubmitLiveRating.fulfilled
         ),
         (state, action) => {
           // Защита: если сессия завершилась без оценки, stats будет отсутствовать
@@ -182,7 +183,7 @@ const profileSlice = createSlice({
                 ...action.payload.newAchievements,
               )
             }
-          }
+          } 
 
           // Помечаем данные как "устаревшие" для обновления радарной карты
           state.isStale = true

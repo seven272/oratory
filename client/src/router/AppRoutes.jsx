@@ -56,9 +56,14 @@ const routers = [
     panel: 'admin-panel',
     view: 'main_view',
   },
-    {
+  {
     path: '/live-duel',
     panel: 'live-duel-panel',
+    view: 'main_view',
+  },
+  {
+    path: '/live-duel/join/:token',
+    panel: 'live-duel-join-panel',
     view: 'main_view',
   },
 ]

@@ -41,25 +41,68 @@ const initCronJobs = () => {
     },
   )
 
-  // НОВЫЙ КРОН: Запуск каждые 30 минут для очистки "протухших" комнат дуэлей
+  // 2. МОДИФИЦИРОВАННЫЙ КРОН: Запуск каждые 30 минут для очистки "протухших" комнат дуэлей
   cron.schedule('*/30 * * * *', async () => {
+    console.log(
+      '⏳ [Cron]: Запуск проверки и очистки неактуальных комнат дуэлей...',
+    )
     try {
-      const halfHourAgo = new Date(Date.now() - 30 * 60 * 1000)
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000)
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000)
 
-      // Отменяем комнаты быстрого поиска или ссылок, которые висят в pending дольше 30 минут
-      const result = await LiveRoom.updateMany(
+      // ВЕТКА А: Быстрый поиск и Прямые ссылки
+      // Ключи изменены под camelCase: creationType, createdAt
+      const instantRoomsResult = await LiveRoom.updateMany(
         {
           status: 'pending',
-          created_at: { $lt: halfHourAgo },
+          creationType: { $in: ['quick_search', 'direct_link'] },
+          createdAt: { $lt: thirtyMinutesAgo },
         },
         { $set: { status: 'canceled' } },
       )
 
-      console.log(
-        `[Cron Log]: Очищено заброшенных комнат: ${result.modifiedCount}`,
+      // ВЕТКА Б: Календарные слоты
+      // Ключи изменены под camelCase: creationType, scheduledAt
+      const calendarRoomsResult = await LiveRoom.updateMany(
+        {
+          status: 'pending',
+          creationType: 'calendar',
+          scheduledAt: { $lt: fifteenMinutesAgo }, // Время начала дуэли уже позади
+        },
+        { $set: { status: 'canceled' } },
       )
+
+      // ВЕТКА В: Жесткое удаление абсолютно неактуального мусора (например, отмененных комнат старше 7 дней)
+      const sevenDaysAgo = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000,
+      )
+
+      const cleanTrashResult = await LiveRoom.deleteMany({
+        status: 'canceled', // Удаляем только отмененные. 'completed' НЕ ТРОГАЕМ!
+        createdAt: { $lt: sevenDaysAgo },
+      })
+
+      if (cleanTrashResult.deletedCount > 0) {
+        console.log(
+          `🧹 [Cron Log]: Физически удалено старых отмененных комнат: ${cleanTrashResult.deletedCount}`,
+        )
+      }
+
+      const totalCanceled =
+        instantRoomsResult.modifiedCount +
+        calendarRoomsResult.modifiedCount
+
+      if (totalCanceled > 0) {
+        console.log(
+          `✅ [Cron Log]: Очистка завершена. Отменено комнат: ${totalCanceled} ` +
+            `(Мгновенных/Ссылок: ${instantRoomsResult.modifiedCount}, Календарных: ${calendarRoomsResult.modifiedCount})`,
+        )
+      }
     } catch (error) {
-      console.error('[Cron Error]: Ошибка при очистке комнат:', error)
+      console.error(
+        '❌ [Cron Error]: Ошибка при очистке комнат:',
+        error,
+      )
     }
   })
 }

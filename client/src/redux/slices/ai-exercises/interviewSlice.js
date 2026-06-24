@@ -133,7 +133,7 @@ const interviewSlice = createSlice({
         if (action.payload?.session?.result) {
           state.verdict = action.payload.session.result
         }
-      })
+      }) 
       .addCase(fetchFinishInterview.rejected, setAiRejected)
   },
 })
