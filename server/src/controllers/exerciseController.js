@@ -223,7 +223,7 @@ const completeExercise = async (req, res) => {
       stats: {
         level: user.progression.level,
         xp: user.progression.xp,
-        coins: user.progression.coins,
+        coins: user.progression.coins, 
         streak: user.streak.current,
         completed_days: completedDays,
         // Считаем порог уже для СЛЕДУЮЩЕГО уровня, чтобы фронтенд правильно отрисовал шкалу прогресса

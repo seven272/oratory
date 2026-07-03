@@ -6,7 +6,7 @@
   background-color: transparent; /* Убрали серый фон, теперь наследует фон приложения */
   min-height: 100vh;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow-x: hidden; 
 }
 
 /* Сетка карточек статистики сверху */

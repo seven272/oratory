@@ -11,6 +11,8 @@ import {
 import { Radar } from '@ant-design/plots'
 
 import Achievements from '../achievements/Achievements'
+import LiveDuelStats from '../live-duel-stats/LiveDuelStats'
+import CourseHistory from '../course-history/CourseHistory'
 import styles from './Dashboard.module.css'
 
 const Dashboard = ({
@@ -19,8 +21,10 @@ const Dashboard = ({
   weakPoint,
   recentActivity,
   totalExercises,
+  duelStats,
+  archiveCourses
 }) => {
-  if (!skills || !user) {
+  if (!skills || !user || !duelStats) {
     return <Spin size="large" fullscreen />
   }
 
@@ -99,6 +103,13 @@ const Dashboard = ({
             />
           </div>
         </div>
+
+
+         {/* статистика пройденных курсов  */}
+        <CourseHistory historyList={archiveCourses}/>
+
+        {/* статистика дуэлей  */}
+        <LiveDuelStats duelStats={duelStats} />
 
         {/* История */}
         <div className={`${styles.card} ${styles.activity_area}`}>

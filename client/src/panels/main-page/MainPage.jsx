@@ -8,6 +8,7 @@ import DashboardBlock from './dashboard-block/DashboardBlock'
 import DailyChallengesBlock from './daily-challenges-block/DailyChallengesBlock'
 import ExerciseCatalogBlock from './exercise-catalog-block/ExerciseCatalogBlock'
 import LeaderboardShortBlock from './leaderboard-short-block/LeaderboardShortBlock'
+import ActivityBlock from './activity-block/ActivityBlock'
 
 const MainPage = ({ id }) => {
   return (
@@ -28,6 +29,8 @@ const MainPage = ({ id }) => {
         <ExerciseCatalogBlock />
         <div className={styles.border}></div>
         <LeaderboardShortBlock />
+        <div className={styles.border}></div>
+        <ActivityBlock />
         <div className={styles.border}></div>
       </div>
       <Footer />

@@ -77,7 +77,7 @@ const LiveDuelCreateSlot = () => {
   
 
   return (
-    <div className={styles.calendar_wrapper}>
+    <div className={styles.calendar_section}>
       {/* Форма создания слота */}
       <form
         className={styles.calendar_box}

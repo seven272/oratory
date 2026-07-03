@@ -93,7 +93,7 @@ const LiveDuelSelection = () => {
           onClick={handleGoCalendar}
           disabled={loading}
         >
-          🔍 Найти слот
+          🔍 Найти дуэль
         </button>
       </div>
     </div>

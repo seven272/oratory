@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const liveRoomSchema = new mongoose.Schema({
+const liveDuelSchema = new mongoose.Schema({
   // Кто создал комнату / Инициатор
   userA: {
     type: mongoose.Schema.Types.ObjectId,
@@ -51,6 +51,9 @@ const liveRoomSchema = new mongoose.Schema({
     default: null, // Игрок Б еще не оценил Игрока А
   },
 
+  pointsEarnedA: { type: Number, default: 0 },
+  pointsEarnedB: { type: Number, default: 0 },
+
   status: {
     type: String,
     enum: ['pending', 'active', 'completed', 'canceled'],
@@ -59,7 +62,7 @@ const liveRoomSchema = new mongoose.Schema({
   },
 
   // Лог раундов (для ИИ-заглушки или сохранения текстовых логов)
-  turnsLog: [
+  messagesAi: [
     {
       sender: { type: String, enum: ['userA', 'userB'] },
       text: String,
@@ -67,7 +70,7 @@ const liveRoomSchema = new mongoose.Schema({
     },
   ],
 
-  createdAt: { type: Date, default: Date.now }, 
+  createdAt: { type: Date, default: Date.now },
 })
 
-export default mongoose.model('LiveRoom', liveRoomSchema)
+export default mongoose.model('LiveDuel', liveDuelSchema)

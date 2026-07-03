@@ -17,6 +17,7 @@ import shopRoutes from './routes/shopRoutes.js'
 import challengeRoutes from './routes/challengeRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import liveDuelRoutes from './routes/liveDuelRoutes.js'
+import courseRoutes from './routes/courseRoutes.js'
 
 dotenv.config()
 
@@ -43,6 +44,7 @@ app.use('/api/shop', shopRoutes)
 app.use('/api/challenges', challengeRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/live/', liveDuelRoutes)
+app.use('/api/courses', courseRoutes)
 
 const start = async () => {
   try {

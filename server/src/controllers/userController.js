@@ -3,7 +3,10 @@ import dotenv from 'dotenv'
 
 import User from '../models/User.js'
 import createToken from '../utils/createToken.js'
-import { SKILLS_MAP } from '../constants/skills.js'
+import {
+  SKILLS_MAP,
+  EXERCISE_MAX_POINTS,
+} from '../constants/skills.js'
 import { getXpThreshold } from '../utils/fnForControllers.js'
 
 dotenv.config()
@@ -169,34 +172,46 @@ const getUserProfile = async (req, res) => {
       (user.progression.xp / nextThreshold) * 100,
     )
 
-    // Подготавливаем данные для Radar Chart (Паутинка навыков)
-    // Расчет данных для Radar Chart (Паутинка)
+    // Расчет данных для Radar Chart (Паутинка) с нормализацией по весам упражнений
     const skillsData = Object.entries(SKILLS_MAP).map(
       ([skillName, aliases]) => {
-        // Фильтруем статистику по текущему навыку
+        // Фильтруем статистику упражнений, которые относятся к текущему навыку
         const relevantStats = user.stats.exerciseStats.filter((s) =>
           aliases.includes(s.alias),
         )
+
         let average = 0
         if (relevantStats.length > 0) {
-          // 1. Считаем общую сумму очков по всем упражнениям навыка
-          const sumPoints = relevantStats.reduce(
+          // 1. Считаем, сколько ВСЕГО очков набрал пользователь в этой категории
+          const totalEarnedPoints = relevantStats.reduce(
             (sum, item) => sum + item.totalPoints,
             0,
           )
-          // 2. Считаем общее количество попыток во всех упражнениях навыка
-          const sumAttempts = relevantStats.reduce(
-            (sum, item) => sum + item.completionsCount,
+
+          // 2. Считаем, сколько МАКСИМАЛЬНО он мог набрать за все свои попытки
+          const totalPossiblePoints = relevantStats.reduce(
+            (sum, item) => {
+              // Берем максимум из карты очков. Если вдруг упражнения нет в списке — ставим дефолт 30
+              const maxForOneAttempt =
+                EXERCISE_MAX_POINTS[item.alias] || 30
+              // Умножаем максимальную стоимость на количество прохождений
+              return sum + maxForOneAttempt * item.completionsCount
+            },
             0,
           )
-          // 3. Вычисляем средний балл за одну попытку (0-100)
+
+          // 3. Вычисляем честный процент мастерства (от 0 до 100)
           average =
-            sumAttempts > 0 ? Math.round(sumPoints / sumAttempts) : 0
+            totalPossiblePoints > 0
+              ? Math.round(
+                  (totalEarnedPoints / totalPossiblePoints) * 100,
+                )
+              : 0
         }
 
         return {
           subject: skillName,
-          A: average, // Теперь здесь будет число от 0 до 100
+          A: Math.min(average, 100), // Предохранитель, чтобы значение гарантированно не превышало 100
           fullMark: 100,
         }
       },

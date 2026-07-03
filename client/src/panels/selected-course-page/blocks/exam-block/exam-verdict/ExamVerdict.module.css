@@ -1,0 +1,201 @@
+.verdict_container {
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-black, #000000);
+  margin: 0 0 24px 0;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+/* Зона результата: чистый фокус на цифрах */
+.score_zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.score_value {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.score_max {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-grey, #939cad);
+}
+
+.score_status {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.text_success {
+  color: #04c32b;
+}
+
+.text_danger {
+  color: #ff3344;
+}
+
+/* Карточка отзыва от ИИ (оформлена как экспертный блок) */
+.feedback_card {
+  background-color: var(--vkui--color_background_cards, #f9fafb);
+  border-left: 3px solid var(--color-blue-vk, #0077ff);
+  border-radius: 0 12px 12px 0;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.feedback_title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-black, #000000);
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.feedback_text {
+  font-size: 15px;
+  color: var(--color-text-primary, #454d56);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.meta_info {
+  font-size: 13px;
+  color: var(--color-grey, #818c99);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.action_zone {
+  width: 100%;
+}
+
+/* Системная кнопка ВК */
+.next_attempt_btn {
+  background-color: var(--color-blue-vk, #0077ff);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.next_attempt_btn:hover {
+  opacity: 0.9;
+}
+
+.next_attempt_btn:active {
+  transform: scale(0.98);
+}
+
+/* Аккуратные баннеры */
+.finish_banner {
+  background-color: rgba(4, 195, 43, 0.05);
+  border-left: 3px solid #04c32b;
+  color: #039e23;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.fail_banner {
+  background-color: rgba(255, 51, 68, 0.05);
+  border-left: 3px solid #ff3344;
+  color: #d61c2c;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+/* Контейнер для группировки баннера и кнопки перезапуска */
+.end_flow_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Яркая акцентная кнопка перезапуска (для сценария "Не сдал / Попытки исчерпаны") */
+.restart_btn {
+  background-color: var(--color-blue-vk, #0077ff);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.restart_btn:hover {
+  opacity: 0.9;
+}
+
+.restart_btn:active {
+  transform: scale(0.98);
+}
+
+/* Аккуратная контурная кнопка перезапуска (для сценария "Сдал успешно") */
+.secondary_restart_btn {
+  background-color: transparent;
+  color: var(--vkui--color_text_secondary, #818c99);
+  border: 1px solid var(--vkui--color_separator, #e1e3e6);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.secondary_restart_btn:hover {
+  background-color: var(--vkui--color_background_secondary, #f5f5f5);
+  color: var(--color-black, #000000);
+  border-color: var(--color-grey, #939cad);
+}
+
+.secondary_restart_btn:active {
+  transform: scale(0.99);
+}
+
+/* Не забудьте добавить disabled-стейт для защиты от двойных кликов */
+.restart_btn:disabled, .secondary_restart_btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}

@@ -1,0 +1,186 @@
+/* Базовые контейнеры с ограничением по ширине */
+.timeline_container,
+.welcome_wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Приветственный экран */
+.welcome_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.course_title {
+  font: var(--font-xl);
+  color: var(--color-black);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.course_description {
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Кнопки */
+.primary_button {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+  font: var(--font-ml);
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.primary_button:active {
+  background-color: var(--color-blue-dark);
+}
+
+.primary_button:disabled {
+  background-color: var(--color-grey-light);
+  color: var(--color-grey);
+  cursor: not-allowed;
+}
+
+.secondary_back_button {
+  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  font: var(--font-m);
+  border: 1px solid var(--color-secondary);
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* ==========================================================================
+   Новая улучшенная шапка (Двухуровневая структура)
+   ========================================================================== */
+
+.timeline_header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+/* Верхний ряд: Кнопка назад | Текст | Заглушка для центровки */
+.top_bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.inline_back_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font: var(--font-xl); /* Используем крупный шрифт для красивой стрелочки ‹ */
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+}
+
+.header_info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step_counter {
+  font: var(--font-s);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.current_step_title {
+  font: var(--font-m);
+  font-weight: 600;
+  color: var(--color-black);
+  margin: 4px 0 0 0;
+}
+
+/* Фантомный блок справа равен по ширине кнопке назад. 
+   Гарантирует, что заголовок будет идеально по центру экрана */
+.right_spacer {
+  width: 32px; 
+}
+
+/* Нижний ряд: Прогресс-бар в стиле сторис */
+.stepper_container {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.step_indicator {
+  flex: 1;
+  height: 4px;
+  background-color: var(--color-secondary); /* Неактивный серый трек */
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
+}
+
+/* Пройденные шаги окрашиваются в основной цвет темы */
+.step_completed {
+  background-color: var(--color-primary);
+}
+
+/* Текущий активный шаг выделяется цветом VK */
+.step_current {
+  background-color: var(--color-blue-vk);
+}
+
+/* ==========================================================================
+   Остальные системные элементы
+   ========================================================================== */
+
+.error_alert {
+  background-color: rgba(243, 4, 4, 0.1);
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
+  font: var(--font-s);
+  padding: 12px;
+  border-radius: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.block_content_area {
+  width: 100%;
+}
+
+.loader_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+}

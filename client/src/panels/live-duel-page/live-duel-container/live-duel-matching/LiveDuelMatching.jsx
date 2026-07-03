@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-
+ 
 import {
-  fetchFallbackToAiBot,
+  fetchStartLiveDuelAiBot,
   fetchCheckRoomStatus,
   setSearchStatus,
   resetLiveDuelState,
@@ -83,7 +83,7 @@ const LiveDuelMatching = () => {
       return
     }
 
-    dispatch(fetchFallbackToAiBot({ roomId }))
+    dispatch(fetchStartLiveDuelAiBot({ roomId }))
   }
 
   const handleSubscribeMock = () => {

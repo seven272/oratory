@@ -1,10 +1,13 @@
 import dayjs from 'dayjs'
 import crypto from 'crypto'
+import mongoose from 'mongoose'
 
-import LiveRoom from '../models/LiveRoom.js'
+import LiveDuel from '../models/LiveDuel.js'
 import User from '../models/User.js'
 import { getXpThreshold } from '../utils/fnForControllers.js'
 import { checkAchievements } from '../utils/achievementService.js'
+import generateDuelData from '../utils/liveDuelTopicSelector.js'
+import { DUEL_TOPICS } from '../constants/duelTopics.js'
 
 // Вспомогательный хелпер для получения условий "активного" календарного слота
 const getActiveCalendarQuery = (userId) => ({
@@ -14,26 +17,7 @@ const getActiveCalendarQuery = (userId) => ({
   scheduledAt: { $gt: new Date() }, // Слот еще не просрочен
 })
 
-// Пул заготовленных тем для дуэлей
-const DUEL_TOPICS = [
-  {
-    title:
-      'Искусственный интеллект заменит учителей в школах к 2030 году',
-    sideA: 'За',
-    sideB: 'Против',
-  },
-  {
-    title:
-      'Удаленная работа эффективнее для карьеры, чем работа в офисе',
-    sideA: 'За',
-    sideB: 'Против',
-  },
-  {
-    title: 'Пицца с ананасами — это кулинарный шедевр',
-    sideA: 'За',
-    sideB: 'Против',
-  },
-]
+
 
 // Инициализация комнаты (для Быстрого поиска, Ссылки или Календаря)
 const createRoom = async (req, res) => {
@@ -44,7 +28,7 @@ const createRoom = async (req, res) => {
 
     // Если создается календарный слот — проверяем лимит
     if (creationType === 'calendar') {
-      const activeSlotsCount = await LiveRoom.countDocuments(
+      const activeSlotsCount = await LiveDuel.countDocuments(
         getActiveCalendarQuery(userId),
       )
 
@@ -64,7 +48,7 @@ const createRoom = async (req, res) => {
     const roomData = {
       userA: userId,
       creationType,
-      topic: randomTopic,
+      topic: generateDuelData(),
       status: 'pending',
     }
 
@@ -76,7 +60,7 @@ const createRoom = async (req, res) => {
       roomData.scheduledAt = new Date(scheduledAt)
     }
 
-    const room = await LiveRoom.create(roomData)
+    const room = await LiveDuel.create(roomData)
 
     return res.status(201).json({ success: true, room })
   } catch (error) {
@@ -96,15 +80,15 @@ const joinRoom = async (req, res) => {
 
     // 1. Поиск комнаты в зависимости от сценария входных данных
     if (inviteToken) {
-      room = await LiveRoom.findOne({
+      room = await LiveDuel.findOne({
         inviteToken,
         status: 'pending',
       })
     } else if (roomId) {
-      room = await LiveRoom.findById(roomId)
+      room = await LiveDuel.findById(roomId)
     } else {
       // Быстрый поиск: ищем любую свободную комнату, где создатель НЕ текущий пользователь
-      room = await LiveRoom.findOne({
+      room = await LiveDuel.findOne({
         creationType: 'quick_search',
         status: 'pending',
         userA: { $ne: userBId },
@@ -174,7 +158,7 @@ const checkRoomStatus = async (req, res) => {
         .json({ success: false, message: 'ID комнаты не передан' })
     }
 
-    const room = await LiveRoom.findById(roomId)
+    const room = await LiveDuel.findById(roomId)
 
     if (!room) {
       return res
@@ -191,68 +175,29 @@ const checkRoomStatus = async (req, res) => {
   }
 }
 
-//  Фолбэк на ИИ-бота (Вызывается фронтендом, если за 30 сек никто не зашел в быстрый поиск/ссылку)
-const fallbackToAi = async (req, res) => {
-  try {
-    // Принимаем параметр в формате camelCase из измененного слайса
-    const { roomId } = req.body
-    const room = await LiveRoom.findById(roomId)
-
-    if (!room || room.status !== 'pending') {
-      return res.status(400).json({
-        success: false,
-        message: 'Невозможно переключить комнату на ИИ',
-      })
-    }
-
-    // Записываем свойства строго под новую Mongoose-схему
-    room.isAiBot = true
-    room.status = 'active'
-    room.vkCallLink = ''
-    await room.save()
-
-    // Возвращаем стартовую реплику от ИИ-оппонента (используем sideB вместо side_b)
-    const aiFirstGreeting = `Привет! Я твой ИИ-оппонент на сегодня. Наша тема: "${room.topic.title}". Моя позиция: я "${room.topic.sideB}". Начинай свой монолог, я внимательно слушаю!`
-
-    return res.status(200).json({
-      success: true,
-      message: 'Подключен ИИ-бот',
-      room,
-      aiGreeting: aiFirstGreeting, // Ключ изменен под extraReducers слайса
-    })
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: error.message })
-  }
-}
 
 const submitRating = async (req, res) => {
   try {
-    // Принимаем параметры в формате camelCase из измененного слайса
     const { roomId, rating } = req.body
-    const userId = req.userId // Используем req.userId из вашего мидлвара checkAuth
+    const userId = req.userId
+
     if (!roomId) {
       return res
         .status(400)
         .json({ success: false, message: 'roomId обязателен' })
     }
 
-    // 1. Находим комнату живой дуэли
-    const room = await LiveRoom.findById(roomId)
+    const room = await LiveDuel.findById(roomId)
     if (!room) {
       return res
         .status(404)
         .json({ success: false, message: 'Комната не найдена' })
     }
 
-    // 2. ВЗАИМНОЕ ОЦЕНИВАНИЕ И ЗАЩИТА ОТ НАКРУТКИ НАГРАД
-    // Переводим статус комнаты в completed (дуэль завершена)
     room.status = 'completed'
 
-    // Проверяем роль текущего пользователя и записываем оценку в нужное поле
+    // Защита от накрутки наград
     if (room.userA.toString() === userId.toString()) {
-      // Если оценка уже была им выставлена, значит он вызывает эндпоинт повторно
       if (room.ratingFromA !== null) {
         return res
           .status(400)
@@ -266,7 +211,6 @@ const submitRating = async (req, res) => {
       room.userB &&
       room.userB.toString() === userId.toString()
     ) {
-      // То же самое для пользователя B
       if (room.ratingFromB !== null) {
         return res
           .status(400)
@@ -285,10 +229,6 @@ const submitRating = async (req, res) => {
         })
     }
 
-    // Сохраняем состояние комнаты (новые поля оценок и статус)
-    await room.save()
-
-    // 3. Находим пользователя для расчета геймификации
     const user = await User.findById(userId)
     if (!user) {
       return res
@@ -296,7 +236,7 @@ const submitRating = async (req, res) => {
         .json({ success: false, message: 'Пользователь не найден' })
     }
 
-    // 4. Расчет календарного стрика активности (UTC 00:00:00)
+    // Расчет календарного стрика активности (UTC 00:00:00)
     const now = new Date()
     const todayMs = new Date(now).setUTCHours(0, 0, 0, 0)
     const lastDate = user.streak.lastCompletedDate
@@ -318,27 +258,35 @@ const submitRating = async (req, res) => {
     }
     user.streak.lastCompletedDate = now
 
-    // 5. Вычисление множителя опыта за серию дней
+    // Вычисление множителя опыта за серию дней
     let multiplier = 1
     if (user.streak.current >= 3) multiplier = 1.2
     if (user.streak.current >= 7) multiplier = 1.5
 
     // Фиксированные базовые награды за живую дуэль
-    const baseRewardXp = 250
-    const baseRewardCoins = 25
+    const baseRewardXp = 150
+    const baseRewardCoins = 15
 
     // Итоговые награды с учетом буста за стрик дней
     const earnedXp = Math.round(baseRewardXp * multiplier)
     const earnedCoins = Math.round(baseRewardCoins * multiplier)
 
-    // 6. Начисление наград в документ пользователя
+    // Сохраняем опыт в документ комнаты
+    if (room.userA.toString() === userId.toString()) {
+      room.pointsEarnedA = earnedXp
+    } else {
+      room.pointsEarnedB = earnedXp
+    }
+    await room.save()
+
+    // Начисление наград в документ пользователя
     user.stats.lifetimeXp += earnedXp
     user.weeklyXp += earnedXp
     user.progression.xp += earnedXp
     user.progression.coins += earnedCoins
     user.stats.totalExercises = (user.stats.totalExercises || 0) + 1
 
-    // 7. Цикл динамического повышения уровней ("Стакан" через while)
+    // Повышение уровней ("Стакан")
     let isLevelUp = false
     while (
       user.progression.xp >= getXpThreshold(user.progression.level)
@@ -348,40 +296,38 @@ const submitRating = async (req, res) => {
       isLevelUp = true
     }
 
-    // Запись в историю выполнения конкретного упражнения
+    // Запись статистики для паутинки навыков
     const exAlias = 'live-duel'
+    const fixedDuelScore = 150 // Всегда 250 баллов за факт участия независимо от оценки
+
     const statIndex = user.stats.exerciseStats.findIndex(
       (ex) => ex.alias === exAlias,
     )
     if (statIndex > -1) {
       user.stats.exerciseStats[statIndex].completionsCount += 1
+      user.stats.exerciseStats[statIndex].totalPoints +=
+        fixedDuelScore
     } else {
       user.stats.exerciseStats.push({
         alias: exAlias,
         title: 'Живая дуэль',
-        totalPoints: 0,
+        totalPoints: fixedDuelScore,
         completionsCount: 1,
       })
     }
 
-    // 8. Проверка сквозных ачивок платформы (алиас 'live_pioneer' для фиксации первой дуэли)
+    // Проверка ачивок
     const newAwards = checkAchievements(
       user,
       false,
-      earnedXp,
+      fixedDuelScore,
       exAlias,
     )
+    user.progression.lastAwarded =
+      newAwards && newAwards.length > 0 ? newAwards : []
 
-    if (newAwards && newAwards.length > 0) {
-      user.progression.lastAwarded = newAwards
-    } else {
-      user.progression.lastAwarded = []
-    }
-
-    // Сохраняем обновленный профиль в MongoDB
     await user.save()
 
-    // Получаем массив уникальных дат выполненных дейликов
     const completedDays = [
       ...new Set(
         user.dailyProgress
@@ -390,7 +336,6 @@ const submitRating = async (req, res) => {
       ),
     ]
 
-    // 9. Возвращаем клиенту успешный ответ (ключи переведены на camelCase)
     return res.status(200).json({
       success: true,
       message: 'Дуэль успешно завершена, награды начислены',
@@ -405,7 +350,7 @@ const submitRating = async (req, res) => {
         xp: user.progression.xp,
         coins: user.progression.coins,
         streak: user.streak.current,
-        completedDays: completedDays,
+        completed_days: completedDays,
         nextThreshold: getXpThreshold(user.progression.level),
       },
     })
@@ -422,7 +367,7 @@ const getCalendarRooms = async (req, res) => {
   try {
     const userId = req.userId // ID текущего юзера
 
-    const rooms = await LiveRoom.find({
+    const rooms = await LiveDuel.find({
       creationType: 'calendar',
       status: 'pending',
       scheduledAt: { $gte: new Date() }, // Только будущие сессии
@@ -444,7 +389,7 @@ const getMyActiveSlots = async (req, res) => {
   try {
     const userId = req.userId
 
-    const slots = await LiveRoom.find({
+    const slots = await LiveDuel.find({
       creationType: 'calendar',
       scheduledAt: { $gte: new Date() }, // Только будущие
       $or: [
@@ -479,7 +424,7 @@ const updateSlotDate = async (req, res) => {
     }
 
     // Ищем строго под новые ключи userA
-    const room = await LiveRoom.findOne({
+    const room = await LiveDuel.findOne({
       _id: roomId,
       userA: userId,
       status: 'pending',
@@ -514,7 +459,7 @@ const deleteSlot = async (req, res) => {
     const userId = req.userId
 
     // Атомарно находим и удаляем запись с учетом ключа userA
-    const room = await LiveRoom.findOneAndDelete({
+    const room = await LiveDuel.findOneAndDelete({
       _id: roomId,
       userA: userId,
       status: 'pending',
@@ -542,7 +487,7 @@ const checkInviteToken = async (req, res) => {
     const { token } = req.params
 
     // Ищем активную комнату, которая создана по ссылке и еще ждет игрока
-    const room = await LiveRoom.findOne({
+    const room = await LiveDuel.findOne({
       inviteToken: token,
       status: 'pending',
     }).populate('userA', 'displayName avatar') // подтянем данные Создателя, чтобы показать Гостю на экране входа
@@ -569,12 +514,12 @@ const checkRatingStatus = async (req, res) => {
     const { roomId } = req.params
     const currentUserId = req.userId
 
-    const room = await LiveRoom.findById(roomId)
+    const room = await LiveDuel.findById(roomId)
     if (!room) {
-     
-      return res.status(404).json({ success: false, message: 'Комната не найдена' })
+      return res
+        .status(404)
+        .json({ success: false, message: 'Комната не найдена' })
     }
- 
 
     let yourRatingToOpponent = null
     let opponentRatingToYou = null
@@ -583,29 +528,150 @@ const checkRatingStatus = async (req, res) => {
     if (room.userA.toString() === currentUserId.toString()) {
       yourRatingToOpponent = room.ratingFromA
       opponentRatingToYou = room.ratingFromB
-    } else if (room.userB && room.userB.toString() === currentUserId.toString()) {
+    } else if (
+      room.userB &&
+      room.userB.toString() === currentUserId.toString()
+    ) {
       yourRatingToOpponent = room.ratingFromB
       opponentRatingToYou = room.ratingFromA
     } else {
-      return res.status(403).json({ success: false, message: 'Доступ запрещен' })
+      return res
+        .status(403)
+        .json({ success: false, message: 'Доступ запрещен' })
     }
 
     res.json({
       success: true,
       data: {
         yourRatingToOpponent, // null или число
-        opponentRatingToYou,   // null или число (фронтенд ждет, пока тут появится не null)
-        isAiBot: room.isAiBot
-      }
+        opponentRatingToYou, // null или число (фронтенд ждет, пока тут появится не null)
+        isAiBot: room.isAiBot,
+      },
     })
   } catch (error) {
     console.error('Ошибка в checkRatingStatus:', error)
-    res.status(500).json({ success: false, message: 'Ошибка сервера' })
+    res
+      .status(500)
+      .json({ success: false, message: 'Ошибка сервера' })
   }
 }
 
+const getLiveDuelStats = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.userId)
+
+    // 1. Быстрый агрегационный запрос только для расчета общих цифр и распределения оценок
+    const stats = await LiveDuel.aggregate([
+      {
+        $match: {
+          status: 'completed',
+          $or: [{ userA: userId }, { userB: userId }],
+        },
+      },
+      {
+        $project: {
+          receivedRating: {
+            $cond: {
+              if: { $eq: ['$userA', userId] },
+              then: '$ratingFromB',
+              else: '$ratingFromA',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalRooms: { $sum: 1 },
+          ratedRoomsCount: {
+            $sum: {
+              $cond: [{ $ne: ['$receivedRating', null] }, 1, 0],
+            },
+          },
+          averageRating: {
+            $avg: {
+              $cond: [
+                { $ne: ['$receivedRating', null] },
+                '$receivedRating',
+                '$$REMOVE',
+              ],
+            },
+          },
+          allRatings: { $push: '$receivedRating' }, // Собираем только массив оценок (числа)
+        },
+      },
+    ])
+
+    // Если у пользователя вообще еще нет завершенных комнат
+    if (stats.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          averageRating: 5.0,
+          totalRooms: 0,
+          feedbackRate: 0,
+          distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+          history: [],
+        },
+      })
+    }
+
+    const data = stats[0]
+
+    // 2. Считаем распределение оценок по звездам (1-5)
+    const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    data.allRatings.forEach((r) => {
+      if (r >= 1 && r <= 5) distribution[r]++
+    })
+
+    // Процент комнат, где пользователю оставили отзыв
+    const feedbackRate =
+      data.totalRooms > 0
+        ? Math.round((data.ratedRoomsCount / data.totalRooms) * 100)
+        : 0
+
+    // 3. ОТДЕЛЬНЫЙ ОПТИМИЗИРОВАННЫЙ ЗАПРОС: Достаем строго 1 самую свежую дуэль
+    const lastRoom = await LiveDuel.findOne({
+      status: 'completed',
+      $or: [{ userA: userId }, { userB: userId }],
+    })
+      .sort({ createdAt: -1 }) // Сортируем на уровне индекса базы данных (очень быстро)
+      .limit(1)
+
+    // Формируем массив истории из одного элемента в том формате, который ожидал ваш фронтенд
+    const history = []
+    if (lastRoom) {
+      const isUserA = lastRoom.userA.toString() === userId.toString()
+      history.push({
+        topic: lastRoom.topic?.title || 'Без темы',
+        rating: isUserA ? lastRoom.ratingFromB : lastRoom.ratingFromA,
+        date: lastRoom.createdAt,
+        points: isUserA ? lastRoom.pointsEarnedA : lastRoom.pointsEarnedB,
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        averageRating: data.averageRating
+          ? Number(data.averageRating.toFixed(2))
+          : 5.0,
+        totalRooms: data.totalRooms,
+        feedbackRate,
+        distribution,
+        history,
+      },
+    })
+  } catch (error) {
+    console.error('Ошибка в getLiveDuelStats:', error)
+    return res
+      .status(500)
+      .json({ success: false, message: 'Ошибка сервера' })
+  }
+}
+
+
 export {
-  fallbackToAi,
   createRoom,
   joinRoom,
   checkRoomStatus,
@@ -615,5 +681,6 @@ export {
   updateSlotDate,
   deleteSlot,
   checkInviteToken,
-  checkRatingStatus
+  checkRatingStatus,
+  getLiveDuelStats,
 }

@@ -58,24 +58,6 @@ const fetchCheckRoomStatus = createAsyncThunk(
   },
 )
 
-// Фолбэк на ИИ-бота при тайм-ауте
-const fetchFallbackToAiBot = createAsyncThunk(
-  'liveDuel/fetchFallbackToAiBot',
-  async (roomPayload, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.post('/live/fallback-ai', {
-        roomId: roomPayload.roomId,
-      })
-      return response.data
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-          'Ошибка при подключении ИИ-бота',
-      )
-    }
-  },
-)
-
 // Сохранение рейтинга / завершение дуэли
 const fetchSubmitLiveRating = createAsyncThunk(
   'liveDuel/fetchSubmitLiveRating',
@@ -196,6 +178,82 @@ const fetchCheckRatingStatus = createAsyncThunk(
     }
   },
 )
+// статистика по дуэлям
+const fetchLiveDuelStats = createAsyncThunk(
+  'liveDuel/fetchLiveDuelStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get('/live/dashboard-stats')
+      console.log('Ответ сервера для дуэлей:', res.data)
+      console.log(res.data.data)
+      return res.data.data
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          'Ошибка загрузки статистики дуэлей',
+      )
+    }
+  },
+)
+
+// Фолбэк на ИИ-бота при тайм-ауте
+const fetchStartLiveDuelAiBot = createAsyncThunk(
+  'liveDuel/fetchStartLiveDuelAiBot',
+  async (roomPayload, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/live/start-ai', {
+        roomId: roomPayload.roomId,
+      })
+      return response.data
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          'Ошибка при подключении ИИ-бота',
+      )
+    }
+  },
+)
+ const fetchSendLiveDuelMessageAiBot = createAsyncThunk(
+  'liveDuel/fetchSendLiveDuelMessageAiBot',
+  async ({ roomId, audioBlob }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData()
+      formData.append('roomId', roomId)
+      
+      if (audioBlob) {
+        formData.append('audio', audioBlob, 'speech.wav') // Передаем эталонный WAV-файл
+      }
+
+      const response = await axiosInstance.post('/live/send-ai-message', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data // Возвращает { success: true, userText: '...', answer: '...', isFinished: true/false }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Ошибка сервера при отправке аудиозаписи',
+      )
+    }
+  }
+)
+
+// --- Завершение дуэли и получение вердикта ИИ-судьи ---
+ const fetchFinishLiveDuelAiBot = createAsyncThunk(
+  'liveDuel/fetchFinishLiveDuelAiBot',
+  async ({ roomId }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/live/finish-ai', {
+        roomId,
+      })
+      return response.data // Возвращает { success: true, evaluation: {...}, earnedXp: 250, ... }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Ошибка при получении оценки ИИ-судьи',
+      )
+    }
+  }
+)
 
 // --- СЛАЙС ---
 
@@ -209,6 +267,15 @@ const initialState = {
   isRatingSubmitted: false, // Флаг, что ТЕКУЩИЙ пользователь отправил оценку (или нажал Пропустить)
   loading: false,
   error: null,
+  duelStats: {
+    averageRating: 5.0,
+    totalRooms: 0,
+    feedbackRate: 0,
+    distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    history: [],
+  },
+  statsLoading: false,
+  statsError: null,
 }
 
 const liveDuelSlice = createSlice({
@@ -225,6 +292,15 @@ const liveDuelSlice = createSlice({
       state.isRatingSubmitted = false
       state.loading = false
       state.error = null
+      state.duelStats = {
+        averageRating: 5.0,
+        totalRooms: 0,
+        feedbackRate: 0,
+        distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        history: [],
+      }
+      state.statsLoading = false
+      state.statsError = null
     },
     setSearchStatus: (state, action) => {
       state.searchStatus = action.payload
@@ -275,23 +351,6 @@ const liveDuelSlice = createSlice({
         state.searchStatus = 'failed'
         state.error = action.payload
       })
-
-      // --- Переключение на ИИ-бота ---
-      .addCase(fetchFallbackToAiBot.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(fetchFallbackToAiBot.fulfilled, (state, action) => {
-        state.loading = false
-        state.currentRoom = action.payload.room
-        state.aiGreeting = action.payload.aiGreeting
-        state.searchStatus = 'active'
-      })
-      .addCase(fetchFallbackToAiBot.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
-      })
-
       // --- Проверка статуса комнаты (Пуллинг) ---
       .addCase(fetchCheckRoomStatus.pending, (state) => {
         state.error = null
@@ -408,6 +467,68 @@ const liveDuelSlice = createSlice({
         state.loading = false
         state.error = action.payload
       })
+      // --- ПОЛУЧЕНИЕ СТАТИСТИКИ ДУЭЛЕЙ ---
+      .addCase(fetchLiveDuelStats.pending, (state) => {
+        state.statsLoading = true
+        state.statsError = null
+      })
+      .addCase(fetchLiveDuelStats.fulfilled, (state, action) => {
+        state.statsLoading = false
+        state.duelStats = action.payload
+      })
+      .addCase(fetchLiveDuelStats.rejected, (state, action) => {
+        state.statsLoading = false
+        state.statsError = action.payload
+      })
+         // --- Переключение на ИИ-бота ---
+      .addCase(fetchStartLiveDuelAiBot.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchStartLiveDuelAiBot.fulfilled, (state, action) => {
+        state.loading = false
+        state.currentRoom = action.payload.room
+        state.aiGreeting = action.payload.aiGreeting
+        state.searchStatus = 'active'
+      })
+      .addCase(fetchStartLiveDuelAiBot.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+      // --- отправка сообщений ии боты ---
+      .addCase(fetchSendLiveDuelMessageAiBot.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchSendLiveDuelMessageAiBot.fulfilled, (state, action) => {
+        state.loading = false
+        // Здесь мы не перезаписываем всю комнату, так как бэкенд возвращает только точечные данные (answer, isFinished).
+        // Добавление сообщений в массив чата мы сделаем прямо в UI-компоненте или через локальный стейт, 
+        // чтобы сохранить плавность интерфейса. При необходимости можно обновить свойства в currentRoom.
+      })
+      .addCase(fetchSendLiveDuelMessageAiBot.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+       // --- Финализация и судейство ИИ ---
+       .addCase(fetchFinishLiveDuelAiBot.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchFinishLiveDuelAiBot.fulfilled, (state, action) => {
+        state.loading = false
+        // Переводим статус комнаты в выполненный в глобальном стейте
+        if (state.currentRoom) {
+          state.currentRoom.status = 'completed'
+        }
+     
+      })
+      .addCase(fetchFinishLiveDuelAiBot.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+
+
   },
 })
 
@@ -416,7 +537,6 @@ export const { resetLiveDuelState, setSearchStatus } =
 export {
   fetchCreateLiveRoom,
   fetchJoinLiveRoom,
-  fetchFallbackToAiBot,
   fetchCheckRoomStatus,
   fetchSubmitLiveRating,
   fetchGetCalendarRooms,
@@ -425,5 +545,9 @@ export {
   fetchUpdateLiveRoomDate,
   fetchCheckInviteToken,
   fetchCheckRatingStatus,
+  fetchLiveDuelStats,
+  fetchStartLiveDuelAiBot,
+  fetchSendLiveDuelMessageAiBot,
+  fetchFinishLiveDuelAiBot
 }
 export default liveDuelSlice.reducer

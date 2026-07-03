@@ -9,6 +9,7 @@ import shopSlice from './slices/shopSlice'
 import challengeSlice from './slices/challengeSlice'
 import adminSlice from './slices/adminSlice'
 import liveDuelSlice from './slices/liveDuelSlice'
+import courseSlice from './slices/courseSlice'
 //слайсы ИИ тренажеров
 import aiSlices from './slices/ai-exercises/index'
 
@@ -24,6 +25,7 @@ const store = configureStore({
     challenge: challengeSlice,
     admin: adminSlice,
     liveDuel: liveDuelSlice,
+    course: courseSlice,
     //ИИ тренажеры
     ...aiSlices
   },

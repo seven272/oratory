@@ -2,10 +2,10 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import {
-  fetchFallbackToAiBot,
+  fetchStartLiveDuelAiBot,
   fetchCheckRoomStatus,
   setSearchStatus,
-  resetLiveDuelState
+  resetLiveDuelState,
 } from '../../../../redux/slices/liveDuelSlice'
 import styles from './LiveDuelLinkWaiting.module.css'
 import LiveDuelAiOffer from '../../live-duel-ui/live-duel-ai-offer/LiveDuelAiOffer'
@@ -19,7 +19,7 @@ const LiveDuelLinkWaiting = () => {
     (state) => state.liveDuel,
   )
   const { user } = useSelector((state) => state.profile)
-  const isPremium = user?.isPremium || false 
+  const isPremium = user?.isPremium || false
 
   const [timerSeconds, setTimerSeconds] = useState(10)
   const [isCopied, setIsCopied] = useState(false)
@@ -29,7 +29,7 @@ const LiveDuelLinkWaiting = () => {
   const countdownRef = useRef(null)
   const pollingRef = useRef(null)
 
-  const roomId = currentRoom?._id 
+  const roomId = currentRoom?._id
 
   const inviteUrl = currentRoom?.inviteToken
     ? `${window.location.origin}/#/live-duel/join/${currentRoom.inviteToken}`
@@ -88,7 +88,7 @@ const LiveDuelLinkWaiting = () => {
       return
     }
 
-    dispatch(fetchFallbackToAiBot({ roomId }))
+    dispatch(fetchStartLiveDuelAiBot({ roomId }))
   }
 
   const handleSubscribeMock = () => {
@@ -104,21 +104,21 @@ const LiveDuelLinkWaiting = () => {
     dispatch(resetLiveDuelState())
   }
 
-    if (showPaywall) {
+  if (showPaywall) {
     return (
-      <LiveDuelPaywall 
-        onSubscribe={handleSubscribeMock} 
-        onBack={() => setShowPaywall(false)} 
+      <LiveDuelPaywall
+        onSubscribe={handleSubscribeMock}
+        onBack={() => setShowPaywall(false)}
       />
     )
   }
 
   if (showAiOffer) {
     return (
-      <LiveDuelAiOffer 
-        onAccept={handleAiClick} 
-        onBack={handleGoMainScreen} 
-        loading={loading} 
+      <LiveDuelAiOffer
+        onAccept={handleAiClick}
+        onBack={handleGoMainScreen}
+        loading={loading}
       />
     )
   }
@@ -135,7 +135,9 @@ const LiveDuelLinkWaiting = () => {
 
       <div className={styles.timer_badge}>
         Ждем еще:{' '}
-        <span className={styles.seconds_count}>{timerSeconds} сек</span>
+        <span className={styles.seconds_count}>
+          {timerSeconds} сек
+        </span>
       </div>
 
       <p className={styles.matching_hint}>

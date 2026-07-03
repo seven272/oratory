@@ -15,6 +15,8 @@ import ChallengesPage from '../panels/challenges-page/ChallengesPage'
 import AdminPage from '../panels/admin-page/AdminPage'
 import LiveDuelPage from '../panels/live-duel-page/LiveDuelPage'
 import LiveDuelJoinPage from '../panels/live-duel-join-page/LiveDuelJoinPage'
+import CoursesPage from '../panels/courses-page/CoursesPage'
+import SelectedCoursePage from '../panels/selected-course-page/SelectedCoursePage'
 
 const MainView = ({ activePanel, id }) => {
   return (
@@ -31,7 +33,9 @@ const MainView = ({ activePanel, id }) => {
       <ChallengesPage id="challenges-panel" />
       <AdminPage id="admin-panel" />
       <LiveDuelPage id="live-duel-panel" />
-      <LiveDuelJoinPage  id="live-duel-join-panel" />
+      <LiveDuelJoinPage id="live-duel-join-panel" />
+      <CoursesPage id="courses-panel" />
+      <SelectedCoursePage id="select-course-panel" />
     </View>
   )
 }

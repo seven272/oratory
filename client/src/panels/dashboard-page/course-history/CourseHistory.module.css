@@ -1,0 +1,143 @@
+.history_container {
+  width: 100%;
+  max-width: 480px;
+  margin: 32px auto 0 auto;
+  box-sizing: border-box;
+}
+
+.history_title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-black, #000000);
+  margin-bottom: 16px;
+  text-align: left;
+  letter-spacing: -0.2px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history_item {
+  background-color: var(--vkui--color_background_cards, #f9fafb);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: background-color 0.15s ease;
+}
+
+.item_header {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.item_header:hover {
+  background-color: var(--vkui--color_background_secondary, #f0f2f5);
+}
+
+.meta_info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.attempt_number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-black, #000000);
+}
+
+.finish_date {
+  font-size: 12px;
+  color: var(--color-grey, #818c99);
+}
+
+.score_zone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Компактные бейджи статуса */
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.badge_success {
+  background-color: rgba(4, 195, 43, 0.08);
+  color: #04c32b;
+}
+
+.badge_danger {
+  background-color: rgba(255, 51, 68, 0.08);
+  color: #ff3344;
+}
+
+.score_value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-black, #000000);
+}
+
+.score_max {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-grey, #939cad);
+}
+
+.arrow {
+  font-size: 10px;
+  color: var(--color-grey, #818c99);
+  width: 12px;
+  text-align: center;
+}
+
+/* Выпадающая панель с разбором ИИ */
+.item_details {
+  padding: 16px;
+  background-color: #ffffff;
+  border-top: 1px solid var(--vkui--color_separator, #f0f2f5);
+  text-align: left;
+  font-size: 14px;
+}
+
+.detail_row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-primary, #454d56);
+  margin-bottom: 12px;
+}
+
+.ai_feedback_block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: var(--vkui--color_background_cards, #f9fafb);
+  border-left: 2px solid var(--color-blue-vk, #0077ff);
+  padding: 10px 12px;
+  border-radius: 0 6px 6px 0;
+}
+
+.feedback_label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-black, #000000);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.feedback_text {
+  font-size: 13px;
+  color: var(--color-text-primary, #454d56);
+  line-height: 1.45;
+  margin: 0;
+}

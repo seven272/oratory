@@ -1,7 +1,7 @@
 import cron from 'node-cron'
 import User from '../models/User.js'
 import UserChallenge from '../models/UserChallenge.js'
-import LiveRoom from '../models/LiveRoom.js'
+import LiveDuel from '../models/LiveDuel.js'
 
 const initCronJobs = () => {
   // Выражение '0 0 * * 1' означает: Ровно в 00:00, каждый понедельник (1)
@@ -52,7 +52,7 @@ const initCronJobs = () => {
 
       // ВЕТКА А: Быстрый поиск и Прямые ссылки
       // Ключи изменены под camelCase: creationType, createdAt
-      const instantRoomsResult = await LiveRoom.updateMany(
+      const instantRoomsResult = await LiveDuel.updateMany(
         {
           status: 'pending',
           creationType: { $in: ['quick_search', 'direct_link'] },
@@ -63,7 +63,7 @@ const initCronJobs = () => {
 
       // ВЕТКА Б: Календарные слоты
       // Ключи изменены под camelCase: creationType, scheduledAt
-      const calendarRoomsResult = await LiveRoom.updateMany(
+      const calendarRoomsResult = await LiveDuel.updateMany(
         {
           status: 'pending',
           creationType: 'calendar',
@@ -77,7 +77,7 @@ const initCronJobs = () => {
         Date.now() - 7 * 24 * 60 * 60 * 1000,
       )
 
-      const cleanTrashResult = await LiveRoom.deleteMany({
+      const cleanTrashResult = await LiveDuel.deleteMany({
         status: 'canceled', // Удаляем только отмененные. 'completed' НЕ ТРОГАЕМ!
         createdAt: { $lt: sevenDaysAgo },
       })

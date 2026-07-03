@@ -22,8 +22,9 @@ import { fetchFinishStopWord } from './ai-exercises/stopWordSlice'
 import { fetchFinishPoemActing } from './ai-exercises/poemActingSlice'
 import { fetchFinishPoemRap } from './ai-exercises/poemRapSlice'
 import { fetchFinishRadioHost } from './ai-exercises/radioHostSlice'
-import {fetchFinishRandomWord} from './ai-exercises/randomWordSlice'
+import { fetchFinishRandomWord } from './ai-exercises/randomWordSlice'
 import { fetchSubmitLiveRating } from './liveDuelSlice'
+import { fetchFinishLiveDuelAiBot } from './liveDuelSlice'
 
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
@@ -153,7 +154,8 @@ const profileSlice = createSlice({
           fetchFinishPoemRap.fulfilled,
           fetchFinishRadioHost.fulfilled,
           fetchFinishRandomWord.fulfilled,
-          fetchSubmitLiveRating.fulfilled
+          fetchSubmitLiveRating.fulfilled,
+          fetchFinishLiveDuelAiBot.fulfilled,
         ),
         (state, action) => {
           // Защита: если сессия завершилась без оценки, stats будет отсутствовать
@@ -183,7 +185,7 @@ const profileSlice = createSlice({
                 ...action.payload.newAchievements,
               )
             }
-          } 
+          }
 
           // Помечаем данные как "устаревшие" для обновления радарной карты
           state.isStale = true

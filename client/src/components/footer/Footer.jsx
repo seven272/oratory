@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { TbHandClick } from 'react-icons/tb'
 import { FaBasketShopping, FaPeopleGroup } from 'react-icons/fa6'
-import { GiDuel } from "react-icons/gi";
+import { LuSwords } from "react-icons/lu";
+import { PiStudent } from "react-icons/pi";
 
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 
@@ -49,16 +50,16 @@ const Footer = () => {
           className={`${styles.btn} ${activeItem === 3 ? styles.active : ''}`}
           onClick={() => routeNavigator.go('/live-duel')}
         >
-          <GiDuel size={25} className={styles.btn_icon} />
+          <LuSwords size={25} className={styles.btn_icon} />
           <span className={styles.btn_title}>Живые дуэли</span>
         </li>
 
         <li
           className={`${styles.btn} ${activeItem === 4 ? styles.active : ''}`}
-          onClick={() => handleClick(4)}
+          onClick={() => routeNavigator.go('/courses')}
         >
-          <TbHandClick size={25} className={styles.btn_icon} />
-          <span className={styles.btn_title}>Пункт 4</span>
+          <PiStudent size={25} className={styles.btn_icon} />
+          <span className={styles.btn_title}>Курсы</span>
         </li>
       </ul>
       {/* <span className={styles.text}>

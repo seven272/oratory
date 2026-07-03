@@ -66,6 +66,16 @@ const routers = [
     panel: 'live-duel-join-panel',
     view: 'main_view',
   },
+  {
+    path: '/courses',
+    panel: 'courses-panel',
+    view: 'main_view',
+  },
+  {
+    path: '/course/:courseCode',
+    panel: 'select-course-panel',
+    view: 'main_view',
+  },
 ]
 
 const router = createHashRouter(routers)

@@ -298,7 +298,7 @@ const finishInterview = async (req, res) => {
     const gamificationResult = await applyAiGamificationProgress(
       user,
       evaluation.totalScore,
-      'ai-inrerview',
+      'ai-interview',
       'Интервью с ИИ',
       isDaily,
     )

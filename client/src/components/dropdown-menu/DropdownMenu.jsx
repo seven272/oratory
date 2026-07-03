@@ -38,6 +38,10 @@ const DropdownMenu = () => {
       alias: 'live-duel',
     },
     {
+      title: 'курсы',
+      alias: 'courses',
+    },
+    {
       title: 'админ',
       alias: 'admin',
     },
@@ -58,6 +62,7 @@ const DropdownMenu = () => {
       'leaderboard',
       'challenges',
       'live-duel',
+      'courses',
       'admin',
     ]
 

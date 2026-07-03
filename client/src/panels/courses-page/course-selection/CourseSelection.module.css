@@ -1,0 +1,115 @@
+.selection_container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}
+
+.main_title {
+  font: var(--font-xl);
+  color: var(--color-black);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.main_description {
+  font: var(--font-m);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Сетка/Список карточек */
+.courses_list_block {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+/* Базовая карточка курса */
+.course_card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Активное/выбранное состояние карточки */
+.course_card_active {
+  border: 2px solid var(--color-blue-vk);
+  box-shadow: 0 4px 14px rgba(38, 136, 235, 0.15);
+  transform: translateY(-2px);
+}
+
+.card_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.course_tag {
+  font: var(--font-s);
+  background-color: var(--color-light-blue);
+  color: var(--color-blue-dark);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.course_reward {
+  font: var(--font-submenu);
+  color: var(--color-green);
+  font-weight: bold;
+}
+
+.course_title {
+  font: var(--font-l);
+  color: var(--color-black);
+  margin-bottom: 8px;
+}
+
+.course_text {
+  font: var(--font-m-light);
+  color: var(--color-text-dark);
+  line-height: var(--font-line-m);
+}
+
+/* Нижняя кнопка действия */
+.action_zone {
+  width: 100%;
+  margin-top: auto;
+}
+
+.menu_button_primary {
+  background-color: var(--color-blue-vk);
+  color: var(--color-white);
+  font: var(--font-ml);
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.menu_button_primary:active {
+  background-color: var(--color-blue-dark);
+}
+
+.menu_button_primary:disabled {
+  background-color: var(--color-grey-light);
+  color: var(--color-grey);
+  cursor: not-allowed;
+}

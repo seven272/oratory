@@ -1,0 +1,152 @@
+.results_container {
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.meta_zone {
+  margin-bottom: 16px;
+}
+
+/* Минималистичные аккуратные бейджи */
+.badge_neutral,
+.badge_success,
+.badge_danger {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.badge_neutral {
+  background-color: var(--vkui--color_background_secondary, #f5f5f5);
+  color: var(--vkui--color_text_secondary, #818c99);
+}
+
+.badge_success {
+  background-color: rgba(4, 195, 43, 0.08);
+  color: #04c32b;
+}
+
+.badge_danger {
+  background-color: rgba(255, 51, 68, 0.08);
+  color: #ff3344;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-black, #000000);
+  margin: 0 0 10px 0;
+  letter-spacing: -0.3px;
+}
+
+.description {
+  font-size: 15px;
+  color: var(--color-text-primary, #6f7985);
+  line-height: 1.5;
+  margin: 0 0 32px 0;
+}
+
+/* Современная двухколоночная структура метрик */
+.stats_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.stat_card {
+  background-color: var(--vkui--color_background_cards, #f9fafb);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat_label {
+  font-size: 12px;
+  color: var(--color-grey, #818c99);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.stat_value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-black, #000000);
+}
+
+.stat_max {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-grey, #939cad);
+}
+
+.text_success {
+  color: #04c32b;
+}
+
+.action_zone {
+  width: 100%;
+}
+
+/* Акцентная кнопка в стиле VK Mini Apps */
+.start_button {
+  background-color: var(--color-blue-vk, #0077ff);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.start_button:hover {
+  opacity: 0.9;
+}
+
+.start_button:active {
+  transform: scale(0.98);
+}
+
+/* Благородные и лаконичные баннеры статусов */
+.finished_banner {
+  background-color: rgba(4, 195, 43, 0.05);
+  border-left: 3px solid #04c32b;
+  color: #039e23;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.danger_banner {
+  background-color: rgba(255, 51, 68, 0.05);
+  border-left: 3px solid #ff3344;
+  color: #d61c2c;
+  padding: 14px 16px;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}

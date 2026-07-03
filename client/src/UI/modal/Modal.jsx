@@ -14,7 +14,7 @@ const Modal = ({ active, onClose, children }) => {
     const closeModal = (evt) => {
       if (evt.key === 'Escape') {
         onClose()
-      }
+      } 
     }
     window.addEventListener('keydown', closeModal)
 

@@ -60,32 +60,14 @@ const LiveDuelContainer = () => {
       case 'link_waiting':
         return <LiveDuelLinkWaiting room={currentRoom} />
       case 'slot_create':
-        return (
-          <div className={styles.sub_screen_holder}>
-            <LiveDuelCreateSlot />
-          </div>
-        )
-
-      // Новое состояние 1: Полноэкранный поиск чужих слотов в расписании
+        return <LiveDuelCreateSlot />
       case 'slots_list':
-        return (
-          // Здесь рендерится ваш текущий список слотов, очищенный от лишних кнопок меню
-          <div className={styles.sub_screen_holder}>
-            {/* Сюда прокидываются пропсы из вашего стейта */}
-            <LiveDuelSlotsList />
-          </div>
-        )
-
+        return <LiveDuelSlotsList />
       case 'active':
-        // Свойство адаптировано под camelCase (isAiBot вместо is_ai_bot)
         if (currentRoom?.isAiBot) {
           return <LiveRoomAi />
         }
         return <LiveRoomReal />
-      case 'active_real': // Демо-статус для проверки комнаты с человеком
-        return <LiveRoomReal />
-      case 'active_ai': // Демо-статус для проверки чата с ИИ
-        return <LiveRoomAi />
 
       default:
         return <LiveDuelSelection />
@@ -94,74 +76,12 @@ const LiveDuelContainer = () => {
 
   return (
     <div className={styles.container_wrapper}>
-      {/* 🛠️ ВРЕМЕННАЯ ДЕМО-ПАНЕЛЬ ДЛЯ ТЕСТИРОВАНИЯ ВЕРСТКИ */}
-      <div
-        style={{
-          background: '#fff4cc',
-          padding: '10px',
-          display: 'flex',
-          gap: '10px',
-          justifyContent: 'center',
-          borderBottom: '1px solid #ecd98c',
-          zIndex: 9999,
-        }}
-      >
-        <button onClick={() => dispatch(setSearchStatus('idle'))}>
-          1. Выбор режима
-        </button>
-        <button
-          onClick={() => dispatch(setSearchStatus('searching'))}
-        >
-          2. Поиск / Ссылка
-        </button>
-        <button
-          onClick={() => dispatch(setSearchStatus('active_real'))}
-        >
-          3. Комната (Человек)
-        </button>
-        <button
-          onClick={() => dispatch(setSearchStatus('active_ai'))}
-        >
-          4. Чат (ИИ-бот)
-        </button>
-      </div>
-
       {/* Контрастная кнопка возврата на главный экран */}
       {showBackButton && (
-        <div
-          style={{
-            width: '100%',
-            marginBottom: '12px',
-            padding: '0 4px',
-          }}
-        >
+        <div className={styles.back_button_container}>
           <button
             onClick={handleBackToMenu}
-            style={{
-              background: 'none',
-              border: '1px solid var(--color-secondary)',
-              color: 'var(--color-text-secondary)',
-              font: 'var(--font-s)',
-              fontWeight: '500',
-              padding: '8px 14px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor =
-                'var(--color-bg)'
-              e.currentTarget.style.color =
-                'var(--color-text-primary)'
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-              e.currentTarget.style.color =
-                'var(--color-text-secondary)'
-            }}
+            className={styles.back_menu_btn}
           >
             ← Вернуться в главное меню
           </button>
