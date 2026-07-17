@@ -1,17 +1,32 @@
 import mongoose from 'mongoose'
 
-
 // подсхема для архивных записей
-const ArchiveRecordSchema = new mongoose.Schema({
-  status: String, // 'completed' (сдал) или 'failed' (завалил все попытки)
-  finishedAt: { type: Date, default: Date.now },
-  blocksProgress: {
-    theory: { isCompleted: Boolean },
-    aiWorkout: { isCompleted: Boolean, accumulatedScore: Number, sessionsCount: Number },
-    irlChallenge: { isCompleted: Boolean, textReport: String, aiFeedback: String },
-    exam: { isCompleted: Boolean, bestScore: Number, attemptsCount: Number, aiFeedback: String }
-  }
-}, { _id: true });
+const ArchiveRecordSchema = new mongoose.Schema(
+  {
+    status: String, // 'completed' (сдал) или 'failed' (завалил все попытки)
+    finishedAt: { type: Date, default: Date.now },
+    blocksProgress: {
+      theory: { isCompleted: Boolean },
+      aiWorkout: {
+        isCompleted: Boolean,
+        accumulatedScore: Number,
+        sessionsCount: Number,
+      },
+      irlChallenge: {
+        isCompleted: Boolean,
+        textReport: String,
+        aiFeedback: String,
+      },
+      exam: {
+        isCompleted: Boolean,
+        bestScore: Number,
+        attemptsCount: Number,
+        aiFeedback: String,
+      },
+    },
+  },
+  { _id: true },
+)
 
 const UserCourseProgressSchema = new mongoose.Schema(
   {
@@ -21,7 +36,7 @@ const UserCourseProgressSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    courseCode: { 
+    courseCode: {
       type: String,
       required: true,
     },
@@ -38,6 +53,12 @@ const UserCourseProgressSchema = new mongoose.Schema(
         isCompleted: { type: Boolean, default: false },
         accumulatedScore: { type: Number, default: 0 }, // Сколько баллов СУММАРНО набрано внутри этого курса
         sessionsCount: { type: Number, default: 0 }, // Сколько попыток совершено (для аналитики)
+        currentSession: {
+          status: { type: String, default: 'active' },
+          exerciseData: mongoose.Schema.Types.Mixed,
+          messages: { type: Array, default: [] },
+          createdAt: { type: Date, default: Date.now },
+        },
       },
       irlChallenge: {
         isCompleted: { type: Boolean, default: false },
@@ -48,11 +69,12 @@ const UserCourseProgressSchema = new mongoose.Schema(
         isCompleted: { type: Boolean, default: false },
         bestScore: { type: Number, default: 0 },
         attemptsCount: { type: Number, default: 0 },
+        lastAttemptScore: { type: Number, default: 0 },
         lockedUntil: { type: Date, default: null },
         aiFeedback: String,
       },
     },
-     history: [ArchiveRecordSchema]
+    history: [ArchiveRecordSchema], 
   },
   { timestamps: true },
 )

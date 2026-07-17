@@ -37,6 +37,11 @@ const routers = [
     view: 'main_view',
   },
   {
+    path: '/mini-dashboard',
+    panel: 'mini-dashboard-panel',
+    view: 'main_view',
+  },
+  {
     path: '/leaderboard',
     panel: 'leaderboard-panel',
     view: 'main_view',

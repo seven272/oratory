@@ -28,9 +28,9 @@ const MainPage = ({ id }) => {
         <div className={styles.border}></div>
         <ExerciseCatalogBlock />
         <div className={styles.border}></div>
-        <LeaderboardShortBlock />
-        <div className={styles.border}></div>
         <ActivityBlock />
+        <div className={styles.border}></div>
+        <LeaderboardShortBlock />
         <div className={styles.border}></div>
       </div>
       <Footer />

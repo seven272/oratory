@@ -22,7 +22,7 @@ const Dashboard = ({
   recentActivity,
   totalExercises,
   duelStats,
-  archiveCourses
+  archiveCourses,
 }) => {
   if (!skills || !user || !duelStats) {
     return <Spin size="large" fullscreen />
@@ -104,12 +104,23 @@ const Dashboard = ({
           </div>
         </div>
 
-
-         {/* статистика пройденных курсов  */}
-        <CourseHistory historyList={archiveCourses}/>
-
-        {/* статистика дуэлей  */}
-        <LiveDuelStats duelStats={duelStats} />
+        {/* 3. ЗОНА РОСТА */}
+        {weakPoint && (
+          <div className={styles.growth_banner}>
+            <div className={styles.growth_icon}>
+              <StarOutlined />
+            </div>
+            <div className={styles.growth_info}>
+              <div className={styles.growth_title}>
+                Твоя ближайшая цель: {weakPoint.skill}
+              </div>
+              <div className={styles.growth_desc}>
+                Средний балл здесь {weakPoint.score}%.{' '}
+                {weakPoint.recommendation}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* История */}
         <div className={`${styles.card} ${styles.activity_area}`}>
@@ -135,32 +146,15 @@ const Dashboard = ({
             ))}
           </div>
         </div>
+
+        {/* статистика пройденных курсов  */}
+        <CourseHistory historyList={archiveCourses} />
+
+        {/* статистика дуэлей  */}
+        <LiveDuelStats duelStats={duelStats} />
+
+        <Achievements />
       </div>
-
-      {/* 3. ЗОНА РОСТА */}
-      {weakPoint && (
-        <div className={styles.growth_banner}>
-          <div className={styles.growth_icon}>
-            <StarOutlined />
-          </div>
-          <div className={styles.growth_info}>
-            <div className={styles.growth_title}>
-              Твоя ближайшая цель: {weakPoint.skill}
-            </div>
-            <div className={styles.growth_desc}>
-              Средний балл здесь {weakPoint.score}%.{' '}
-              {weakPoint.recommendation}
-            </div>
-          </div>
-          <div className={styles.growth_action}>
-            <Button type="primary" className={styles.growth_btn}>
-              Поднажать
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <Achievements />
     </div>
   )
 }

@@ -12,7 +12,7 @@ const PointsUser = () => {
   return (
     <div
       className={styles.main_points_user}
-      onClick={() => routeNavigator.push('/dashboard')}
+      onClick={() => routeNavigator.push('/mini-dashboard')}
     >
       {/* Верхний ярус таблички */}
       <div className={styles.row}>

@@ -5,6 +5,7 @@ import {
   CrownOutlined,
   TeamOutlined,
   MessageOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons'
 import styles from './LiveDuelStats.module.css'
 
@@ -22,16 +23,17 @@ const LiveDuelStats = ({ duelStats }) => {
   ).reduce((a, b) => a + b, 0)
 
   return (
-    <>
-      {/* Заголовок секции */}
-      <h3 className={styles.section_divider_title}>
-        <TeamOutlined /> Живые дуэли
+    /* Главный внешний контейнер, объединяющий всю статистику живых дуэлей */
+    <div className={styles.card}>
+      {/* Главный заголовок секции */}
+      <h3 className={styles.card_title}>
+        <TeamOutlined className={styles.icon_main} /> Живые дуэли
       </h3>
 
-      {/* Мини-сетка карточек дуэлей */}
+      {/* 1. Внутренняя мини-сетка карточек дуэлей */}
       <div className={styles.stats_grid}>
-        {/* Карточка количества встреч */}
-        <div className={styles.card}>
+        {/* Подблок количества встреч */}
+        <div className={styles.sub_card}>
           <div className={styles.stat_header}>
             <TeamOutlined className={styles.icon_duels_count} />
             <span className={styles.stat_title}>Всего дуэлей</span>
@@ -43,8 +45,9 @@ const LiveDuelStats = ({ duelStats }) => {
             Фидбек: {duelStats.feedbackRate}% комнат
           </div>
         </div>
-        {/* Карточка рейтинга */}
-        <div className={styles.card}>
+
+        {/* Подблок рейтинга */}
+        <div className={styles.sub_card}>
           <div className={styles.stat_header}>
             <CrownOutlined className={styles.icon_rating} />
             <span className={styles.stat_title}>Средний балл</span>
@@ -61,10 +64,12 @@ const LiveDuelStats = ({ duelStats }) => {
         </div>
       </div>
 
-      {/* Гистограмма распределения (показываем, только если есть сыгранные комнаты) */}
+      {/* 2. Гистограмма распределения (показываем, только если есть сыгранные комнаты) */}
       {duelStats.totalRooms > 0 && (
-        <div className={styles.card}>
-          <h3 className={styles.card_title}>Распределение оценок</h3>
+        <div className={styles.inner_section}>
+          <h4 className={styles.sub_section_title}>
+            <BarChartOutlined /> Распределение оценок
+          </h4>
           <div className={styles.distribution_list}>
             {distributionArray.map(({ stars, count }) => {
               const percent =
@@ -77,7 +82,7 @@ const LiveDuelStats = ({ duelStats }) => {
                   <div className={styles.dist_label}>
                     {stars}{' '}
                     <StarOutlined
-                      style={{ color: '#fadb14', fontSize: '12px' }}
+                      style={{ color: '#fadb14', fontSize: '11px' }}
                     />
                   </div>
                   <div className={styles.dist_progress}>
@@ -97,11 +102,11 @@ const LiveDuelStats = ({ duelStats }) => {
         </div>
       )}
 
-      {/* История последних поединков */}
-      <div className={`${styles.card} ${styles.activity_area}`}>
-        <h3 className={styles.card_title}>
+      {/* 3. История последних поединков */}
+      <div className={styles.inner_section_last}>
+        <h4 className={styles.sub_section_title}>
           <MessageOutlined /> Последняя дуэль
-        </h3>
+        </h4>
         <div className={styles.activity_list}>
           {duelStats.history.length === 0 ? (
             <div className={styles.empty_text}>
@@ -116,9 +121,7 @@ const LiveDuelStats = ({ duelStats }) => {
                   </div>
                   <div className={styles.activity_score}>
                     {item.date
-                      ? new Date(item.date).toLocaleDateString(
-                          'ru-RU',
-                        )
+                      ? new Date(item.date).toLocaleDateString('ru-RU')
                       : ''}
                   </div>
                 </div>
@@ -139,7 +142,7 @@ const LiveDuelStats = ({ duelStats }) => {
           )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

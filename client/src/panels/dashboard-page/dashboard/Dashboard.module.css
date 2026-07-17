@@ -143,7 +143,6 @@
 
 /* Баннер зоны роста */
 .growth_banner {
-  margin-top: 16px;
   background: linear-gradient(90deg, #fffbe6 0%, #ffffff 100%);
   border: 1px solid #ffe58f;
   border-radius: 16px;

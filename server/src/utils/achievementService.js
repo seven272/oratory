@@ -80,9 +80,14 @@ const checkAchievements = (
 
   // 3. Находчивость (association, synonyms, description, taboo)
   const resourcefulnessStats = user.stats.exerciseStats.filter((s) =>
-    ['association', 'synonyms', 'taboo', 'ai-metaphor', 'ai-stop-word', 'ai-random-word'].includes(
-      s.alias,
-    ),
+    [
+      'association',
+      'synonyms',
+      'taboo',
+      'ai-metaphor',
+      'ai-stop-word',
+      'ai-random-word',
+    ].includes(s.alias),
   )
   const totalResourcefulnessPoints = resourcefulnessStats.reduce(
     (sum, s) => sum + (s.totalPoints || 0),
@@ -90,6 +95,11 @@ const checkAchievements = (
   )
   if (totalResourcefulnessPoints >= 1500)
     add('improv_king', 'Король экспромта')
+
+  // 💡 Ачивка прохождения курса
+  if (currentExerciseAlias === 'course_master') {
+    add('course_master', 'Выпускник академии')
+  }
 
   // --- СИТУАТИВНЫЕ РЕКОРДЫ И СТАТУСЫ ---
 

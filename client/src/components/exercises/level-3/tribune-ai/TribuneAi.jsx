@@ -24,7 +24,7 @@ import {
 } from '../../../../redux/slices/ai-exercises/tribuneSlice'
 import TheoryContent from '../../../theory-content/TheoryContent'
 import Modal from '../../../../UI/modal/Modal'
-
+ 
 const TOTAL_ROUNDS = 1
 const TIME_ROUND = 40
 

@@ -6,6 +6,7 @@ import MainPage from '../panels/main-page/MainPage'
 import AuthPage from '../panels/auth-page/AuthPage'
 import ExercisePage from '../panels/exercise-page/ExercisePage'
 import DashboardPage from '../panels/dashboard-page/DashboardPage'
+import MiniDashboardPage from '../panels/mini-dashboard-page/MiniDashboardPage'
 import ShopPage from '../panels/shop-page/ShopPage'
 import ExercisesDailyPage from '../panels/exercises-daily-page/ExercisesDailyPage'
 import ExercisesAllPage from '../panels/exercises-all-page/ExercisesAllPage'
@@ -25,6 +26,7 @@ const MainView = ({ activePanel, id }) => {
       <AuthPage id="auth-panel" />
       <ExercisePage id="exercise-page-panel" />
       <DashboardPage id="dashboard-panel" />
+      <MiniDashboardPage id="mini-dashboard-panel" />
       <ShopPage id="shop-panel" />
       <ExercisesDailyPage id="exercises-daily-panel" />
       <ExercisesAllPage id="exercises-all-panel" />

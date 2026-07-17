@@ -1,12 +1,12 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
 import { fetchRestartCourse } from '../../../../../redux/slices/courseSlice'
 import styles from './ExamVerdict.module.css'
 
 const ExamVerdict = ({
   courseCode,
-  score,
+  currentScore, // 💡 Новое поле: балл за текущую попытку
+  score, // Это лучший балл (bestScore)
   isCompleted,
   attemptsCount,
   aiFeedback,
@@ -16,6 +16,9 @@ const ExamVerdict = ({
   const dispatch = useDispatch()
   const { courseStatus } = useSelector((state) => state.course)
   const maxAttempts = 5
+
+  // Логику прохождения текущей попытки завязываем на порог в 85 баллов
+  const isCurrentAttemptPassed = currentScore >= 85
 
   const handleRestart = () => {
     if (
@@ -31,16 +34,39 @@ const ExamVerdict = ({
     <div className={styles.verdict_container}>
       <h2 className={styles.title}>Вердикт ИИ-экзаменатора</h2>
 
-      <div className={styles.score_zone}>
+      {/* 📊 Сетка с двумя результатами: текущий и лучший */}
+      <div className={styles.stats_grid}>
+        <div className={styles.stat_card}>
+          <span className={styles.stat_label}>
+            Результат текущей попытки
+          </span>
+          <span
+            className={`${styles.score_value} ${isCurrentAttemptPassed ? styles.text_success : styles.text_danger}`}
+          >
+            {currentScore}{' '}
+            <span className={styles.score_max}>/ 100</span>
+          </span>
+        </div>
+
+        <div className={styles.stat_card}>
+          <span className={styles.stat_label}>
+            Лучший результат курса
+          </span>
+          <span
+            className={`${styles.score_value} ${score >= 85 ? styles.text_success : ''}`}
+          >
+            {score} <span className={styles.score_max}>/ 100</span>
+          </span>
+        </div>
+      </div>
+
+      <div className={styles.status_badge_zone}>
         <span
-          className={`${styles.score_value} ${isCompleted ? styles.text_success : styles.text_danger}`}
+          className={`${styles.score_status} ${isCurrentAttemptPassed ? styles.badge_success : styles.badge_danger}`}
         >
-          {score} <span className={styles.score_max}>/ 100</span>
-        </span>
-        <span className={styles.score_status}>
-          {isCompleted
-            ? 'Экзамен успешно сдан'
-            : 'Порог в 85 баллов не пройден'}
+          {isCurrentAttemptPassed
+            ? '🎉 Попытка успешно засчитана!'
+            : '❌ Текущий порог в 85 баллов не пройден'}
         </span>
       </div>
 
@@ -63,10 +89,9 @@ const ExamVerdict = ({
         {isCompleted ? (
           <div className={styles.end_flow_wrapper}>
             <div className={styles.finish_banner}>
-              Поздравляем! Курс успешно завершен, награда добавлена в
-              ваш личный профиль.
+              Поздравляем! Обучение успешно завершено, награда
+              добавлена в ваш личный профиль.
             </div>
-            {/* 💡 Добавляем кнопку вторичного стиля для успешного рестарта */}
             <button
               className={styles.secondary_restart_btn}
               onClick={handleRestart}
@@ -81,7 +106,6 @@ const ExamVerdict = ({
               Попытки исчерпаны. Текущее прохождение сохранено в архив
               программы.
             </div>
-            {/* 💡 Для заваливших это главная кнопка — делаем её акцентной */}
             <button
               className={styles.restart_btn}
               onClick={handleRestart}

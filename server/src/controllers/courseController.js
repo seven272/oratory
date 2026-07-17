@@ -2,6 +2,11 @@ import Course from '../models/Course.js'
 import UserCourseProgress from '../models/UserCourseProgress.js'
 import User from '../models/User.js'
 import { checkAchievements } from '../utils/achievementService.js'
+import { IRL_CHALLENGE_PROMPT } from '../assets/prompts/irlPrompt.js'
+import { EXAM_EVALUATION_PROMPT } from '../assets/prompts/examPrompt.js'
+import gigachatAxiosClient from '../utils/gigachatAxiosClient.js'
+import { parseAiResponse } from '../utils/aiJsonParser.js'
+import { transcribeLongAudio } from '../utils/salutSpeechAxiosClient.js'
 
 const getCourseProgress = async (req, res) => {
   try {
@@ -229,122 +234,97 @@ const submitAiWorkout = async (req, res) => {
   }
 }
 
-const handleCourseAiWorkoutTrigger = async (
-  userId,
-  exerciseCode,
-  earnedScore,
-) => {
-  // 1. Ищем активный курс пользователя, который сейчас находится на этапе ИИ-тренажеров (индекс 1)
-  const progress = await UserCourseProgress.findOne({
-    userId,
-    currentBlockIndex: 1,
-    status: 'active',
-  })
-
-  // Если пользователь сейчас не проходит никакой курс на этом этапе, ничего не делаем
-  if (!progress) return null
-
-  // 2. Подтягиваем настройки этого курса, чтобы узнать требуемый балл и список доступных упражнений
-  const course = await Course.findById(progress.courseId)
-  const aiBlock = course.blocks.find(
-    (b) =>
-      b.blockType === 'exam' ||
-      b.aiWorkoutData?.exercises.includes(exerciseCode),
-  )
-  // На всякий случай ищем блок именно с этим упражнением
-  const currentAiBlockData =
-    course.blocks[progress.currentBlockIndex].aiWorkoutData
-
-  // Проверяем, входит ли пройденный тренажер в программу курса
-  if (!currentAiBlockData.exercises.includes(exerciseCode)) {
-    return null // Тренажер пройден вне программы текущего курса
-  }
-
-  // 3. Плюсуем баллы в прогресс курса
-  progress.blocksProgress.aiWorkout.accumulatedScore += earnedScore
-  progress.blocksProgress.aiWorkout.sessionsCount += 1
-
-  // 4. Проверяем, пробит ли порог баллов
-  if (
-    progress.blocksProgress.aiWorkout.accumulatedScore >=
-    currentAiBlockData.requiredScore
-  ) {
-    progress.blocksProgress.aiWorkout.isCompleted = true
-    progress.currentBlockIndex = 2 // Автоматически переводим на Блок 3: IRL-практика!
-  }
-
-  await progress.save()
-  return progress
-}
-
 const submitIrlReport = async (req, res) => {
   try {
     const { courseCode, textReport } = req.body
     const userId = req.userId
 
-    if (!courseCode)
+    // 1. Быстрая базовая валидация на сервере
+    if (!courseCode) {
       return res.status(400).json({ message: 'Не указан код курса' })
+    }
     if (!textReport || textReport.trim().length < 20) {
-      return res
-        .status(400)
-        .json({
-          message: 'Отчет слишком короткий (минимум 20 символов).',
-        })
+      return res.status(400).json({
+        message: 'Отчет слишком короткий (минимум 20 символов).',
+      })
     }
 
+    // 2. Проверка состояния прогресса в БД
     const progress = await UserCourseProgress.findOne({
       userId,
       courseCode,
     })
-    if (!progress)
+    if (!progress) {
       return res.status(404).json({ message: 'Прогресс не найден' })
+    }
     if (progress.currentBlockIndex < 2) {
       return res
         .status(400)
         .json({ message: 'Вы еще не дошли до IRL-челленджа.' })
     }
 
-    // --- ИМИТАЦИЯ РАБОТЫ ИИ (GigaChat) ---
-    // В будущем тут будет запрос к ИИ, который вернет скоринг или флаг одобрения
-    const isReportValid =
-      textReport.toLowerCase().includes('привет') === false // Пример: баним банальные приветствия
+    let parsedResult
 
-    let aiFeedback = ''
-    let isCompleted = false
-    let nextBlockIndex = 2 // По умолчанию оставляем на этом же шаге
+    // 3. Отправка отчета на жесткую цензуру в GigaChat-2
+    try {
+      const response = await gigachatAxiosClient.post(
+        '/chat/completions',
+        {
+          model: 'GigaChat-2',
+          messages: [
+            { role: 'system', content: IRL_CHALLENGE_PROMPT },
+            {
+              role: 'user',
+              content: `Проанализируй этот отчет по практическому заданию "В поле":\n${textReport.trim()}`,
+            },
+          ],
+          max_tokens: 700,
+          temperature: 0.3, // Минимизирует риск галлюцинаций и сломанного JSON
+        },
+      )
 
-    if (isReportValid) {
-      aiFeedback =
-        '🔥 Отличный отчет! Вы детально описали реакцию и сделали верные выводы. Доступ к экзамену открыт.'
-      isCompleted = true
-    } else {
-      aiFeedback =
-        '❌ ИИ не принял отчет. Кажется, вы использовали банальное приветствие или отчет не содержит описания реакции. Пожалуйста, перечитайте условия задания и попробуйте снова.'
-      isCompleted = false
-      nextBlockIndex = 2 // Провал -> оставляем переделывать
+      const aiJsonResult = response.data.choices[0].message.content
+
+      // Парсим JSON с фолбеками на случай непредвиденных сбоев
+      parsedResult = parseAiResponse(aiJsonResult, {
+        isCompleted: false,
+        aiFeedback:
+          '⚠️ Робот-цензор не смог распознать структуру отчета. Перефразируйте текст более развернуто и попробуйте отправить снова.',
+      })
+    } catch (apiError) {
+      console.error(
+        'Сбой сети GigaChat при проверке IRL-отчета:',
+        apiError.message,
+      )
+      return res.status(500).json({
+        message:
+          'Ошибка нейросети при проверке отчета. Попробуйте позже.',
+      })
     }
 
-    // Обновляем БД
+    // 5. Запись результатов в MongoDB
     const updatedProgress = await UserCourseProgress.findOneAndUpdate(
       { userId, courseCode },
       {
         $set: {
           'blocksProgress.irlChallenge.textReport': textReport.trim(),
-          'blocksProgress.irlChallenge.aiFeedback': aiFeedback,
-          'blocksProgress.irlChallenge.isCompleted': isCompleted,
-          currentBlockIndex: nextBlockIndex,
+          'blocksProgress.irlChallenge.aiFeedback':
+            parsedResult.aiFeedback,
+          'blocksProgress.irlChallenge.isCompleted':
+            parsedResult.isCompleted,
         },
       },
       { new: true },
     )
 
+    // 6. Возврат актуального состояния на фронтенд
     return res.status(200).json({
       success: true,
-      isReportValid, // Передаем флаг успеха на фронтенд для локальной логики
+      isReportValid: parsedResult.isCompleted,
       progressData: updatedProgress,
     })
   } catch (error) {
-    console.error(error)
+    console.error('Глобальная ошибка в submitIrlReport:', error)
     return res
       .status(500)
       .json({ message: 'Ошибка сервера при проверке отчета.' })
@@ -353,23 +333,25 @@ const submitIrlReport = async (req, res) => {
 
 const submitExamReport = async (req, res) => {
   try {
-    const { courseCode, testMode } = req.body
-    const userId = req.userId // Из checkAuth
+    const { courseCode } = req.body
+    const userId = req.userId
 
-    if (!courseCode)
+    if (!courseCode) {
       return res.status(400).json({ message: 'Не указан код курса' })
+    }
 
-    // 1. Находим прогресс курса
+    // 1. Находим прогресс курса в базе данных
     const progress = await UserCourseProgress.findOne({
       userId,
       courseCode,
     })
-    if (!progress)
+    if (!progress) {
       return res.status(404).json({ message: 'Прогресс не найден' })
+    }
 
     const currentExamState = progress.blocksProgress.exam
 
-    // 2. Проверка: не завершен ли уже курс (из-за успеха или исчерпания всех 5 попыток)
+    // 2. Валидация: не завершен ли уже курс (успех или лимит 5 попыток)
     if (
       progress.status === 'completed' ||
       currentExamState.attemptsCount >= 5
@@ -380,7 +362,7 @@ const submitExamReport = async (req, res) => {
       })
     }
 
-    // 3. Проверка на активный таймаут (24 часа)
+    // 3. Валидация: проверка на активный таймаут (24 часа)
     if (
       currentExamState.lockedUntil &&
       new Date(currentExamState.lockedUntil) > new Date()
@@ -391,14 +373,84 @@ const submitExamReport = async (req, res) => {
       })
     }
 
-    // 4. Мокаем результат от ИИ
-    let currentAttemptScore = testMode === 'pass' ? 92 : 64
-    let mockAiFeedback =
-      testMode === 'pass'
-        ? '🔥 Великолепный питч! Экзамен успешно сдан!'
-        : '❌ К сожалению, порог в 85 баллов не пройден. Попытка заблокирована.'
+    // 4. Расшифровка аудиозаписи через SalutSpeech
+    let userTranscript = ''
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: 'Аудиофайл ответа не получен.' })
+    }
 
-    // 5. Расчет новых параметров
+    try {
+      userTranscript = await transcribeLongAudio(req.file.buffer)
+    } catch (speechError) {
+      console.error(
+        'Ошибка распознавания SalutSpeech на экзамене:',
+        speechError,
+      )
+      return res.status(500).json({
+        message:
+          'Не удалось распознать аудиозапись экзамена. Попробуйте еще раз.',
+        error: speechError.message,
+      })
+    }
+
+    // 5. Защита от тишины и промалчивания (Аналогично Трибуне)
+    if (
+      !userTranscript ||
+      !userTranscript.trim() ||
+      userTranscript.includes('нечего сказать')
+    ) {
+      return res.status(400).json({
+        message:
+          'Вы ничего не сказали на записи. Оценить пустой ответ невозможно. Попробуйте снова.',
+      })
+    }
+
+    let parsedResult
+
+    // 6. Оценка текста ответа в GigaChat-2
+    try {
+      const response = await gigachatAxiosClient.post(
+        '/chat/completions',
+        {
+          model: 'GigaChat-2',
+          messages: [
+            { role: 'system', content: EXAM_EVALUATION_PROMPT },
+            {
+              role: 'user',
+              content: `Вот расшифровка устного ответа студента для оценки:\n"${userTranscript.trim()}"`,
+            },
+          ],
+          max_tokens: 700,
+          temperature: 0.3, // Жесткий JSON без галлюцинаций
+        },
+      )
+
+      const aiJsonResult =
+        response.data?.choices?.[0]?.message?.content
+
+      // Парсим JSON с безопасными фолбеками под структуру экзамена
+      parsedResult = parseAiResponse(aiJsonResult, {
+        score: 0,
+        aiFeedback:
+          '⚠️ Ошибка автоматической обработки результатов экзамена нейросетью. Пожалуйста, обратитесь в поддержку.',
+      })
+    } catch (apiError) {
+      console.error(
+        'Сбой сети GigaChat при оценке экзамена:',
+        apiError.message,
+      )
+      return res.status(500).json({
+        message:
+          'Ошибка нейросети при проверке экзамена. Попробуйте позже.',
+      })
+    }
+
+    // 7. Бизнес-логика расчета результатов попытки
+    const currentAttemptScore = parsedResult.score
+    let finalAiFeedback = parsedResult.aiFeedback
+
     const newAttemptsCount = currentExamState.attemptsCount + 1
     const newBestScore =
       currentAttemptScore > currentExamState.bestScore
@@ -409,48 +461,96 @@ const submitExamReport = async (req, res) => {
     let overallCourseStatus = 'active'
     let newLockedUntil = null
 
+    const rewardXp = 1000
+    const rewardCoins = 100
+    let newAnnouncedAchievements = []
+
     if (currentAttemptScore >= 85) {
-      // СЦЕНАРИЙ А: СДАЛ (Баллы >= 85)
+      // === СЦЕНАРИЙ А: СДАЛ (Баллы >= 85) ===
+      if (!isExamCompleted) {
+        try {
+          // 1. Находим текущего пользователя в БД
+          const user = await User.findById(userId)
+
+          if (user) {
+            // 2. Начисляем опыт во все три поля и монеты
+            user.progression.xp += rewardXp
+            user.stats.lifetimeXp += rewardXp
+            user.weeklyXp += rewardXp // 💡 Добавлено: Начисление недельного опыта
+            user.progression.coins += rewardCoins
+
+            // 3. Проверяем ачивки через утилиту (передаем 'course_master')
+            // Функция модифицирует user.progression.achievements по ссылке
+            newAnnouncedAchievements = checkAchievements(
+              user,
+              false,
+              currentAttemptScore,
+              'course_master',
+            )
+
+            // 4. Сохраняем обновленный документ пользователя в MongoDB
+            await user.save()
+          }
+        } catch (rewardError) {
+          console.error(
+            'Ошибка при начислении геймификации и ачивок:',
+            rewardError,
+          )
+        }
+      }
+
       isExamCompleted = true
       overallCourseStatus = 'completed'
     } else {
-      // СЦЕНАРИЙ Б: НЕ СДАЛ (Баллы < 85)
+      // === СЦЕНАРИЙ Б: НЕ СДАЛ (Баллы < 85) ===
       if (newAttemptsCount >= 5) {
-        // Израсходованы все 5 попыток -> курс принудительно завершается, блокировок нет, пересдач больше нет
         overallCourseStatus = 'failed'
-        mockAiFeedback +=
-          ' Вы израсходовали все 5 попыток. Курс завершен.'
+        finalAiFeedback +=
+          '\n\n❌ Вы израсходовали все 5 попыток. Курс завершен неудовлетворительно.'
       } else {
-        // Попытки еще есть -> включаем блокировку на 24 часа
         const lockDate = new Date()
         lockDate.setHours(lockDate.getHours() + 24)
         newLockedUntil = lockDate
       }
     }
 
-    // 6. Обновляем базу данных
-    const updatedProgress = await UserCourseProgress.findOneAndUpdate(
-      { userId, courseCode },
-      {
-        $set: {
-          status: overallCourseStatus,
-          currentBlockIndex: 3,
-          'blocksProgress.exam.isCompleted': isExamCompleted,
-          'blocksProgress.exam.bestScore': newBestScore,
-          'blocksProgress.exam.attemptsCount': newAttemptsCount,
-          'blocksProgress.exam.lockedUntil': newLockedUntil,
-          'blocksProgress.exam.aiFeedback': mockAiFeedback,
+    // --- 8. СОХРАНЕНИЕ ФИНАЛЬНЫХ РЕЗУЛЬТАТОВ В MONGODB ---
+    // Выполняется ВСЕГДА (и при успехе, и при провале), обновляя баллы и лучшую попытку
+    const updatedProgressDoc =
+      await UserCourseProgress.findOneAndUpdate(
+        { userId, courseCode },
+        {
+          $set: {
+            status: overallCourseStatus,
+            currentBlockIndex: 3,
+            'blocksProgress.exam.isCompleted': isExamCompleted,
+            'blocksProgress.exam.bestScore': newBestScore,
+            'blocksProgress.exam.attemptsCount': newAttemptsCount,
+            'blocksProgress.exam.lockedUntil': newLockedUntil,
+            'blocksProgress.exam.lastAttemptScore':
+              currentAttemptScore,
+            'blocksProgress.exam.aiFeedback': finalAiFeedback,
+          },
         },
-      },
-      { new: true },
-    )
+        { new: true },
+      )
 
+    // Превращаем mongoose-документ в объект, чтобы добавить поле для фронтенда
+    const progressResponse = updatedProgressDoc
+      ? updatedProgressDoc.toObject()
+      : {}
+
+    // Подмешиваем массив ачивок в корень progressData (при провале улетит чистый [])
+    progressResponse.newAchievements = newAnnouncedAchievements
+
+    // --- 9. ВЫДАЧА ИТОГОВОГО ОТВЕТА НА ФРОНТЕНД ---
     return res.status(200).json({
       success: true,
-      progressData: updatedProgress,
+      user_transcript: userTranscript ? userTranscript.trim() : '',
+      progressData: progressResponse,
     })
   } catch (error) {
-    console.error(error)
+    console.error('Глобальная ошибка в submitExamReport:', error)
     return res
       .status(500)
       .json({ message: 'Ошибка сервера при обработке экзамена.' })
@@ -461,34 +561,35 @@ const unlockExamWithCoins = async (req, res) => {
   try {
     const { courseCode } = req.body
     const userId = req.userId
-    const coinPrice = 50 // Стоимость досрочной разблокировки в монетах
+    const coinPrice = 50
 
-    // 1. Проверяем баланс пользователя
+    // 1. Проверяем баланс пользователя (ИСПРАВЛЕНО: смотрим внутрь progression)
     const user = await User.findById(userId)
-    if (!user)
+    if (!user) {
       return res
         .status(404)
         .json({ message: 'Пользователь не найден' })
-
-    if (user.coins < coinPrice) {
-      return res
-        .status(400)
-        .json({ message: 'Недостаточно монет для покупки попытки.' })
     }
 
-    // 2. Проверяем состояние прогресса курса
+    if (!user.progression || user.progression.coins < coinPrice) {
+      return res.status(400).json({
+        message: 'Недостаточно монет для покупки попытки.',
+      })
+    }
+
+    // 2. Проверяем состояние прогресса курса (код оставляем без изменений)
     const progress = await UserCourseProgress.findOne({
       userId,
       courseCode,
     })
-    if (!progress)
+    if (!progress) {
       return res
         .status(404)
         .json({ message: 'Прогресс курса не найден' })
+    }
 
     const exam = progress.blocksProgress.exam
 
-    // Проверяем, есть ли что разблокировать
     if (
       !exam.lockedUntil ||
       new Date(exam.lockedUntil) <= new Date()
@@ -499,63 +600,69 @@ const unlockExamWithCoins = async (req, res) => {
     }
 
     if (exam.attemptsCount >= 5) {
-      return res
-        .status(400)
-        .json({
-          message:
-            'Вы уже использовали максимум (5 попыток). Больше купить нельзя.',
-        })
+      return res.status(400).json({
+        message:
+          'Вы уже использовали максимум (5 попыток). Больше купить нельзя.',
+      })
     }
 
-    // 3. Списываем монеты у пользователя
-    user.coins -= coinPrice
+    // 3. Списываем монеты у пользователя (ИСПРАВЛЕНО: меняем progression.coins)
+    user.progression.coins -= coinPrice
     await user.save()
 
-    // 4. Сбрасываем блокировку в документе прогресса ($set в null)
+    // 4. Сбрасываем блокировку в документе прогресса
     const updatedProgress = await UserCourseProgress.findOneAndUpdate(
       { userId, courseCode },
       {
         $set: {
           'blocksProgress.exam.lockedUntil': null,
-          'blocksProgress.exam.aiFeedback': '', // Очищаем старый фидбек, чтобы вернуть форму рекордера
+          'blocksProgress.exam.aiFeedback': '',
         },
       },
       { new: true },
     )
 
+    // Возвращаем обновленный баланс из progression.coins
     return res.status(200).json({
       success: true,
       message: `Попытка успешно куплена! Списано ${coinPrice} монет.`,
-      remainingCoins: user.coins,
+      remainingCoins: user.progression.coins,
       progressData: updatedProgress,
     })
   } catch (error) {
     console.error(error)
-    return res
-      .status(500)
-      .json({ message: 'Ошибка при покупке попытки за монеты.' })
+    return res.status(500).json({
+      message: 'Ошибка при покупке попытки за монеты.',
+    })
   }
 }
-
 
 const restartCourse = async (req, res) => {
   try {
     const { courseCode } = req.body
     const userId = req.userId
 
-    const progress = await UserCourseProgress.findOne({ userId, courseCode })
-    if (!progress) return res.status(404).json({ message: 'Прогресс не найден' })
+    const progress = await UserCourseProgress.findOne({
+      userId,
+      courseCode,
+    })
+    if (!progress)
+      return res.status(404).json({ message: 'Прогресс не найден' })
 
     // Проверяем, что курс действительно завершен (успешно или неуспешно)
     if (progress.status === 'active') {
-      return res.status(400).json({ message: 'Нельзя перезапустить активный курс' })
+      return res
+        .status(400)
+        .json({ message: 'Нельзя перезапустить активный курс' })
     }
 
     // 1. Формируем архивную запись из текущего состояния
     const archiveRecord = {
       status: progress.status,
       finishedAt: new Date(),
-      blocksProgress: JSON.parse(JSON.stringify(progress.blocksProgress)) // глубокое копирование
+      blocksProgress: JSON.parse(
+        JSON.stringify(progress.blocksProgress),
+      ), // глубокое копирование
     }
 
     // 2. Сбрасываем прогресс до дефолтных значений и пушим старый в history
@@ -566,54 +673,70 @@ const restartCourse = async (req, res) => {
           status: 'active',
           currentBlockIndex: 0,
           'blocksProgress.theory.isCompleted': false,
-          'blocksProgress.aiWorkout': { isCompleted: false, accumulatedScore: 0, sessionsCount: 0 },
-          'blocksProgress.irlChallenge': { isCompleted: false, textReport: '', aiFeedback: '' },
-          'blocksProgress.exam': { isCompleted: false, bestScore: 0, attemptsCount: 0, lockedUntil: null, aiFeedback: '' }
+          'blocksProgress.aiWorkout': {
+            isCompleted: false,
+            accumulatedScore: 0,
+            sessionsCount: 0,
+          },
+          'blocksProgress.irlChallenge': {
+            isCompleted: false,
+            textReport: '',
+            aiFeedback: '',
+          },
+          'blocksProgress.exam': {
+            isCompleted: false,
+            bestScore: 0,
+            attemptsCount: 0,
+            lockedUntil: null,
+            aiFeedback: '',
+          },
         },
         $push: {
-          history: archiveRecord // 💡 Сохраняем в историю
-        }
+          history: archiveRecord, // 💡 Сохраняем в историю
+        },
       },
-      { new: true }
+      { new: true },
     )
 
     return res.status(200).json({
       success: true,
-      progressData: updatedProgress
+      progressData: updatedProgress,
     })
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ message: 'Ошибка при перезапуске курса' })
+    return res
+      .status(500)
+      .json({ message: 'Ошибка при перезапуске курса' })
   }
 }
 
- const getUserCoursesArchive = async (req, res) => {
+const getUserCoursesArchive = async (req, res) => {
   try {
-    const userId = req.userId;
-    
+    const userId = req.userId
+
     // Находим все курсы пользователя, где в массиве history есть хотя бы одна запись
     const archives = await UserCourseProgress.find(
       { userId, 'history.0': { $exists: true } },
-      { courseCode: 1, history: 1 } // Берем только код курса и историю
-    );
+      { courseCode: 1, history: 1 }, // Берем только код курса и историю
+    )
 
-    return res.status(200).json({ success: true, archives });
+    return res.status(200).json({ success: true, archives })
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Ошибка при получении архива.' });
+    console.error(error)
+    return res
+      .status(500)
+      .json({ message: 'Ошибка при получении архива.' })
   }
-};
-
+}
 
 export {
   getCourseProgress,
   startCourse,
   submitTheory,
   submitAiWorkout,
-  handleCourseAiWorkoutTrigger,
   submitIrlReport,
   submitExamReport,
   unlockExamWithCoins,
   restartCourse,
-  getUserCoursesArchive
+  getUserCoursesArchive,
 }

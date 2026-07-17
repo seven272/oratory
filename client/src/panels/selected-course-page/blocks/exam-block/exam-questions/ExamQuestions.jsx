@@ -1,59 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useSpeechSber } from '../../../../../hooks/useSpeechSber'
 import styles from './ExamQuestions.module.css'
 
-const ExamQuestions = ({ isSubmitting, onSubmit, onCancel }) => {
+const ExamQuestions = ({
+  courseCode,
+  isSubmitting,
+  onSubmit,
+  onCancel,
+}) => {
   const [currentCase] = useState({
     title: 'Ситуация: Спасение контракта в лифте',
-    description: 'Вы случайно зашли в лифт с генеральным директором компании-клиента, которая завтра планирует расторгнуть с вами договор из-за задержки поставок. У вас есть ровно одна поездка (от 60 до 120 секунд), чтобы применить "Правило 3 секунд", удержать его внимание, снять первичный негатив и договориться о личной встрече сегодня вечером.'
+    description:
+      'Вы случайно зашли в лифт с генеральным директором компании-клиента, которая завтра планирует расторгнуть с вами договор из-за задержки поставок. У вас есть ровно одна поездка (от 60 до 120 секунд), чтобы применить "Правило 3 секунд", удержать его внимание, снять первичный негатив и договориться о личной встрече сегодня вечером.',
   })
 
-  const [isRecording, setIsRecording] = useState(false)
-  const [audioBlob, setAudioBlob] = useState(null)
-  const [recordingTime, setRecordingTime] = useState(0)
-  const [showDebugOptions, setShowDebugOptions] = useState(false)
+  // 1. Подключаем хук Сбера со всей аудио-логикой (16кГц WAV)
+  const {
+    startListening,
+    stopListening,
+    audioBlob,
+    isListening,
+    resetTranscript,
+  } = useSpeechSber()
 
-  const mediaRecorderRef = useRef(null)
-  const audioChunksRef = useRef([])
+  const [recordingTime, setRecordingTime] = useState(0)
   const timerRef = useRef(null)
 
-  useEffect(() => {
-    if (isRecording) {
-      timerRef.current = setInterval(() => {
-        setRecordingTime((prev) => {
-          if (prev >= 120) { handleStopRecording(); return 120; }
-          return prev + 1
-        })
-      }, 1000)
-    } else {
-      clearInterval(timerRef.current)
-    }
-    return () => clearInterval(timerRef.current)
-  }, [isRecording])
-
-  const handleStartRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      mediaRecorderRef.current = new MediaRecorder(stream)
-      audioChunksRef.current = []
-
-      mediaRecorderRef.current.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data) }
-      mediaRecorderRef.current.onstop = () => { setAudioBlob(new Blob(audioChunksRef.current, { type: 'audio/wav' })) }
-
-      mediaRecorderRef.current.start()
-      setRecordingTime(0)
-      setAudioBlob(null)
-      setIsRecording(true)
-    } catch (err) {
-      alert('Микрофон недоступен. Разрешите доступ в браузере.')
-    }
-  }
-
-  const handleStopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop()
-      setIsRecording(false)
-    }
-  }
+  const isTimeValid = recordingTime >= 5 && recordingTime <= 120
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -61,20 +34,81 @@ const ExamQuestions = ({ isSubmitting, onSubmit, onCancel }) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const isTimeValid = recordingTime >= 5 && recordingTime <= 120
+  // 2. Управляем таймером на основе статуса isListening из хука
+  useEffect(() => {
+    if (isListening) {
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prev) => {
+          if (prev >= 120) {
+            stopListening() // Автоматическая остановка на 120 секундах
+            return 120
+          }
+          return prev + 1
+        })
+      }, 1000)
+    } else {
+      clearInterval(timerRef.current)
+    }
+    return () => clearInterval(timerRef.current)
+  }, [isListening, stopListening])
 
-  const handlePreSubmit = () => {
+  // Очистка при размонтировании (если пользователь вышел во время записи)
+  useEffect(() => {
+    return () => {
+      clearInterval(timerRef.current)
+    }
+  }, [])
+
+  // 3. Хэндлер старта записи через Сбер-хук
+  const handleStartRecording = () => {
+    resetTranscript()
+    setRecordingTime(0)
+    startListening()
+  }
+
+  // 4. Хэндлер остановки записи
+  const handleStopRecording = () => {
+    if (isListening) {
+      stopListening()
+    }
+  }
+
+  // 5. Очистка записи (удаление)
+  const handleResetRecording = () => {
+    resetTranscript()
+    setRecordingTime(0)
+  }
+
+  // 6. Финальная отправка готового WAV файла
+  const handleRealSubmit = () => {
     if (!audioBlob) return
-    setShowDebugOptions(true)
+
+    const formData = new FormData()
+    formData.append('courseCode', courseCode)
+
+    // Передаем правильный WAV-файл (16kHz), сгенерированный хуком Сбера
+    formData.append('audio', audioBlob, 'exam_record.wav')
+
+    onSubmit({ formData })
   }
 
   return (
     <div className={styles.exam_container}>
       <div className={styles.exam_header}>
-        <span className={isRecording ? styles.live_badge_active : styles.live_badge}>
-          {isRecording ? 'Идет запись' : 'Запись ответа'}
+        <span
+          className={
+            isListening ? styles.live_badge_active : styles.live_badge
+          }
+        >
+          {isListening ? 'Идет запись' : 'Запись ответа'}
         </span>
-        <button className={styles.cancel_btn} onClick={onCancel} disabled={isSubmitting}>Выйти</button>
+        <button
+          className={styles.cancel_btn}
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
+          Выйти
+        </button>
       </div>
 
       <div className={styles.case_card}>
@@ -84,33 +118,64 @@ const ExamQuestions = ({ isSubmitting, onSubmit, onCancel }) => {
 
       <div className={styles.recorder_zone}>
         <div className={styles.timer_display}>
-          <span className={`${styles.time} ${isRecording ? styles.pulse : ''}`}>{formatTime(recordingTime)}</span>
-          <span className={styles.time_limits}>Требуемый хронометраж: 01:00 — 02:00</span>
+          <span
+            className={`${styles.time} ${isListening ? styles.pulse : ''}`}
+          >
+            {formatTime(recordingTime)}
+          </span>
+          <span className={styles.time_limits}>
+            Требуемый хронометраж: 01:00 — 02:00
+          </span>
         </div>
 
         <div className={styles.progress_track}>
-          <div 
-            className={`${styles.progress_bar} ${isTimeValid ? styles.progress_valid : ''}`} 
-            style={{ width: `${Math.min((recordingTime / 120) * 100, 100)}%` }} 
+          <div
+            className={`${styles.progress_bar} ${isTimeValid ? styles.progress_valid : ''}`}
+            style={{
+              width: `${Math.min((recordingTime / 120) * 100, 100)}%`,
+            }}
           />
           <div className={styles.marker_60s} />
         </div>
 
         <div className={styles.controls}>
-          {!isRecording && !audioBlob && (
-            <button type="button" className={styles.record_btn} onClick={handleStartRecording} disabled={isSubmitting}>
+          {/* Если запись не идет и файла еще нет — показываем старт */}
+          {!isListening && !audioBlob && (
+            <button
+              type="button"
+              className={styles.record_btn}
+              onClick={handleStartRecording}
+              disabled={isSubmitting}
+            >
               Начать запись
             </button>
           )}
-          {isRecording && (
-            <button type="button" className={styles.stop_btn} onClick={handleStopRecording}>
+
+          {/* Если запись идет — показываем стоп */}
+          {isListening && (
+            <button
+              type="button"
+              className={styles.stop_btn}
+              onClick={handleStopRecording}
+            >
               Остановить
             </button>
           )}
-          {!isRecording && audioBlob && (
+
+          {/* Если запись завершена и файл сформирован — даем послушать и перезаписать */}
+          {!isListening && audioBlob && (
             <div className={styles.review_container}>
-              <audio src={URL.createObjectURL(audioBlob)} controls className={styles.audio_player} />
-              <button type="button" className={styles.retry_btn} onClick={() => { setAudioBlob(null); setRecordingTime(0); setShowDebugOptions(false); }} disabled={isSubmitting}>
+              <audio
+                src={URL.createObjectURL(audioBlob)}
+                controls
+                className={styles.audio_player}
+              />
+              <button
+                type="button"
+                className={styles.retry_btn}
+                onClick={handleResetRecording}
+                disabled={isSubmitting}
+              >
                 Удалить и перезаписать
               </button>
             </div>
@@ -118,40 +183,26 @@ const ExamQuestions = ({ isSubmitting, onSubmit, onCancel }) => {
         </div>
       </div>
 
-      {recordingTime > 0 && recordingTime < 60 && !isRecording && (
-        <p className={styles.warning_text}>Длина аудиозаписи меньше 60 секунд. Пожалуйста, разверните ответ подробнее.</p>
+      {recordingTime > 0 && recordingTime < 60 && !isListening && (
+        <p className={styles.warning_text}>
+          Длина аудиозаписи меньше 60 секунд. Пожалуйста, разверните
+          ответ подробнее.
+        </p>
       )}
 
-      {!showDebugOptions ? (
-        <button
-          type="button"
-          className={styles.submit_btn}
-          onClick={handlePreSubmit}
-          disabled={isRecording || !audioBlob || !isTimeValid || isSubmitting}
-        >
-          Отправить на оценку ИИ
-        </button>
-      ) : (
-        <div className={styles.debug_panel}>
-          <p className={styles.debug_title}>Симуляция вердикта сервера:</p>
-          <div className={styles.debug_actions}>
-            <button 
-              className={styles.debug_btn_pass} 
-              disabled={isSubmitting}
-              onClick={() => onSubmit({ testMode: 'pass' })}
-            >
-              Успешная сдача (&gt;= 85)
-            </button>
-            <button 
-              className={styles.debug_btn_fail} 
-              disabled={isSubmitting}
-              onClick={() => onSubmit({ testMode: 'fail' })}
-            >
-              Неудовлетворительно (&lt; 85)
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Кнопка отправки на бэк */}
+      <button
+        type="button"
+        className={styles.submit_btn}
+        onClick={handleRealSubmit}
+        disabled={
+          isListening || !audioBlob || !isTimeValid || isSubmitting
+        }
+      >
+        {isSubmitting
+          ? 'Нейросеть слушает и анализирует...'
+          : 'Отправить на оценку ИИ'}
+      </button>
     </div>
   )
 }

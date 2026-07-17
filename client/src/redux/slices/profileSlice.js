@@ -26,6 +26,7 @@ import { fetchFinishRandomWord } from './ai-exercises/randomWordSlice'
 import { fetchSubmitLiveRating } from './liveDuelSlice'
 import { fetchFinishLiveDuelAiBot } from './liveDuelSlice'
 
+
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
   'profile/fetchProfileData',
@@ -156,6 +157,7 @@ const profileSlice = createSlice({
           fetchFinishRandomWord.fulfilled,
           fetchSubmitLiveRating.fulfilled,
           fetchFinishLiveDuelAiBot.fulfilled,
+        
         ),
         (state, action) => {
           // Защита: если сессия завершилась без оценки, stats будет отсутствовать

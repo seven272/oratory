@@ -110,7 +110,7 @@ const responseTribune = async (req, res) => {
 
 const finishTribune = async (req, res) => {
   try {
-    const userId = req.userId
+    const userId = req.userId 
     const { isDaily } = req.body
     // Ищем активную сессию именно для icebreaker
     let session = await AiExercise.findOne({

@@ -1,145 +1,179 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSubmitAiWorkout } from '../../../../redux/slices/courseSlice'
+import {
+  resetAiChat,
+  setAiChatStatus,
+} from '../../../../redux/slices/courseSlice'
+
+import AiWorkoutIntro from './ai-workout-intro/AiWorkoutIntro'
+import AiWorkoutChat from './ai-workout-chat/AiWorkoutChat'
+import AiWorkoutResult from './ai-workout-result/AiWorkoutResult'
+import { useSpeechSber } from '../../../../hooks/useSpeechSber'
+
+import { INVESTOR_PITCH_SCENARIOS } from '../../../../assets/data/courses/scenarios/investorPitchScenarios'
+import { OBJECTION_HANDLER_SCENARIOS } from '../../../../assets/data/courses/scenarios/objectionHandlerScenarios'
+import { ELEVATOR_SPEECH_SCENARIOS } from '../../../../assets/data/courses/scenarios/elevatorSpeechScenarios'
+
+import {
+  WORKOUT_CONFIGS,
+  WORKOUT_MODES_LIST,
+  ALL_WORKOUT_THUNKS,
+} from '../../../../assets/data/courses/config/workoutConfigs'
 import styles from './AiWorkoutBlock.module.css'
 
-const WORKOUT_MODES = [
-  {
-    id: 'investor_pitch',
-    title: '🤖 Питч-сессия с жестким инвестором',
-    description:
-      'Симуляция встречи с венчурным фондом. ИИ будет перебивать, задавать неудобные вопросы о юнит-экономике и проверять вас на стрессоустойчивость.',
-    reward: '+50 баллов',
-    testScore: 50,
-  },
-  {
-    id: 'elevator_speech',
-    title: '⏱️ Элевейтор-питч в лифте',
-    description:
-      'У вас есть ровно 60 секунд, чтобы донести суть продукта до крупного клиента. Тренажер оценивает лаконичность, отсутствие «воды» и четкость вашего УТП.',
-    reward: '+30 баллов',
-    testScore: 30,
-  },
-]
+const SCENARIOS_MAP = {
+  investor_pitch: INVESTOR_PITCH_SCENARIOS,
+  objection_handler: OBJECTION_HANDLER_SCENARIOS,
+  elevator_speech: ELEVATOR_SPEECH_SCENARIOS,
+}
 
 const AiWorkoutBlock = ({ courseCode }) => {
   const dispatch = useDispatch()
-  const { error, progressData, courseStatus } = useSelector(
+  const { startListening, stopListening, resetTranscript } =
+    useSpeechSber()
+  const { error, progressData, aiChat } = useSelector(
     (state) => state.course,
   )
+  const { aiStatus, chatStatus, verdict } = aiChat
 
+  // Храним ID текущего активного тренажера
   const [selectedMode, setSelectedMode] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // 1. Извлекаем данные из вашей структуры UserCourseProgressSchema
+  // Достаем активный конфиг на основе стейта
+  const currentConfig = WORKOUT_CONFIGS[selectedMode]
+
   const accumulatedScore =
     progressData?.blocksProgress?.aiWorkout?.accumulatedScore || 0
   const sessionsCount =
     progressData?.blocksProgress?.aiWorkout?.sessionsCount || 0
-  const REQUIRED_SCORE = 500 // Целевой норматив из модели Course
+  const REQUIRED_SCORE = 500
 
-  // Расчет процента для прогресс-бара очков (не выше 100%)
-  const progressPercentage = Math.min(
-    (accumulatedScore / REQUIRED_SCORE) * 100,
-    100,
-  )
-
-  const handleSimulatePass = async (score) => {
-    setIsSubmitting(true)
-    try {
-      await dispatch(
-        fetchSubmitAiWorkout({
-          courseCode,
-          score: score,
-        }),
-      ).unwrap()
-    } catch (err) {
-      setIsSubmitting(false)
+  useEffect(() => {
+    return () => {
+      dispatch(resetAiChat())
     }
+  }, [dispatch])
+
+  const handleStartTrainer = (modeId) => {
+    setSelectedMode(modeId) // Запоминаем режим
+
+    const config = WORKOUT_CONFIGS[modeId]
+    const targetScenarios = SCENARIOS_MAP[modeId]
+    if (!config || !targetScenarios || targetScenarios.length === 0)
+      return
+
+    const randomIndex = Math.floor(
+      Math.random() * targetScenarios.length,
+    )
+    const selectedScenario = targetScenarios[randomIndex]
+
+    const payload = {
+      role: selectedScenario.role,
+      topic: selectedScenario.topic,
+      context: selectedScenario.context,
+      firstQuestion: selectedScenario.firstQuestion,
+      scenarioId: selectedScenario.id,
+    }
+
+    // Динамический вызов Start Thunk
+    const startThunk = ALL_WORKOUT_THUNKS[config.thunks.start]
+    if (startThunk) {
+      dispatch(startThunk({ courseCode, exerciseData: payload }))
+    }
+  }
+
+  const handleStartRecording = () => {
+    resetTranscript()
+    dispatch(setAiChatStatus('recording'))
+    startListening()
+  }
+
+  const handleStopRecording = () => {
+    if (chatStatus === 'loading' || aiStatus === 'ai_thinking') return
+
+    stopListening((readyBlob) => {
+      if (!readyBlob || readyBlob.size === 0) {
+        dispatch(setAiChatStatus('active'))
+        return
+      }
+
+      dispatch(setAiChatStatus('ai_thinking'))
+
+      // Динамический вызов Send Thunk
+      const sendThunk = ALL_WORKOUT_THUNKS[currentConfig.thunks.send]
+      if (sendThunk) {
+        dispatch(
+          sendThunk({ courseCode, audioBlob: readyBlob }),
+        ).then(() => {
+          resetTranscript()
+        })
+      }
+    })
+  }
+
+  const handleFinishTrainer = async () => {
+    try {
+      // Динамический вызов Finish Thunk
+      const finishThunk =
+        ALL_WORKOUT_THUNKS[currentConfig.thunks.finish]
+      if (finishThunk) {
+        await dispatch(finishThunk({ courseCode })).unwrap()
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleBackToModes = () => {
+    dispatch(resetAiChat())
+    setSelectedMode(null)
+  }
+
+  if (aiStatus === 'finished') {
+    return (
+      <div className={styles.workout_container}>
+        <AiWorkoutResult
+          evaluationResult={verdict}
+          config={currentConfig} // Передаем конфиг для динамических шкал
+          onBack={handleBackToModes}
+        />
+      </div>
+    )
+  }
+
+  if (aiStatus !== 'idle') {
+    return (
+      <div className={styles.workout_container}>
+        <AiWorkoutChat
+          aiChat={aiChat}
+          chatStatus={chatStatus}
+          config={currentConfig} // Передаем конфиг для динамических текстов
+          onStartRecording={handleStartRecording}
+          onStopRecording={handleStopRecording}
+          onFinishTrainer={handleFinishTrainer}
+          onExit={handleBackToModes}
+        />
+      </div>
+    )
   }
 
   return (
     <div className={styles.workout_container}>
-      <div className={styles.intro_zone}>
-        <h2 className={styles.title}>Доступные ИИ-тренажеры</h2>
-        <p className={styles.subtitle}>
-          Каждое прохождение приближает вас к цели. Наберите{' '}
-          {REQUIRED_SCORE} XP, чтобы открыть доступ к реальному кейсу.
-        </p>
-      </div>
-
-      {/* 2. Визуальный блок общей шкалы очков за ИИ-этап */}
-      <div className={styles.score_progress_card}>
-        <div className={styles.score_header}>
-          <span className={styles.score_label}>
-            Прогресс ИИ-модуля
-          </span>
-          <span className={styles.score_values}>
-            <strong>{accumulatedScore}</strong> / {REQUIRED_SCORE} XP
-          </span>
+      <AiWorkoutIntro
+        workoutModes={WORKOUT_MODES_LIST} // Массив генерируется из конфига автоматически
+        selectedMode={selectedMode}
+        setSelectedMode={setSelectedMode}
+        accumulatedScore={accumulatedScore}
+        sessionsCount={sessionsCount}
+        requiredScore={REQUIRED_SCORE}
+        courseStatus={chatStatus}
+        onStartTrainer={handleStartTrainer}
+      />
+      {(error || aiChat.error) && (
+        <div className={styles.error_alert}>
+          {error || aiChat.error}
         </div>
-        <div className={styles.progress_track}>
-          <div
-            className={styles.progress_fill}
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
-        <div className={styles.score_footer}>
-          <span>Попыток совершено: {sessionsCount}</span>
-          {progressPercentage >= 100 && (
-            <span className={styles.success_text}>
-              🎉 Норматив выполнен!
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className={styles.grid_list}>
-        {WORKOUT_MODES.map((mode) => {
-          const isCurrentSelected = selectedMode === mode.id
-
-          return (
-            <div
-              key={mode.id}
-              className={`${styles.workout_card} ${isCurrentSelected ? styles.card_active : ''}`}
-              onClick={() =>
-                !isSubmitting && setSelectedMode(mode.id)
-              }
-            >
-              <div className={styles.card_header}>
-                <h3 className={styles.card_title}>{mode.title}</h3>
-                <span className={styles.reward_badge}>
-                  {mode.reward}
-                </span>
-              </div>
-              <p className={styles.card_description}>
-                {mode.description}
-              </p>
-
-              {isCurrentSelected && (
-                <div className={styles.action_zone}>
-                  <button
-                    className={styles.simulate_button}
-                    disabled={
-                      isSubmitting || courseStatus === 'loading'
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleSimulatePass(mode.testScore)
-                    }}
-                  >
-                    {isSubmitting
-                      ? 'Начисление баллов...'
-                      : 'Пройти тест-драйв тренажера'}
-                  </button>
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {error && <div className={styles.error_alert}>{error}</div>}
+      )}
     </div>
   )
 }

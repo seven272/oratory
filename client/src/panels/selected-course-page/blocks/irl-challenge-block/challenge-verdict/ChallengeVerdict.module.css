@@ -51,7 +51,11 @@
 }
 
 .next_button {
-  background-color: #2ecc71;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--color-green);
   color: var(--color-white);
   font: var(--font-m);
   font-weight: 600;
@@ -64,10 +68,15 @@
 }
 
 .next_button:hover {
-  background-color: #27ae60;
+  background-color: var(--color-green);
+  color: var(--color-white);
 }
 
 .retry_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   background-color: var(--color-blue-vk);
   color: var(--color-white);
   font: var(--font-m);

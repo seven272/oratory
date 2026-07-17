@@ -122,7 +122,7 @@ const applyAiGamificationProgress = async (
   const earnedXp = baseEarnedXp + dailyBonusXp
   const earnedCoins = baseEarnedCoins + dailyBonusCoins
 
-  // 4. Зачисление наград в профиль
+  // 4. Зачисление наград в профиль 
   user.stats.lifetimeXp += earnedXp
   user.weeklyXp += earnedXp
   user.progression.xp += earnedXp
