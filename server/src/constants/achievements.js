@@ -83,6 +83,11 @@ const ACHIEVEMENT_LIST = [
     title: 'Мастер дуэлей',
     descr: 'Поучавствовать в живой дуэли с реальным человеком',
   },
+  {
+    code: 'course_master',
+    title: 'Выпускник академии',
+    descr: 'Закончить успешно любой курс',
+  },
 ]
 
 export { ACHIEVEMENT_LIST }

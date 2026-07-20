@@ -2,7 +2,7 @@ import gigachatAxiosClient from '../../../../utils/gigachatAxiosClient.js'
 import UserCourseProgress from '../../../../models/UserCourseProgress.js'
 import Course from '../../../../models/Course.js' // Ваша модель курса для проверки requiredScore
 import { parseAiResponse } from '../../../../utils/aiJsonParser.js'
-import { transcribeShortAudio } from '../../../../utils/salutSpeechAxiosClient.js'
+import { transcribeShortAudio } from '../../../../utils/speechService.js'
 import {
   getObjectionDialogPrompt,
   OBJECTION_EVALUATION_PROMPT,

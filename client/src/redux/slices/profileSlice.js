@@ -26,7 +26,6 @@ import { fetchFinishRandomWord } from './ai-exercises/randomWordSlice'
 import { fetchSubmitLiveRating } from './liveDuelSlice'
 import { fetchFinishLiveDuelAiBot } from './liveDuelSlice'
 
-
 // Один универсальный запрос для получения всех данных профиля и дашборда
 const fetchProfileData = createAsyncThunk(
   'profile/fetchProfileData',
@@ -98,6 +97,29 @@ const profileSlice = createSlice({
         state.user.inventory = action.payload.inventory
       }
     },
+    updateRewardAfterCourse: (state, action) => {
+      console.log(action.payload)
+      console.log(action.payload.progressData)
+      // Извлекаем объект наград из пришедших данных
+      const rewards = action.payload.progressData?.rewards
+
+      // Если rewards или xp отсутствуют, прибавляем 0 (защита от NaN)
+      state.user.xp = state.user.xp + (rewards?.xp ?? 0)
+      state.user.coins = state.user.coins + (rewards?.coins ?? 0)
+      state.user.lifetimeXp = state.user.lifetimeXp + (rewards?.xp ?? 0)
+
+        // 🔥 Записываем новые ачивки в стейт профиля.
+            if (
+               action.payload.progressData?.newAchievements.length > 0
+            ) {
+              state.lastAwarded =
+                action.payload.progressData?.newAchievements[0]
+            }
+
+      // Обновляем массив ачивок (если новых нет, бэкенд пришлет пустой массив [])
+      state.user.achievements =
+        action.payload.progressData?.newAchievements
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -157,7 +179,6 @@ const profileSlice = createSlice({
           fetchFinishRandomWord.fulfilled,
           fetchSubmitLiveRating.fulfilled,
           fetchFinishLiveDuelAiBot.fulfilled,
-        
         ),
         (state, action) => {
           // Защита: если сессия завершилась без оценки, stats будет отсутствовать
@@ -201,6 +222,7 @@ export const {
   clearLastAwarded,
   updateCoinsAndInventory,
   setTotalPoints,
+  updateRewardAfterCourse,
 } = profileSlice.actions
 export { fetchProfileData }
 export default profileSlice.reducer

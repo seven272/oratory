@@ -9,7 +9,7 @@ const AchievementModal = () => {
   const dispatch = useDispatch()
   const lastAwarded = useSelector(
     (state) => state.profile.lastAwarded,
-  )
+  ) 
 
   // Локальный стейт для создания задержки появления
   const [showModal, setShowModal] = useState(false)

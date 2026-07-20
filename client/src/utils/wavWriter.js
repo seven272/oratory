@@ -45,7 +45,7 @@ export function bufferToWav(buffer, sampleRate = 16000) {
     view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true)
   }
 
-  return new Blob([view], { type: 'audio/wav' })
+  return new Blob([view.buffer], { type: 'audio/wav' })
 }
 
 function writeString(view, offset, string) {

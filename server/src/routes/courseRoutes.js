@@ -5,7 +5,6 @@ import {
   getCourseProgress,
   startCourse,
   submitTheory,
-  submitAiWorkout,
   submitIrlReport,
   submitExamReport,
   unlockExamWithCoins,
@@ -34,13 +33,6 @@ router.post('/start', checkAuth, startCourse)
 
 // 3. Проверка ответа на квиз (Завершение Блока 1 и переход к Блоку 2)
 router.post('/submit-theory', checkAuth, submitTheory)
-
-// 4. Прохождение ИИ тренажеров
-router.post(
-  '/progress/ai-workout/:courseCode',
-  checkAuth,
-  submitAiWorkout,
-)
 
 // 4. Сдача текстового отчета по реальной практике (Завершение Блока 3 и переход к Блоку 4)
 router.post('/submit-irl', checkAuth, submitIrlReport)

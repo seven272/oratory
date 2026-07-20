@@ -49,22 +49,7 @@ const fetchSubmitTheoryQuiz = createAsyncThunk(
   },
 )
 
-// 4. Отправка результатов ИИ-тренажера
-const fetchSubmitAiWorkout = createAsyncThunk(
-  'course/fetchSubmitAiWorkout',
-  async ({ courseCode, score }, { rejectWithValue }) => {
-    try {
-      const res = await axiosInstance.post(
-        `/courses/progress/ai-workout/${courseCode}`,
-        { score },
-      )
-      console.log(res.data)
-      return res.data
-    } catch (error) {
-      return rejectWithValue(error.response.data)
-    }
-  },
-)
+
 // 5. Отправка результатов реального челленджа
 const fetchSubmitIrlReport = createAsyncThunk(
   'course/fetchSubmitIrlReport',
@@ -282,27 +267,6 @@ const courseSlice = createSlice({
         state.error =
           action.payload?.message || 'Ошибка при отправке квиза'
       })
-
-      /* ==========================================
-         4. FETCH SUBMIT AI WORKOUT
-         ========================================== */
-      .addCase(fetchSubmitAiWorkout.pending, (state) => {
-        state.courseStatus = 'loading'
-        state.error = null
-      })
-      .addCase(fetchSubmitAiWorkout.fulfilled, (state, action) => {
-        state.courseStatus = 'succeeded'
-        state.status = action.payload.status || 'active'
-        // Обратите внимание: здесь бэкенд возвращает progressData вместо progress
-        state.progressData = action.payload.progressData
-        state.currentBlockIndex = action.payload.currentBlockIndex
-      })
-      .addCase(fetchSubmitAiWorkout.rejected, (state, action) => {
-        state.courseStatus = 'failed'
-        state.error =
-          action.payload?.message ||
-          'Ошибка сохранения результатов ИИ'
-      })
       /* ==========================================
          5. FETCH  SUBMIT IRL CHALLENGE REPORT
          ========================================== */
@@ -335,6 +299,8 @@ const courseSlice = createSlice({
         state.error = null
       })
       .addCase(fetchSubmitExam.fulfilled, (state, action) => {
+        console.log('слайс курсов 338')
+        console.log(action.payload.progressData)
         state.examSubmittingStatus = 'succeeded'
         // Обновляем прогресс актуальными данными из БД
         state.progressData = action.payload.progressData
@@ -428,7 +394,6 @@ export {
   fetchCourseProgress,
   fetchStartCourse,
   fetchSubmitTheoryQuiz,
-  fetchSubmitAiWorkout,
   fetchSubmitIrlReport,
   fetchSubmitExam,
   fetchUnlockExamWithCoins,

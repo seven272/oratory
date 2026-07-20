@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
   fetchSubmitTheoryQuiz,
   clearCourseError,
 } from '../../../../redux/slices/courseSlice'
 
 import styles from './TheoryBlock.module.css'
-import { SLIDES_PITCH_MASTER } from '../../../../assets/data/courses/theorySlides'
-import { QUIZ_PITCH_MASTER } from '../../../../assets/data/courses/quizSlides'
+import { COURSES_STATIC_CONTENT } from '../../../../assets/data/courses/coursesContent'
 import TheoryData from './theory-data/TheoryData'
 import TheoryQuiz from './theory-quiz/TheoryQuiz'
 
@@ -16,7 +15,11 @@ const TheoryBlock = ({ courseCode }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const isQuizStage = currentSlide === SLIDES_PITCH_MASTER.length
+  const courseTheory = COURSES_STATIC_CONTENT[courseCode]?.theory
+  const slides = courseTheory?.slides || []
+  const quiz = courseTheory?.quiz || null
+
+  const isQuizStage = currentSlide === slides.length
 
   // Сброс ошибки при уходе со страницы (размонтировании всего блока теории)
   useEffect(() => {
@@ -26,7 +29,7 @@ const TheoryBlock = ({ courseCode }) => {
   }, [dispatch])
 
   const handleNext = () => {
-    if (currentSlide < SLIDES_PITCH_MASTER.length) {
+    if (currentSlide < slides.length) {
       setCurrentSlide((prev) => prev + 1)
     }
   }
@@ -58,14 +61,14 @@ const TheoryBlock = ({ courseCode }) => {
         /* СЦЕНАРИЙ 1: Чтение теории */
         <TheoryData
           currentSlide={currentSlide}
-          theorySlides={SLIDES_PITCH_MASTER}
+          theorySlides={slides}
           onPrev={handlePrev}
           onNext={handleNext}
         />
       ) : (
         /* СЦЕНАРИЙ 2: Интерактивный Квиз */
         <TheoryQuiz
-          quizData={QUIZ_PITCH_MASTER}
+          quizData={quiz}
           isSubmitting={isSubmitting}
           onPrev={handlePrev}
           onSubmit={handleSubmit}

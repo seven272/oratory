@@ -1,5 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Popconfirm } from 'antd'
+
 import { fetchRestartCourse } from '../../../../../redux/slices/courseSlice'
 import styles from './ExamVerdict.module.css'
 
@@ -21,13 +23,7 @@ const ExamVerdict = ({
   const isCurrentAttemptPassed = currentScore >= 85
 
   const handleRestart = () => {
-    if (
-      window.confirm(
-        'Вы уверены, что хотите заархивировать текущий результат и пройти курс заново?',
-      )
-    ) {
-      dispatch(fetchRestartCourse(courseCode))
-    }
+    dispatch(fetchRestartCourse(courseCode))
   }
 
   return (
@@ -89,16 +85,26 @@ const ExamVerdict = ({
         {isCompleted ? (
           <div className={styles.end_flow_wrapper}>
             <div className={styles.finish_banner}>
-              Поздравляем! Обучение успешно завершено, награда
-              добавлена в ваш личный профиль.
+              Поздравляем с завершением обучения. Курс пройден
+              блестяще! Награда 📈 <strong>1000</strong> xp и 🪙{' '}
+              <strong>100 </strong> монет добавлена в ваш личный
+              профиль.
             </div>
-            <button
-              className={styles.secondary_restart_btn}
-              onClick={handleRestart}
-              disabled={courseStatus === 'loading'}
+            <Popconfirm
+              title="Повторить"
+              description="Вы уверены, что хотите заархивировать текущий результат и пройти курс заново?"
+              onConfirm={handleRestart}
+              onCancel={() => console.log('Отменено')}
+              okText="Да"
+              cancelText="Нет"
             >
-              Пройти курс заново
-            </button>
+              <button
+                className={styles.secondary_restart_btn}
+                disabled={courseStatus === 'loading'}
+              >
+                Пройти курс заново
+              </button>
+            </Popconfirm>
           </div>
         ) : isCourseFinished ? (
           <div className={styles.end_flow_wrapper}>
@@ -106,13 +112,21 @@ const ExamVerdict = ({
               Попытки исчерпаны. Текущее прохождение сохранено в архив
               программы.
             </div>
-            <button
-              className={styles.restart_btn}
-              onClick={handleRestart}
-              disabled={courseStatus === 'loading'}
+            <Popconfirm
+              title="Повторить"
+              description="Вы уверены, что хотите заархивировать текущий результат и пройти курс заново?"
+              onConfirm={handleRestart}
+              onCancel={() => console.log('Отменено')}
+              okText="Да"
+              cancelText="Нет"
             >
-              Попробовать еще раз (сбросить прогресс)
-            </button>
+              <button
+                className={styles.restart_btn}
+                disabled={courseStatus === 'loading'}
+              >
+                Попробовать еще раз (сбросить прогресс)
+              </button>
+            </Popconfirm>
           </div>
         ) : (
           <button

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   useParams,
@@ -12,16 +12,8 @@ import TheoryBlock from '../blocks/theory-block/TheoryBlock'
 import AiWorkoutBlock from '../blocks/ai-workout-block/AiWorkoutBlock'
 import ExamBlock from '../blocks/exam-block/ExamBlock'
 import IrlChallengeBlock from '../blocks/irl-challenge-block/IrlChallengeBlock'
-
 import styles from './CourseTimeline.module.css'
-
-// Массив заголовков для каждого шага
-const STEP_TITLES = [
-  'Теория и база',
-  'Тренажер с ИИ',
-  'Реальный кейс',
-  'Финальный экзамен'
-]
+import { COURSES_STATIC_CONTENT } from '../../../assets/data/courses/coursesContent'
 
 const CourseTimeline = () => {
   const { courseCode } = useParams()
@@ -36,6 +28,17 @@ const CourseTimeline = () => {
     error,
   } = useSelector((state) => state.course)
 
+  //  Достаем текстовый контент конкретного интенсива по его коду
+  const courseContent = COURSES_STATIC_CONTENT[courseCode]
+
+  // Массив заголовков для каждого шага
+  const STEP_TITLES = [
+    courseContent?.theory.title || 'Теория и база',
+    courseContent?.ai_workout.title || 'Тренажер с ИИ',
+    courseContent?.irl_challenge.title || 'Испытание реальностью',
+    courseContent?.exam.title || 'Финальный экзамен',
+  ]
+
   useEffect(() => {
     if (courseCode) {
       dispatch(fetchCourseProgress(courseCode))
@@ -44,6 +47,15 @@ const CourseTimeline = () => {
 
   const handleGoBack = () => {
     routeNavigator.back()
+  }
+
+  // Защита на случай, если ввели несуществующий в конфиге courseCode
+  if (!courseContent) {
+    return (
+      <div className={styles.error_alert}>
+        Контент курса не найден
+      </div>
+    )
   }
 
   if (courseStatus === 'loading') {
@@ -58,10 +70,9 @@ const CourseTimeline = () => {
   if (status === 'not_started') {
     return (
       <div className={styles.welcome_wrapper}>
-        <h1 className={styles.course_title}>Питч на миллион</h1>
+        <h1 className={styles.course_title}>{courseContent.title}</h1>
         <p className={styles.course_description}>
-          Освойте жесткую аргументацию, избавьтесь от воды в речи и
-          научитесь продавать свои идеи инвесторам за 3 минуты.
+          {courseContent.description}
         </p>
         <button
           className={styles.primary_button}
@@ -93,12 +104,15 @@ const CourseTimeline = () => {
             ‹
           </button>
           <div className={styles.header_info}>
-            <span className={styles.step_counter}>Шаг {currentBlockIndex + 1} из 4</span>
+            <span className={styles.step_counter}>
+              Шаг {currentBlockIndex + 1} из 4
+            </span>
             <h2 className={styles.current_step_title}>
               {STEP_TITLES[currentBlockIndex] || 'Обучение'}
             </h2>
           </div>
-          <div className={styles.right_spacer} /> {/* Для идеальной центровки заголовка */}
+          <div className={styles.right_spacer} />{' '}
+          {/* Для идеальной центровки заголовка */}
         </div>
 
         <div className={styles.stepper_container}>
@@ -106,11 +120,11 @@ const CourseTimeline = () => {
             <div
               key={index}
               className={`${styles.step_indicator} ${
-                index === currentBlockIndex 
-                  ? styles.step_current 
-                  : index < currentBlockIndex 
-                  ? styles.step_completed 
-                  : ''
+                index === currentBlockIndex
+                  ? styles.step_current
+                  : index < currentBlockIndex
+                    ? styles.step_completed
+                    : ''
               }`}
             />
           ))}

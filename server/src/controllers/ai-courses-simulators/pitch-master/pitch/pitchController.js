@@ -2,7 +2,7 @@ import gigachatAxiosClient from '../../../../utils/gigachatAxiosClient.js'
 import UserCourseProgress from '../../../../models/UserCourseProgress.js'
 import Course from '../../../../models/Course.js' // Ваша модель курса для проверки requiredScore
 import { parseAiResponse } from '../../../../utils/aiJsonParser.js'
-import { transcribeShortAudio } from '../../../../utils/salutSpeechAxiosClient.js'
+import { transcribeShortAudio } from '../../../../utils/speechService.js'
 import {
   getPitchDialogPrompt,
   PITCH_EVALUATION_PROMPT,
@@ -67,8 +67,6 @@ const generatePitchResponse = async (req, res) => {
     const { courseCode } = req.body
     let userMessage = null
 
-
-
     const progress = await UserCourseProgress.findOne({
       userId,
       courseCode,
@@ -96,12 +94,18 @@ const generatePitchResponse = async (req, res) => {
     // 1. Извлекаем аудиофайл из multer (он лежит в req.file из-за thunk-ключа 'file')
     if (req.file) {
       try {
-     
+        // 🔥 ДОБАВЬТЕ ЭТИ ТРИ СТРОКИ ЛОГОВ:
+        console.log('--- ДАННЫЕ ИЗ REQ.FILE (MULTER) ---')
+        console.log('Имя поля (fieldname):', req.file.fieldname)
+        console.log(
+          'MIME-тип от фронта (mimetype):',
+          req.file.mimetype,
+        )
+        console.log('-----------------------------------')
         userMessage = await transcribeShortAudio(req.file.buffer)
-  
       } catch (speechError) {
         console.error(
-          'Ошибка синхронного SalutSpeech в питче:',
+          'Ошибка асинхронного Yandex SpeechKit в питче:',
           speechError,
         )
         return res.status(500).json({
@@ -187,7 +191,7 @@ const generatePitchResponse = async (req, res) => {
     progress.markModified('blocksProgress.aiWorkout')
 
     await progress.save()
- 
+
     // Имитация естественной паузы
     const sleep = (ms) =>
       new Promise((resolve) => setTimeout(resolve, ms))

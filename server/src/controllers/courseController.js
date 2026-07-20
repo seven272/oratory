@@ -6,7 +6,7 @@ import { IRL_CHALLENGE_PROMPT } from '../assets/prompts/irlPrompt.js'
 import { EXAM_EVALUATION_PROMPT } from '../assets/prompts/examPrompt.js'
 import gigachatAxiosClient from '../utils/gigachatAxiosClient.js'
 import { parseAiResponse } from '../utils/aiJsonParser.js'
-import { transcribeLongAudio } from '../utils/salutSpeechAxiosClient.js'
+import { transcribeLongAudio } from '../utils/speechService.js'
 
 const getCourseProgress = async (req, res) => {
   try {
@@ -120,17 +120,17 @@ const submitTheory = async (req, res) => {
 
     if (
       !theoryBlock ||
-      !theoryBlock.theoryData ||
-      !theoryBlock.theoryData.quiz
+      !theoryBlock.theoryConfig ||
+      !theoryBlock.theoryConfig.quiz
     ) {
       return res.status(500).json({
-        message: 'Данные квиза отсутствуют в структуре курса',
+        message: 'Данные по верному ответу квиза отсутствуют в структуре курса',
       })
     }
 
     // Валидация ответа
     const correctIndex =
-      theoryBlock.theoryData.quiz.correctAnswerIndex
+      theoryBlock.theoryConfig.quiz.correctAnswerIndex
     if (Number(answerIndex) !== correctIndex) {
       return res.status(400).json({
         success: false,
@@ -154,82 +154,6 @@ const submitTheory = async (req, res) => {
     res.status(500).json({
       message: 'Ошибка при проверке теории',
       error: error.message,
-    })
-  }
-}
-
-const submitAiWorkout = async (req, res) => {
-  try {
-    const { courseCode } = req.params
-    const { score } = req.body
-    const userId = req.userId
-
-    // 1. Параллельно ищем прогресс пользователя и сам курс
-    const [progress, course] = await Promise.all([
-      UserCourseProgress.findOne({ userId, courseCode }),
-      Course.findOne({ courseCode }),
-    ])
-
-    if (!progress) {
-      return res
-        .status(404)
-        .json({ message: 'Прогресс по данному интенсиву не найден' })
-    }
-    if (!course) {
-      return res
-        .status(404)
-        .json({ message: 'Интенсив не найден в базе данных' })
-    }
-
-    // 2. Защита: проверяем, что пользователь на этапе ИИ-тренажера
-    if (progress.currentBlockIndex !== 1) {
-      return res.status(400).json({
-        message:
-          'Вы не можете пройти ИИ-тренажер на текущем этапе курса',
-      })
-    }
-
-    // Находим конфигурацию ИИ-блока в модели курса
-    const aiBlockConfig = course.blocks.find(
-      (block) => block.blockType === 'ai_workout',
-    )
-    const requiredScore =
-      aiBlockConfig?.aiWorkoutData?.requiredScore || 500 // 500 по дефолту
-
-    // 3. Обновляем счетчик сессий и прибавляем набранные очки
-    progress.blocksProgress.aiWorkout.sessionsCount += 1
-    progress.blocksProgress.aiWorkout.accumulatedScore += score
-
-    // 4. Проверяем, набрал ли пользователь нужную сумму (например, 500 баллов)
-    if (
-      progress.blocksProgress.aiWorkout.accumulatedScore >=
-      requiredScore
-    ) {
-      // Условие выполнено: закрываем блок и двигаем индекс вперед на IRL-челлендж
-      progress.blocksProgress.aiWorkout.isCompleted = true
-      progress.currentBlockIndex = 2
-    } else {
-      // Очков не хватило: блок остается незавершенным, индекс не меняем (остается 1)
-      progress.blocksProgress.aiWorkout.isCompleted = false
-    }
-
-    // Маркируем вложенное свойство для Mongoose, так как это Mixed/Object тип
-    progress.markModified('blocksProgress.aiWorkout')
-
-    // Сохраняем изменения в базе данных
-    await progress.save()
-
-    // 5. Возвращаем ответ в Redux
-    return res.status(200).json({
-      status: progress.status,
-      currentBlockIndex: progress.currentBlockIndex,
-      progressData: progress,
-    })
-  } catch (error) {
-    console.error('Ошибка в submitAiWorkout:', error)
-    return res.status(500).json({
-      message:
-        'Внутренняя ошибка сервера при фиксации результатов тренажера',
     })
   }
 }
@@ -385,7 +309,7 @@ const submitExamReport = async (req, res) => {
       userTranscript = await transcribeLongAudio(req.file.buffer)
     } catch (speechError) {
       console.error(
-        'Ошибка распознавания SalutSpeech на экзамене:',
+        'Ошибка распознавания YandexLongSpeech на экзамене:',
         speechError,
       )
       return res.status(500).json({
@@ -542,6 +466,11 @@ const submitExamReport = async (req, res) => {
 
     // Подмешиваем массив ачивок в корень progressData (при провале улетит чистый [])
     progressResponse.newAchievements = newAnnouncedAchievements
+    // передаем награды только если они реально начислились
+    progressResponse.rewards =
+      currentAttemptScore >= 85
+        ? { xp: rewardXp, coins: rewardCoins }
+        : null
 
     // --- 9. ВЫДАЧА ИТОГОВОГО ОТВЕТА НА ФРОНТЕНД ---
     return res.status(200).json({
@@ -733,7 +662,6 @@ export {
   getCourseProgress,
   startCourse,
   submitTheory,
-  submitAiWorkout,
   submitIrlReport,
   submitExamReport,
   unlockExamWithCoins,

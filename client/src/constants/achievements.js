@@ -15,6 +15,8 @@ import Icon13 from '../assets/images/achievements/iron_arguments.png'
 import Icon14 from '../assets/images/achievements/premium_club.png'
 import Icon15 from '../assets/images/achievements/marathon_runner.png'
 import Icon16 from '../assets/images/achievements/live_pioneer.png'
+import Icon17 from '../assets/images/achievements/course_master.png'
+
 
 const ALL_ACHIEVEMENTS = [
   {
@@ -118,6 +120,13 @@ const ALL_ACHIEVEMENTS = [
     icon: Icon16,
     descr: 'Поучавствовать в живой дуэли с реальным человеком',
   },
+   {
+    code: 'course_master',
+    title: 'Выпускник академии',
+    icon: Icon17,
+    descr: 'Закончить успешно любой курс',
+  },
+  
 ]
 
 export { ALL_ACHIEVEMENTS }

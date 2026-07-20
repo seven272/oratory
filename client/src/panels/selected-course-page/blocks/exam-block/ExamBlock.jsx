@@ -6,7 +6,10 @@ import {
   fetchSubmitExam,
   fetchUnlockExamWithCoins,
 } from '../../../../redux/slices/courseSlice'
-import { updateCoins } from '../../../../redux/slices/profileSlice'
+import {
+  updateCoins,
+  updateRewardAfterCourse,
+} from '../../../../redux/slices/profileSlice'
 import ExamResults from './exam-results/ExamResults'
 import ExamQuestions from './exam-questions/ExamQuestions'
 import ExamVerdict from './exam-verdict/ExamVerdict'
@@ -22,7 +25,7 @@ const ExamBlock = ({ courseCode }) => {
   const examProgress = progressData?.blocksProgress?.exam
 
   const bestScore = examProgress?.bestScore || 0
-  const currentScore = examProgress?.lastAttemptScore || 0 
+  const currentScore = examProgress?.lastAttemptScore || 0
   const isCompleted = examProgress?.isCompleted || false
   const attemptsCount = examProgress?.attemptsCount || 0
   const aiFeedback = examProgress?.aiFeedback || ''
@@ -47,7 +50,11 @@ const ExamBlock = ({ courseCode }) => {
     try {
       // 💡 Сбрасываем флаг закрытия перед новой отправкой
       setVerdictClosed(false)
-      await dispatch(fetchSubmitExam({ formData })).unwrap()
+      const result = await dispatch(
+        fetchSubmitExam({ formData }),
+      ).unwrap()
+      console.log(result)
+      dispatch(updateRewardAfterCourse(result))
     } catch (err) {
       console.error('Ошибка при отправке экзамена:', err)
     }
@@ -65,7 +72,6 @@ const ExamBlock = ({ courseCode }) => {
 
       setVerdictClosed(false)
       message.success('Доступ успешно восстановлен!')
-
     } catch (err) {
       message.error('Ошибка покупки попытки сдачи экзамена')
       console.error('Ошибка покупки попытки:', err)

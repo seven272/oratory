@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useSpeechSber } from '../../../../../hooks/useSpeechSber'
+import { useSpeechYandex } from '../../../../../hooks/useSpeechYandex'
 import styles from './ExamQuestions.module.css'
 
 const ExamQuestions = ({
@@ -21,7 +21,7 @@ const ExamQuestions = ({
     audioBlob,
     isListening,
     resetTranscript,
-  } = useSpeechSber()
+  } = useSpeechYandex()
 
   const [recordingTime, setRecordingTime] = useState(0)
   const timerRef = useRef(null)
