@@ -10,10 +10,11 @@ import {
   updateCoins,
   updateRewardAfterCourse,
 } from '../../../../redux/slices/profileSlice'
-import ExamResults from './exam-results/ExamResults'
+import ExamIdle from './exam-idle/ExamIdle'
 import ExamQuestions from './exam-questions/ExamQuestions'
 import ExamVerdict from './exam-verdict/ExamVerdict'
 import ExamLocked from './exam-locked/ExamLocked'
+import { COURSES_STATIC_CONTENT } from '../../../../assets/data/courses/coursesContent'
 import styles from './ExamBlock.module.css'
 
 const ExamBlock = ({ courseCode }) => {
@@ -40,11 +41,10 @@ const ExamBlock = ({ courseCode }) => {
     attemptsCount >= 5
 
   const [examStarted, setExamStarted] = useState(false)
-
   // 💡 НОВЫЙ СТЕЙТ: Флаг, закрыл ли пользователь текущий вердикт ИИ
   const [verdictClosed, setVerdictClosed] = useState(false)
-
   const isSubmitting = examSubmittingStatus === 'loading'
+  const examStatic = COURSES_STATIC_CONTENT[courseCode]?.exam
 
   const handleAudioSubmit = async ({ formData }) => {
     try {
@@ -114,11 +114,12 @@ const ExamBlock = ({ courseCode }) => {
       {(!isLocked || isCourseFinished) &&
         (!aiFeedback || verdictClosed) &&
         !examStarted && (
-          <ExamResults
-            bestScore={bestScore}
+          <ExamIdle
+            bestScore={bestScore} 
             isCompleted={isCompleted}
             isCourseFinished={isCourseFinished}
             attemptsCount={attemptsCount}
+            staticData={examStatic}
             onStart={() => setExamStarted(true)}
           />
         )}
@@ -131,6 +132,7 @@ const ExamBlock = ({ courseCode }) => {
             courseCode={courseCode}
             attemptsCount={attemptsCount}
             isSubmitting={isSubmitting}
+            staticData={examStatic}
             onSubmit={handleAudioSubmit}
             onCancel={() => setExamStarted(false)}
           />

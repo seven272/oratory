@@ -5,6 +5,7 @@ import { fetchSubmitIrlReport } from '../../../../redux/slices/courseSlice'
 import ChallengeInstructions from './challenge-instructions/ChallengeInstructions'
 import ChallengeForm from './challenge-form/ChallengeForm'
 import styles from './IrlChallengeBlock.module.css'
+import { COURSES_STATIC_CONTENT } from '../../../../assets/data/courses/coursesContent'
 
 const IrlChallengeBlock = ({ courseCode }) => {
   const dispatch = useDispatch()
@@ -15,19 +16,16 @@ const IrlChallengeBlock = ({ courseCode }) => {
     progressData?.blocksProgress?.irlChallenge?.textReport || ''
   const isCompleted =
     progressData?.blocksProgress?.irlChallenge?.isCompleted || false
-
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Статические инструкции к заданию (в будущем подтянем из модели Course.irlChallengeData)
+  const courseStatic = COURSES_STATIC_CONTENT[courseCode]
+  const irlStatic = courseStatic?.irl_challenge
+
   const challengeData = {
-    title: '🚀 Задание «В поле»: Запитчи гостя',
-    instructions: `Ваша задача — отработать «Правило 3 секунд» на практике. Найдите коллегу, друга или знакомого, который ничего не знает о вашем проекте. 
-    У вас есть ровно одна попытка и 30 секунд, чтобы зацепить его внимание без банальных приветствий. 
-    
-    В поле отчета ниже подробно опишите:
-    1. Какую фразу-крючок вы использовали?
-    2. Какая была мгновенная реакция собеседника (улыбнулся, отвлекся от телефона, задал встречный вопрос)?
-    3. Что бы вы изменили в следующий раз?`,
+    title: irlStatic?.title || '🎯 Задание в реальном мире',
+    instructions:
+      irlStatic?.instructions ||
+      'Выполните практическое задание курса.',
   }
 
   const handleSubmitReport = async (textReport) => {

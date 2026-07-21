@@ -1,10 +1,11 @@
 import React from 'react'
-import styles from './ExamResults.module.css'
+import styles from './ExamIdle.module.css'
 
-const ExamResults = ({
+const ExamIdle = ({
   bestScore,
   isCompleted,
   attemptsCount,
+  staticData,
   onStart,
 }) => {
   const maxAttempts = 5
@@ -21,7 +22,7 @@ const ExamResults = ({
     ? 'Курс пройден'
     : hasNoAttempts
       ? 'Попытки исчерпаны'
-      : 'Финальный этап'
+      : 'Финальный экзамен'
 
   return (
     <div className={styles.results_container}>
@@ -29,11 +30,9 @@ const ExamResults = ({
         <span className={badgeClass}>{badgeText}</span>
       </div>
 
-      <h2 className={styles.title}>Итоговый аудио-экзамен</h2>
+      <h2 className={styles.title}>{staticData?.title || 'Итоговый аудио-экзамен'}</h2>
       <p className={styles.description}>
-        Запишите устный ответ на практический кейс длительностью от 60
-        до 120 секунд. Для успешной сдачи наберите{' '}
-        <strong>минимум 85 баллов из 100</strong>.
+         {staticData?.taskDescription || 'Запишите устный ответ на практический кейс длительностью от 60 до 120 секунд.'}
       </p>
 
       {/* Современный блок метрик без лишних рамок */}
@@ -82,4 +81,4 @@ const ExamResults = ({
   )
 }
 
-export default ExamResults
+export default ExamIdle

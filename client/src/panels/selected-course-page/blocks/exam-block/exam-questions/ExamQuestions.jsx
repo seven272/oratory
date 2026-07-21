@@ -5,15 +5,10 @@ import styles from './ExamQuestions.module.css'
 const ExamQuestions = ({
   courseCode,
   isSubmitting,
+  staticData,
   onSubmit,
   onCancel,
 }) => {
-  const [currentCase] = useState({
-    title: 'Ситуация: Спасение контракта в лифте',
-    description:
-      'Вы случайно зашли в лифт с генеральным директором компании-клиента, которая завтра планирует расторгнуть с вами договор из-за задержки поставок. У вас есть ровно одна поездка (от 60 до 120 секунд), чтобы применить "Правило 3 секунд", удержать его внимание, снять первичный негатив и договориться о личной встрече сегодня вечером.',
-  })
-
   // 1. Подключаем хук Сбера со всей аудио-логикой (16кГц WAV)
   const {
     startListening,
@@ -112,8 +107,12 @@ const ExamQuestions = ({
       </div>
 
       <div className={styles.case_card}>
-        <h3 className={styles.case_title}>{currentCase.title}</h3>
-        <p className={styles.case_text}>{currentCase.description}</p>
+        <h3 className={styles.case_title}>
+          {staticData?.taskTitle || 'Экзаменационный кейс'}
+        </h3>
+        <p className={styles.case_text}>
+          {staticData?.taskDescription}
+        </p>
       </div>
 
       <div className={styles.recorder_zone}>

@@ -9,14 +9,15 @@ import AiWorkoutIntro from './ai-workout-intro/AiWorkoutIntro'
 import AiWorkoutChat from './ai-workout-chat/AiWorkoutChat'
 import AiWorkoutResult from './ai-workout-result/AiWorkoutResult'
 import { useSpeechSber } from '../../../../hooks/useSpeechSber'
-
+import { COURSES_STATIC_CONTENT } from '../../../../assets/data/courses/coursesContent'
 import { INVESTOR_PITCH_SCENARIOS } from '../../../../assets/data/courses/scenarios/investorPitchScenarios'
 import { OBJECTION_HANDLER_SCENARIOS } from '../../../../assets/data/courses/scenarios/objectionHandlerScenarios'
 import { ELEVATOR_SPEECH_SCENARIOS } from '../../../../assets/data/courses/scenarios/elevatorSpeechScenarios'
+import { NETWORKING_SCENARIOS } from '../../../../assets/data/courses/scenarios/networkingScenarios'
+import { VIP_CLIENT_SCENARIOS } from '../../../../assets/data/courses/scenarios/vipClientScenarios'
 
 import {
   WORKOUT_CONFIGS,
-  WORKOUT_MODES_LIST,
   ALL_WORKOUT_THUNKS,
 } from '../../../../assets/data/courses/config/workoutConfigs'
 import styles from './AiWorkoutBlock.module.css'
@@ -25,6 +26,8 @@ const SCENARIOS_MAP = {
   investor_pitch: INVESTOR_PITCH_SCENARIOS,
   objection_handler: OBJECTION_HANDLER_SCENARIOS,
   elevator_speech: ELEVATOR_SPEECH_SCENARIOS,
+  networking_expert: NETWORKING_SCENARIOS,
+  vip_client_close: VIP_CLIENT_SCENARIOS
 }
 
 const AiWorkoutBlock = ({ courseCode }) => {
@@ -39,14 +42,29 @@ const AiWorkoutBlock = ({ courseCode }) => {
   // Храним ID текущего активного тренажера
   const [selectedMode, setSelectedMode] = useState(null)
 
+ 
   // Достаем активный конфиг на основе стейта
   const currentConfig = WORKOUT_CONFIGS[selectedMode]
+
+
+
+  // Читаем данные напрямую из вашего единого контент-файла
+  const aiWorkoutStatic = COURSES_STATIC_CONTENT[courseCode]?.ai_workout
+  // Вытаскиваем массив строк разрешенных тренажёров 
+  const allowedWorkoutIds = aiWorkoutStatic?.listTrainers || []
+  // Порог очков теперь синхронизирован с бэкендом (1000 баллов)
+  const REQUIRED_SCORE = 1000 
+
+  // 💡 ЛОКАЛЬНАЯ ФИЛЬТРАЦИЯ КАРТОЧЕК: Оставляем только нужные тренажёры
+  const filteredWorkoutModes = Object.values(WORKOUT_CONFIGS).filter(mode => 
+    allowedWorkoutIds.includes(mode.id)
+  )
 
   const accumulatedScore =
     progressData?.blocksProgress?.aiWorkout?.accumulatedScore || 0
   const sessionsCount =
     progressData?.blocksProgress?.aiWorkout?.sessionsCount || 0
-  const REQUIRED_SCORE = 500
+
 
   useEffect(() => {
     return () => {
@@ -160,7 +178,7 @@ const AiWorkoutBlock = ({ courseCode }) => {
   return (
     <div className={styles.workout_container}>
       <AiWorkoutIntro
-        workoutModes={WORKOUT_MODES_LIST} // Массив генерируется из конфига автоматически
+        workoutModes={filteredWorkoutModes} // Массив генерируется из конфига автоматически
         selectedMode={selectedMode}
         setSelectedMode={setSelectedMode}
         accumulatedScore={accumulatedScore}
