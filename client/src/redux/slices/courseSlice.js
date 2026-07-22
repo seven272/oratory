@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../utils/axiosInstance'
 import buildPitchCases from './ai-courses-reducers/pitchReducer.js'
 import buildObjectionCases from './ai-courses-reducers/objectionReducer.js'
+import buildVipCloseCases from './ai-courses-reducers/vipCloseReducer.js'
+import { buildNetworkingCases } from './ai-courses-reducers/networkingReducer.js'
 
 // 1. Инициализация прогресса по курсу
 const fetchCourseProgress = createAsyncThunk(
@@ -48,7 +50,6 @@ const fetchSubmitTheoryQuiz = createAsyncThunk(
     }
   },
 )
-
 
 // 5. Отправка результатов реального челленджа
 const fetchSubmitIrlReport = createAsyncThunk(
@@ -377,6 +378,8 @@ const courseSlice = createSlice({
     // Передаем инстанс builder во внешний строитель кейсов для курса "Питч на миллион"
     buildPitchCases(builder)
     buildObjectionCases(builder)
+    buildVipCloseCases(builder)
+    buildNetworkingCases(builder)
 
     // Будущие курсы будут дописываться сюда ниже аналогично одной строчкой:
     // buildNegotiationCases(builder);

@@ -1,16 +1,14 @@
 import gigachatAxiosClient from '../../../../utils/gigachatAxiosClient.js'
 import UserCourseProgress from '../../../../models/UserCourseProgress.js'
-import Course from '../../../../models/Course.js' // Ваша модель курса для проверки requiredScore
+import Course from '../../../../models/Course.js'
 import { parseAiResponse } from '../../../../utils/aiJsonParser.js'
 import { transcribeShortAudio } from '../../../../utils/speechService.js'
 import {
-  getPitchDialogPrompt,
-  PITCH_EVALUATION_PROMPT,
-} from './pitchPrompt.js'
+  getVipCloseDialogPrompt,
+  VIP_EVALUATION_PROMPT,
+} from './vipClientClosePrompt.js'
 
-// СТАРТ ТРЕНАЖЕРА (Инициализация встречи)
-
-const startPitchTrainer = async (req, res) => {
+const startVipCloseTrainer = async (req, res) => {
   try {
     const userId = req.userId
     const { courseCode, exerciseData } = req.body
@@ -34,12 +32,13 @@ const startPitchTrainer = async (req, res) => {
       })
     }
 
-    const preview = `Вы заходите на онлайн-встречу с инвестором. Тема вашего питча: "${exerciseData.topic}". Ваша роль: "${exerciseData.role}". ${exerciseData.context}. \nИнвестор приветствует вас и говорит...`
+    const preview = `Вы начинаете встречу. Собеседник: ${exerciseData.role}. Контекст: ${exerciseData.context}`
     const question = `${exerciseData.firstQuestion}`
 
-    // Инициализируем структуру сессии (теперь валидируется схемой)
+    // Инициализируем структуру сессии (валидируется схемой)
     progress.blocksProgress.aiWorkout.currentSession = {
       status: 'active',
+      workoutConfigId: 'vip_client_close', // Явно пишем ID текущего тренажёра
       exerciseData,
       messages: [],
       createdAt: new Date(),
@@ -48,18 +47,19 @@ const startPitchTrainer = async (req, res) => {
     progress.markModified('blocksProgress.aiWorkout')
     await progress.save()
 
-    return res.status(201).json({ preview, question })
+    return res
+      .status(201)
+      .json({ preview, question, progressData: progress })
   } catch (error) {
-    console.error('Error in startPitchTrainer:', error)
+    console.error('Error in startVipCloseTrainer:', error)
     res.status(500).json({
-      message: 'Ошибка сервера при старте тренажера Питча',
+      message: 'Ошибка сервера при старте тренажера VIP-клиента',
       error: error.message,
     })
   }
 }
 
-
-const generatePitchResponse = async (req, res) => {
+const generateVipCloseResponse = async (req, res) => {
   try {
     const userId = req.userId
     const { courseCode } = req.body
@@ -92,7 +92,6 @@ const generatePitchResponse = async (req, res) => {
     // 1. Извлекаем аудиофайл из multer (он лежит в req.file из-за thunk-ключа 'file')
     if (req.file) {
       try {
-        // 🔥 ДОБАВЬТЕ ЭТИ ТРИ СТРОКИ ЛОГОВ:
         console.log('--- ДАННЫЕ ИЗ REQ.FILE (MULTER) ---')
         console.log('Имя поля (fieldname):', req.file.fieldname)
         console.log(
@@ -103,25 +102,25 @@ const generatePitchResponse = async (req, res) => {
         userMessage = await transcribeShortAudio(req.file.buffer)
       } catch (speechError) {
         console.error(
-          'Ошибка асинхронного Yandex SpeechKit в питче:',
+          'Ошибка асинхронного Yandex SpeechKit в VIP-тренажере:',
           speechError,
         )
         return res.status(500).json({
           message:
-            'Не удалось распознать вашу речь инвестором. Пожалуйста, повторите запись.',
+            'Не удалось распознать вашу речь клиентом. Пожалуйста, повторите запись.',
           error: speechError.message,
         })
       }
     } else {
       return res
         .status(400)
-        .json({ message: 'Аудиофайл питча не был передан.' })
+        .json({ message: 'Аудиофайл ответа не был передан.' })
     }
 
     const attemptsCount = session.messages.filter(
       (m) => m.role === 'user',
     ).length
-    const isPitchFinished = attemptsCount >= 3 // Конец диалога на 3-й раз
+    const isSessionFinished = attemptsCount >= 2 // Конец диалога на 3-й раз (индексы ответов: 0, 1, 2)
 
     // 2. Обработка промалчивания / пустого распознавания
     if (
@@ -144,14 +143,15 @@ const generatePitchResponse = async (req, res) => {
 
       return res.status(200).json({
         answer:
-          'Вы ничего не сказали. Инвестор ждет конкретики по вашему проекту.',
-        isPitchFinished,
+          'Вы ничего не сказали. VIP-клиент ждет конкретики и ответов на свои вопросы.',
+        isSessionFinished,
         isError: true,
+        progressData: progress,
       })
     }
 
     const cleanUserMessage = userMessage.trim()
-    const PROMPT = getPitchDialogPrompt(
+    const PROMPT = getVipCloseDialogPrompt(
       role,
       topic,
       context,
@@ -164,13 +164,15 @@ const generatePitchResponse = async (req, res) => {
       {
         model: 'GigaChat-2',
         messages: [{ role: 'user', content: PROMPT }],
-        max_tokens: 300,
+        max_tokens: 350,
       },
     )
 
     const aiAnswer = response.data.choices?.[0]?.message?.content
     if (!aiAnswer) {
-      throw new Error('Пустой ответ от GigaChat в тренажере питча')
+      throw new Error(
+        'Пустой ответ от GigaChat в тренажере VIP-клиента',
+      )
     }
 
     // Записываем ходы диалога в сессию прогресса
@@ -180,8 +182,7 @@ const generatePitchResponse = async (req, res) => {
       text: aiAnswer.trim(),
     })
 
-    // 🔥 ЖЕЛЕЗОБЕТОННОЕ ИСПРАВЛЕНИЕ ДЛЯ MONGOOSE:
-    // Явно помечаем измененными абсолютно все уровни вложенности объекта сессии!
+    // Помечаем измененными абсолютно все уровни вложенности объекта сессии
     progress.markModified(
       'blocksProgress.aiWorkout.currentSession.messages',
     )
@@ -198,19 +199,19 @@ const generatePitchResponse = async (req, res) => {
     return res.json({
       user_transcript: cleanUserMessage,
       answer: aiAnswer.trim(),
-      isPitchFinished,
+      isSessionFinished,
+      progressData: progress,
     })
   } catch (error) {
-    console.error('Ошибка в generatePitchResponse:', error.message)
+    console.error('Ошибка в generateVipCloseResponse:', error.message)
     res.status(503).json({
       answer:
-        'Инвестор отвлекся на изучение графиков. Пожалуйста, повторите фразу.',
+        'Клиент отвлекся на входящее уведомление. Пожалуйста, повторите фразу.',
     })
   }
 }
 
-
-const finishPitchTrainer = async (req, res) => {
+const finishVipCloseTrainer = async (req, res) => {
   try {
     const userId = req.userId
     const { courseCode } = req.body
@@ -260,7 +261,7 @@ const finishPitchTrainer = async (req, res) => {
           'Тренажер завершен без оценки из-за отсутствия содержательных ответов',
         totalScore: 0,
         feedback:
-          'Слишком много пропущенных ответов. Инвестор покинул встречу.',
+          'Слишком много пропущенных ответов. Клиент завершил созвон.',
         progressData: progress,
       })
     }
@@ -269,7 +270,7 @@ const finishPitchTrainer = async (req, res) => {
     const chatHistory = session.messages
       .map(
         (m) =>
-          `${m.role === 'user' ? 'Стартапер' : 'Инвестор'}: ${m.text}`,
+          `${m.role === 'user' ? 'Эксперт' : 'VIP-Клиент'}: ${m.text}`,
       )
       .join('\n')
 
@@ -281,10 +282,10 @@ const finishPitchTrainer = async (req, res) => {
         {
           model: 'GigaChat-2',
           messages: [
-            { role: 'system', content: PITCH_EVALUATION_PROMPT },
+            { role: 'system', content: VIP_EVALUATION_PROMPT },
             {
               role: 'user',
-              content: `Проанализируй этот диалог-питч:\n${chatHistory}`,
+              content: `Проанализируй эти b2b-переговоры:\n${chatHistory}`,
             },
           ],
           max_tokens: 700,
@@ -293,12 +294,12 @@ const finishPitchTrainer = async (req, res) => {
 
       const aiJsonResult = response.data.choices[0].message.content
       evaluation = parseAiResponse(aiJsonResult, {
-        structure: 40,
-        persuasion: 40,
+        usp: 40,
+        painFocus: 40,
       })
     } catch (apiError) {
       console.error(
-        'Сбой сети GigaChat при оценке питча:',
+        'Сбой сети GigaChat при оценке vip_client_close:',
         apiError.message,
       )
     }
@@ -308,17 +309,17 @@ const finishPitchTrainer = async (req, res) => {
       evaluation = {
         totalScore: 50,
         feedback:
-          'Ваш питч принят инвестором. Из-за технических неполадок подробный отчет недоступен, начислен средний балл.',
-        criteria: { structure: 50, persuasion: 50 },
+          'Ваши тезисы приняты клиентом. Из-за технических неполадок подробный отчет недоступен, начислен средний балл.',
+        criteria: { usp: 50, painFocus: 50 },
       }
     }
 
-    // Вытаскиваем необходимый порог очков из конфигурации курса (ваша оригинальная логика)
+    // Вытаскиваем необходимый порог очков из конфигурации курса
     const aiBlockConfig = course.blocks.find(
       (block) => block.blockType === 'ai_workout',
     )
     const requiredScore =
-      aiBlockConfig?.aiWorkoutData?.requiredScore || 500
+      aiBlockConfig?.aiWorkoutConfig?.requiredScore || 1000
 
     // Обновляем статистику вашего блока
     progress.blocksProgress.aiWorkout.sessionsCount += 1
@@ -347,7 +348,7 @@ const finishPitchTrainer = async (req, res) => {
       status: progress.status,
       currentBlockIndex: progress.currentBlockIndex,
       progressData: progress,
-      // Дополнительные метаданные для отображения красивого ИИ-вердикта на фронтенде в конце сессии:
+      // Метаданные для отображения вердикта на фронтенде по критериям usp и painFocus:
       evaluation: {
         totalScore: evaluation.totalScore,
         feedback: evaluation.feedback,
@@ -355,7 +356,7 @@ const finishPitchTrainer = async (req, res) => {
       },
     })
   } catch (error) {
-    console.error('Ошибка финализации питча:', error)
+    console.error('Ошибка финализации тренажера VIP-клиента:', error)
     return res.status(500).json({
       message:
         'Внутренняя ошибка сервера при фиксации результатов тренажера',
@@ -364,7 +365,7 @@ const finishPitchTrainer = async (req, res) => {
 }
 
 export {
-  startPitchTrainer,
-  generatePitchResponse,
-  finishPitchTrainer,
+  startVipCloseTrainer,
+  generateVipCloseResponse,
+  finishVipCloseTrainer,
 }

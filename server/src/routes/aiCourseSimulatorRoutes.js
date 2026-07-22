@@ -14,6 +14,18 @@ import {
   startObjectionTrainer,
 } from '../controllers/ai-courses-simulators/pitch-master/objection/objectionController.js'
 
+import {
+  startVipCloseTrainer,
+  generateVipCloseResponse,
+  finishVipCloseTrainer,
+} from '../controllers/ai-courses-simulators/self-pitch-pro/vip-client-close/vipClientCloseController.js'
+
+import {
+  startNetworkingTrainer,
+  generateNetworkingResponse,
+  finishNetworkingTrainer,
+} from '../controllers/ai-courses-simulators/self-pitch-pro/networking-expert/networkingExpertController.js'
+
 const aiCourseSimulatorRouter = express.Router()
 
 // Настройка multer для аудио
@@ -27,21 +39,17 @@ const upload = multer({
    ========================================================================== */
 
 // тренажер Питч с Инвестором
-
-// Старт сессии тренажера Питч с инвестором
 aiCourseSimulatorRouter.post(
   '/pitch-master/pitch/start',
   checkAuth,
   startPitchTrainer,
 )
-// Обработка ответа (тренажера Питч с инвестором)
 aiCourseSimulatorRouter.post(
   '/pitch-master/pitch/respond',
   checkAuth,
   upload.single('file'),
   generatePitchResponse,
 )
-// Финализация и вердикт тренажера Питч с инвестором
 aiCourseSimulatorRouter.post(
   '/pitch-master/pitch/finish',
   checkAuth,
@@ -49,31 +57,65 @@ aiCourseSimulatorRouter.post(
 )
 
 // тренажер Обработка возвражений
-
-// Старт сессии тренажера Обработка возвражений
 aiCourseSimulatorRouter.post(
   '/pitch-master/objection/start',
   checkAuth,
   startObjectionTrainer,
 )
-// Обработка ответа тренажера Обработка возвражений
+
 aiCourseSimulatorRouter.post(
   '/pitch-master/objection/respond',
   checkAuth,
   upload.single('file'),
   generateObjectionResponse,
 )
-// Финализация и вердикт тренажера Обработка возвражений
 aiCourseSimulatorRouter.post(
   '/pitch-master/objection/finish',
   checkAuth,
   finishObjectionTrainer,
 )
 
-
 /* ==========================================================================
-   🤝 БУДУЩИЕ КУРСЫ (Добавляются сюда одной строчкой)
+   🤝 Курс Личный бренд: Самопрезентация на миллион
    ========================================================================== */
-// aiCourseSimulatorRouter.post('/negotiations/start', checkAuth, startNegotiationTrainer);
+// тренажер Встреча на миллион: Закрытие VIP-клиента
+aiCourseSimulatorRouter.post(
+  '/self-pitch-pro/vip-client-close/start',
+  checkAuth,
+  startVipCloseTrainer,
+)
+
+aiCourseSimulatorRouter.post(
+  '/self-pitch-pro/vip-client-close/respond',
+  checkAuth,
+  upload.single('file'),
+  generateVipCloseResponse,
+)
+
+aiCourseSimulatorRouter.post(
+  '/self-pitch-pro/vip-client-close/finish',
+  checkAuth,
+  finishVipCloseTrainer,
+)
+
+// --- ТРЕНАЖЕР 2: Нетворкинг-мастер: Бизнес-знакомство ---
+aiCourseSimulatorRouter.post(
+  '/self-pitch-pro/networking-expert/start',
+  checkAuth,
+  startNetworkingTrainer,
+)
+
+aiCourseSimulatorRouter.post(
+  '/self-pitch-pro/networking-expert/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи
+  generateNetworkingResponse,
+)
+
+aiCourseSimulatorRouter.post(
+  '/self-pitch-pro/networking-expert/finish',
+  checkAuth,
+  finishNetworkingTrainer,
+)
 
 export default aiCourseSimulatorRouter
