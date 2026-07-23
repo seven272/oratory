@@ -2,8 +2,8 @@ import Course from '../models/Course.js'
 import UserCourseProgress from '../models/UserCourseProgress.js'
 import User from '../models/User.js'
 import { checkAchievements } from '../utils/achievementService.js'
-import { IRL_CHALLENGE_PROMPT } from '../assets/prompts/irlPrompt.js'
-import { EXAM_EVALUATION_PROMPT } from '../assets/prompts/examPrompt.js'
+import {  IRL_CHALLENGE_PROMPTS_REGISTRY } from '../assets/prompts/irlPrompt.js'
+import { EXAM_PROMPTS_REGISTRY } from '../assets/prompts/examPrompt.js'
 import gigachatAxiosClient from '../utils/gigachatAxiosClient.js'
 import { parseAiResponse } from '../utils/aiJsonParser.js'
 import { transcribeLongAudio } from '../utils/speechService.js'
@@ -124,7 +124,8 @@ const submitTheory = async (req, res) => {
       !theoryBlock.theoryConfig.quiz
     ) {
       return res.status(500).json({
-        message: 'Данные по верному ответу квиза отсутствуют в структуре курса',
+        message:
+          'Данные по верному ответу квиза отсутствуют в структуре курса',
       })
     }
 
@@ -173,6 +174,8 @@ const submitIrlReport = async (req, res) => {
       })
     }
 
+    const currentIrlPrompt = IRL_CHALLENGE_PROMPTS_REGISTRY[courseCode]
+
     // 2. Проверка состояния прогресса в БД
     const progress = await UserCourseProgress.findOne({
       userId,
@@ -196,7 +199,7 @@ const submitIrlReport = async (req, res) => {
         {
           model: 'GigaChat-2',
           messages: [
-            { role: 'system', content: IRL_CHALLENGE_PROMPT },
+            { role: 'system', content: currentIrlPrompt },
             {
               role: 'user',
               content: `Проанализируй этот отчет по практическому заданию "В поле":\n${textReport.trim()}`,
@@ -264,13 +267,25 @@ const submitExamReport = async (req, res) => {
       return res.status(400).json({ message: 'Не указан код курса' })
     }
 
+    // 💡 ДИНАМИЧЕСКИЙ ПОДБОР ПРОМПТА: вытаскиваем системный промпт из реестра по коду курса
+    const currentExamPrompt = EXAM_PROMPTS_REGISTRY[courseCode]
+    if (!currentExamPrompt) {
+      return res
+        .status(400)
+        .json({
+          message: `Системный промпт для курса ${courseCode} не сконфигурирован на сервере`,
+        })
+    }
+
     // 1. Находим прогресс курса в базе данных
     const progress = await UserCourseProgress.findOne({
       userId,
       courseCode,
     })
     if (!progress) {
-      return res.status(404).json({ message: 'Прогресс не найден' })
+      return res
+        .status(404)
+        .json({ message: 'Прогресс по данному курсу не найден' })
     }
 
     const currentExamState = progress.blocksProgress.exam
@@ -282,7 +297,7 @@ const submitExamReport = async (req, res) => {
     ) {
       return res.status(400).json({
         message:
-          'Обучение по этому курсу уже завершено. Попыток больше нет.',
+          'Обучение по этому курсу уже завершено или исчерпаны все попытки.',
       })
     }
 
@@ -293,11 +308,11 @@ const submitExamReport = async (req, res) => {
     ) {
       return res.status(423).json({
         message:
-          'Экзамен заблокирован. Подождите 24 часа или разблокируйте за монеты.',
+          'Экзамен заблокирован. Подождите окончания кулдауна или разблокируйте за монеты.',
       })
     }
 
-    // 4. Расшифровка аудиозаписи через SalutSpeech
+    // 4. Расшифровка аудиозаписи монолога (используем ключ 'audio' из роута)
     let userTranscript = ''
     if (!req.file) {
       return res
@@ -314,12 +329,12 @@ const submitExamReport = async (req, res) => {
       )
       return res.status(500).json({
         message:
-          'Не удалось распознать аудиозапись экзамена. Попробуйте еще раз.',
+          'Не удалось распознать аудиозапись экзамена. Пожалуйста, попробуйте еще раз.',
         error: speechError.message,
       })
     }
 
-    // 5. Защита от тишины и промалчивания (Аналогично Трибуне)
+    // 5. Защита от тишины и промалчивания
     if (
       !userTranscript ||
       !userTranscript.trim() ||
@@ -327,38 +342,38 @@ const submitExamReport = async (req, res) => {
     ) {
       return res.status(400).json({
         message:
-          'Вы ничего не сказали на записи. Оценить пустой ответ невозможно. Попробуйте снова.',
+          'Вы ничего не сказали на записи. Оценить пустой монолог невозможно. Попробуйте снова.',
       })
     }
 
-    let parsedResult
+    let parsedResult = null
 
-    // 6. Оценка текста ответа в GigaChat-2
+    // 6. Оценка текста ответа в GigaChat-2 с подстановкой выбранного промпта
     try {
       const response = await gigachatAxiosClient.post(
         '/chat/completions',
         {
           model: 'GigaChat-2',
           messages: [
-            { role: 'system', content: EXAM_EVALUATION_PROMPT },
+            { role: 'system', content: currentExamPrompt }, // <-- Динамический промпт
             {
               role: 'user',
               content: `Вот расшифровка устного ответа студента для оценки:\n"${userTranscript.trim()}"`,
             },
           ],
-          max_tokens: 700,
-          temperature: 0.3, // Жесткий JSON без галлюцинаций
+          max_tokens: 800,
+          temperature: 0.3, // Минимизируем отклонения от JSON структуры
         },
       )
 
       const aiJsonResult =
         response.data?.choices?.[0]?.message?.content
 
-      // Парсим JSON с безопасными фолбеками под структуру экзамена
+      // Парсим чистый JSON
       parsedResult = parseAiResponse(aiJsonResult, {
         score: 0,
         aiFeedback:
-          '⚠️ Ошибка автоматической обработки результатов экзамена нейросетью. Пожалуйста, обратитесь в поддержку.',
+          '⚠️ Ошибка автоматической обработки результатов экзамена нейросетью. Пожалуйста, попробуйте позже.',
       })
     } catch (apiError) {
       console.error(
@@ -371,7 +386,7 @@ const submitExamReport = async (req, res) => {
       })
     }
 
-    // 7. Бизнес-логика расчета результатов попытки
+    // 7. Расчет результатов попытки
     const currentAttemptScore = parsedResult.score
     let finalAiFeedback = parsedResult.aiFeedback
 
@@ -390,21 +405,17 @@ const submitExamReport = async (req, res) => {
     let newAnnouncedAchievements = []
 
     if (currentAttemptScore >= 85) {
-      // === СЦЕНАРИЙ А: СДАЛ (Баллы >= 85) ===
+      // === СЦЕНАРИЙ А: ЭКЗАМЕН СДАН (Баллы >= 85) ===
       if (!isExamCompleted) {
         try {
-          // 1. Находим текущего пользователя в БД
           const user = await User.findById(userId)
-
           if (user) {
-            // 2. Начисляем опыт во все три поля и монеты
             user.progression.xp += rewardXp
             user.stats.lifetimeXp += rewardXp
-            user.weeklyXp += rewardXp // 💡 Добавлено: Начисление недельного опыта
+            user.weeklyXp += rewardXp
             user.progression.coins += rewardCoins
 
-            // 3. Проверяем ачивки через утилиту (передаем 'course_master')
-            // Функция модифицирует user.progression.achievements по ссылке
+            // Выдаем ачивку за успешное закрытие курса
             newAnnouncedAchievements = checkAchievements(
               user,
               false,
@@ -412,12 +423,11 @@ const submitExamReport = async (req, res) => {
               'course_master',
             )
 
-            // 4. Сохраняем обновленный документ пользователя в MongoDB
             await user.save()
           }
         } catch (rewardError) {
           console.error(
-            'Ошибка при начислении геймификации и ачивок:',
+            'Ошибка при начислении геймификации и ачивок на экзамене:',
             rewardError,
           )
         }
@@ -426,27 +436,27 @@ const submitExamReport = async (req, res) => {
       isExamCompleted = true
       overallCourseStatus = 'completed'
     } else {
-      // === СЦЕНАРИЙ Б: НЕ СДАЛ (Баллы < 85) ===
+      // === СЦЕНАРИЙ Б: ЭКЗАМЕН НЕ СДАН (Баллы < 85) ===
       if (newAttemptsCount >= 5) {
         overallCourseStatus = 'failed'
         finalAiFeedback +=
           '\n\n❌ Вы израсходовали все 5 попыток. Курс завершен неудовлетворительно.'
       } else {
+        // Устанавливаем 24 часа кулдауна до следующей бесплатной попытки
         const lockDate = new Date()
         lockDate.setHours(lockDate.getHours() + 24)
         newLockedUntil = lockDate
       }
     }
 
-    // --- 8. СОХРАНЕНИЕ ФИНАЛЬНЫХ РЕЗУЛЬТАТОВ В MONGODB ---
-    // Выполняется ВСЕГДА (и при успехе, и при провале), обновляя баллы и лучшую попытку
+    // 8. СОХРАНЕНИЕ ФИНАЛЬНЫХ РЕЗУЛЬТАТОВ В MONGODB через атомарный $set
     const updatedProgressDoc =
       await UserCourseProgress.findOneAndUpdate(
         { userId, courseCode },
         {
           $set: {
             status: overallCourseStatus,
-            currentBlockIndex: 3,
+            currentBlockIndex: 3, // Закрепляем на финальном шаге
             'blocksProgress.exam.isCompleted': isExamCompleted,
             'blocksProgress.exam.bestScore': newBestScore,
             'blocksProgress.exam.attemptsCount': newAttemptsCount,
@@ -459,20 +469,18 @@ const submitExamReport = async (req, res) => {
         { new: true },
       )
 
-    // Превращаем mongoose-документ в объект, чтобы добавить поле для фронтенда
     const progressResponse = updatedProgressDoc
       ? updatedProgressDoc.toObject()
       : {}
 
-    // Подмешиваем массив ачивок в корень progressData (при провале улетит чистый [])
+    // Обогащаем объект ответа метаданными для анимаций на фронтенде
     progressResponse.newAchievements = newAnnouncedAchievements
-    // передаем награды только если они реально начислились
     progressResponse.rewards =
       currentAttemptScore >= 85
         ? { xp: rewardXp, coins: rewardCoins }
         : null
 
-    // --- 9. ВЫДАЧА ИТОГОВОГО ОТВЕТА НА ФРОНТЕНД ---
+    // 9. ВЫДАЧА ИТОГОВОГО ОТВЕТА НА ФРОНТЕНД
     return res.status(200).json({
       success: true,
       user_transcript: userTranscript ? userTranscript.trim() : '',
@@ -482,7 +490,9 @@ const submitExamReport = async (req, res) => {
     console.error('Глобальная ошибка в submitExamReport:', error)
     return res
       .status(500)
-      .json({ message: 'Ошибка сервера при обработке экзамена.' })
+      .json({
+        message: 'Внутренняя ошибка сервера при обработке экзамена.',
+      })
   }
 }
 

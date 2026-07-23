@@ -26,6 +26,30 @@ import {
   finishNetworkingTrainer,
 } from '../controllers/ai-courses-simulators/self-pitch-pro/networking-expert/networkingExpertController.js'
 
+import {
+  startHrScreenerTrainer,
+  generateHrScreenerResponse,
+  finishHrScreenerTrainer,
+} from '../controllers/ai-courses-simulators/hr-storm/hr-screener/hrScreenerController.js'
+
+import {
+  startStressInterviewTrainer,
+  generateStressResponse,
+  finishStressInterviewTrainer,
+} from '../controllers/ai-courses-simulators/hr-storm/stress-interview/stressInterviewController.js'
+
+import {
+  startBarSmallTalkTrainer,
+  generateBarSmallTalkResponse,
+  finishBarSmallTalkTrainer,
+} from '../controllers/ai-courses-simulators/party-charisma/bar-small-talk/barSmallTalkController.js'
+
+import {
+  startVipAfterpartyTrainer,
+  generateVipAfterpartyResponse,
+  finishVipAfterpartyTrainer,
+} from '../controllers/ai-courses-simulators/party-charisma/vip-afterparty/vipAfterpartyController.js'
+
 const aiCourseSimulatorRouter = express.Router()
 
 // Настройка multer для аудио
@@ -116,6 +140,97 @@ aiCourseSimulatorRouter.post(
   '/self-pitch-pro/networking-expert/finish',
   checkAuth,
   finishNetworkingTrainer,
+)
+// Тренажер первичное собеседование
+aiCourseSimulatorRouter.post(
+  '/hr-storm/hr-screener/start',
+  checkAuth,
+  startHrScreenerTrainer,
+)
+
+// Обработка аудио-ответов и генерация реплик рекрутера
+aiCourseSimulatorRouter.post(
+  '/hr-storm/hr-screener/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиофайла через thunk-ключ 'file'
+  generateHrScreenerResponse,
+)
+
+// Финализация интервью, ИИ-анализ софт-скиллов по STAR и начисление баллов
+aiCourseSimulatorRouter.post(
+  '/hr-storm/hr-screener/finish',
+  checkAuth,
+  finishHrScreenerTrainer,
+)
+
+// Стресс-интервью с будущим боссом
+aiCourseSimulatorRouter.post(
+  '/hr-storm/stress-interview/start',
+  checkAuth,
+  startStressInterviewTrainer,
+)
+
+aiCourseSimulatorRouter.post(
+  '/hr-storm/stress-interview/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиофайла через thunk-ключ 'file'
+  generateStressResponse,
+)
+
+aiCourseSimulatorRouter.post(
+  '/hr-storm/stress-interview/finish',
+  checkAuth,
+  finishStressInterviewTrainer,
+)
+
+/* ==========================================================================
+   🥂 КУРС: Харизма нетворкинга: Свой в любой компании (party_charisma)
+   ========================================================================== */
+
+// --- ТРЕНАЖЕР 1: Разговор у барной стойки (bar_small_talk) ---
+// Инициализация сессии Small Talk у бара
+aiCourseSimulatorRouter.post(
+  '/party-charisma/bar-small-talk/start',
+  checkAuth,
+  startBarSmallTalkTrainer,
+)
+
+// Обработка аудио-ответов и генерация реплик собеседника у бара
+aiCourseSimulatorRouter.post(
+  '/party-charisma/bar-small-talk/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи через thunk-ключ 'file'
+  generateBarSmallTalkResponse,
+)
+
+// Финализация Small Talk, ИИ-анализ по критериям и начисление баллов
+aiCourseSimulatorRouter.post(
+  '/party-charisma/bar-small-talk/finish',
+  checkAuth,
+  finishBarSmallTalkTrainer,
+)
+
+// --- ТРЕНАЖЕР 2: Закрытое афтерпати лидеров (vip_afterparty) ---
+// Инициализация беседы на VIP-афтерпати
+aiCourseSimulatorRouter.post(
+  '/party-charisma/vip-afterparty/start',
+  checkAuth,
+  startVipAfterpartyTrainer,
+)
+
+// Обработка ответов на афтерпати и генерация реплик VIP-гостя
+aiCourseSimulatorRouter.post(
+  '/party-charisma/vip-afterparty/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи через thunk-ключ 'file'
+  generateVipAfterpartyResponse,
+)
+
+// Финализация VIP-встречи, ИИ-анализ статуса и экологичного выхода
+aiCourseSimulatorRouter.post(
+  '/party-charisma/vip-afterparty/finish',
+  checkAuth,
+  finishVipAfterpartyTrainer,
 )
 
 export default aiCourseSimulatorRouter

@@ -15,7 +15,10 @@ import { OBJECTION_HANDLER_SCENARIOS } from '../../../../assets/data/courses/sce
 import { ELEVATOR_SPEECH_SCENARIOS } from '../../../../assets/data/courses/scenarios/elevatorSpeechScenarios'
 import { NETWORKING_SCENARIOS } from '../../../../assets/data/courses/scenarios/networkingScenarios'
 import { VIP_CLIENT_SCENARIOS } from '../../../../assets/data/courses/scenarios/vipClientScenarios'
-
+import { HR_SCREENER_SCENARIOS } from '../../../../assets/data/courses/scenarios/hrScreenerScenarios'
+import { STRESS_INTERVIEW_SCENARIOS } from '../../../../assets/data/courses/scenarios/stressInterviewScenarios'
+import { VIP_AFTERPARTY_SCENARIOS } from '../../../../assets/data/courses/scenarios/vipAfterpartyScenarios'
+import { BAR_SMALL_TALK_SCENARIOS } from '../../../../assets/data/courses/scenarios/barSmallTalkScenarios'
 import {
   WORKOUT_CONFIGS,
   ALL_WORKOUT_THUNKS,
@@ -27,7 +30,11 @@ const SCENARIOS_MAP = {
   objection_handler: OBJECTION_HANDLER_SCENARIOS,
   elevator_speech: ELEVATOR_SPEECH_SCENARIOS,
   networking_expert: NETWORKING_SCENARIOS,
-  vip_client_close: VIP_CLIENT_SCENARIOS
+  vip_client_close: VIP_CLIENT_SCENARIOS,
+  hr_screener: HR_SCREENER_SCENARIOS,
+  stress_interview: STRESS_INTERVIEW_SCENARIOS,
+  bar_small_talk: BAR_SMALL_TALK_SCENARIOS,
+  vip_afterparty: VIP_AFTERPARTY_SCENARIOS,
 }
 
 const AiWorkoutBlock = ({ courseCode }) => {
@@ -42,29 +49,26 @@ const AiWorkoutBlock = ({ courseCode }) => {
   // Храним ID текущего активного тренажера
   const [selectedMode, setSelectedMode] = useState(null)
 
- 
   // Достаем активный конфиг на основе стейта
   const currentConfig = WORKOUT_CONFIGS[selectedMode]
 
-
-
   // Читаем данные напрямую из вашего единого контент-файла
-  const aiWorkoutStatic = COURSES_STATIC_CONTENT[courseCode]?.ai_workout
-  // Вытаскиваем массив строк разрешенных тренажёров 
+  const aiWorkoutStatic =
+    COURSES_STATIC_CONTENT[courseCode]?.ai_workout
+  // Вытаскиваем массив строк разрешенных тренажёров
   const allowedWorkoutIds = aiWorkoutStatic?.listTrainers || []
   // Порог очков теперь синхронизирован с бэкендом (1000 баллов)
-  const REQUIRED_SCORE = 1000 
+  const REQUIRED_SCORE = 1000
 
   // 💡 ЛОКАЛЬНАЯ ФИЛЬТРАЦИЯ КАРТОЧЕК: Оставляем только нужные тренажёры
-  const filteredWorkoutModes = Object.values(WORKOUT_CONFIGS).filter(mode => 
-    allowedWorkoutIds.includes(mode.id)
+  const filteredWorkoutModes = Object.values(WORKOUT_CONFIGS).filter(
+    (mode) => allowedWorkoutIds.includes(mode.id),
   )
 
   const accumulatedScore =
     progressData?.blocksProgress?.aiWorkout?.accumulatedScore || 0
   const sessionsCount =
     progressData?.blocksProgress?.aiWorkout?.sessionsCount || 0
-
 
   useEffect(() => {
     return () => {

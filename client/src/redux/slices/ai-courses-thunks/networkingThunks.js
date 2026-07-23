@@ -9,7 +9,7 @@ const fetchStartNetworking = createAsyncThunk(
   async ({ courseCode, exerciseData }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post(
-        '/self-pitch-pro/networking-expert/start',
+        '/courses/simulate/self-pitch-pro/networking-expert/start',
         {
           courseCode,
           exerciseData,
@@ -36,7 +36,7 @@ const fetchSendNetworkingResponse = createAsyncThunk(
       formData.append('file', audioBlob, 'networking_speech.wav') // Ключ 'file' для multer на бэкенде
 
       const res = await axiosInstance.post(
-        '/self-pitch-pro/networking-expert/respond',
+        '/courses/simulate/self-pitch-pro/networking-expert/respond',
         formData,
         {
           headers: {
@@ -60,7 +60,7 @@ const fetchFinishNetworking = createAsyncThunk(
   async ({ courseCode }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post(
-        '/self-pitch-pro/networking-expert/finish',
+        '/courses/simulate/self-pitch-pro/networking-expert/finish',
         { courseCode },
       )
       return res.data // Возвращает { status, currentBlockIndex, progressData, evaluation }
@@ -77,5 +77,5 @@ const fetchFinishNetworking = createAsyncThunk(
 export {
   fetchStartNetworking,
   fetchSendNetworkingResponse,
-  fetchFinishNetworking,
+  fetchFinishNetworking, 
 }

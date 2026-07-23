@@ -154,7 +154,7 @@ const generatePitchResponse = async (req, res) => {
     const PROMPT = getPitchDialogPrompt(
       role,
       topic,
-      context,
+      context, 
       cleanUserMessage,
     )
 

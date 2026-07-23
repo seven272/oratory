@@ -9,7 +9,7 @@ const fetchStartVipClose = createAsyncThunk(
   async ({ courseCode, exerciseData }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post(
-        '/self-pitch-pro/vip-client-close/start',
+        '/courses/simulate/self-pitch-pro/vip-client-close/start',
         {
           courseCode,
           exerciseData,
@@ -34,7 +34,7 @@ const fetchSendVipResponse = createAsyncThunk(
       formData.append('file', audioBlob, 'vip_close_speech.wav') // Ключ 'file', как ждет бэкенд в multer
 
       const res = await axiosInstance.post(
-        '/self-pitch-pro/vip-client-close/respond',
+        '/courses/simulate/self-pitch-pro/vip-client-close/respond',
         formData,
         {
           headers: {
@@ -57,7 +57,7 @@ const fetchFinishVipClose = createAsyncThunk(
   async ({ courseCode }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post(
-        '/self-pitch-pro/vip-client-close/finish',
+        '/courses/simulate/self-pitch-pro/vip-client-close/finish',
         { courseCode },
       )
       return res.data // Возвращает { status, currentBlockIndex, progressData, evaluation }

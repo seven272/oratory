@@ -209,6 +209,7 @@ const transcribeLongAudio = async (audioBuffer) => {
       'Ошибка в асинхронном Yandex SpeechKit:',
       error.response?.data || error.message,
     )
+    
     throw new Error('Long speech recognition service error')
   } finally {
     // ЭТАП 4: ЖЕЛЕЗОБЕТОННАЯ ОЧИСТКА ХРАНИЛИЩА (выполняется в любом случае, даже при ошибке)

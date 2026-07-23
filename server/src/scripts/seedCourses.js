@@ -6,9 +6,6 @@ dotenv.config()
 
 // 💡 ТЕПЕРЬ ЭТО МАССИВ: Сюда вы можете добавлять сколько угодно курсов по шаблону
 const COURSES_TO_SEED = [
-  // ==========================================
-  // КУРС 1: ПИТЧ НА МИЛЛИОН
-  // ==========================================
   {
     courseCode: 'pitch_master',
     title: 'Питч на миллион: Как презентовать идею',
@@ -55,146 +52,146 @@ const COURSES_TO_SEED = [
     rewards: {
       xp: 1000,
       coins: 100,
-      achievementCode: 'course_master', // Передается в checkAchievements
+      achievementCode: 'course_master',
     },
   },
 
   {
-  courseCode: "hr_storm",
-  title: "HR-Штурм: Искусство собеседований",
-  description: "Пошаговый интенсив по прохождению интервью. Избавитесь от страха перед рекрутерами, научитесь отвечать на неудобные вопросы и продавать свой опыт на 30% дороже рынка.",
-  blocks: [
-    {
-      blockType: "theory",
-      title: "📖 Блок 1: Стратегия успешного интервью",
-      theoryConfig: {
-        quiz: {
-          correctAnswerIndex: 1 // Правильный ответ на вопрос о самопрезентации по STAR
-        }
-      }
-    },
-    {
-      blockType: "ai_workout",
-      title: "🤖 Блок 2: Интерактивный HR-баттл",
-      aiWorkoutConfig: {
-        // 💡 Два тренажёра на одном шаге! Проходятся в любом порядке
-        workoutConfigIds: ["hr_screener", "stress_interview"], 
-        requiredScore: 1000 // Нужно набрать суммарно 1000 баллов в обоих тренажёрах
-      }
-    },
-    {
-      blockType: "irl_challenge",
-      title: "🎯 Блок 3: Выход на реальный рынок",
-      irlChallengeConfig: {
-        description: "Откликнуться на 3 открытые вакансии на профильном сайте и получить как минимум один письменный или устный ответ от рекрутера."
-      }
-    },
-    {
-      blockType: "exam",
-      title: "🎓 Блок 4: Финальный экзамен (Голосовой монолог)",
-      examConfig: {
-        minScoreToPass: 85 // Промпт оценки на бэке будет требовать связный рассказ на 60-120 сек
-      }
-    }
-  ],
-  rewards: {
-    xp: 1200,
-    coins: 150,
-    achievementCode: "hr_hunter"
-  }
-},
-
-{
-  courseCode: "self_pitch_pro",
-  title: "Личный бренд: Самопрезентация на миллион",
-  description: "Практикум по созданию сильного экспертного образа. Научитесь за 90 секунд доносить свою ценность до VIP-клиентов и партнеров без хвастовства и синдрома самозванца.",
-  blocks: [
-    {
-      blockType: "theory",
-      title: "📖 Блок 1: Формула идеального личного питча",
-      theoryConfig: {
-        quiz: {
-          correctAnswerIndex: 2 // Правильный ответ на квиз по структуре нетворкинга
-        }
-      }
-    },
-    {
-      blockType: "ai_workout",
-      title: "🤖 Блок 2: Воркаут на бизнес-конференции",
-      aiWorkoutConfig: {
-        // 💡 Два тренажёра для прокачки нетворкинга и лифта
-        workoutConfigIds: ["elevator_pitch", "networking_expert"],
-        requiredScore: 1000
-      }
-    },
-    {
-      blockType: "irl_challenge",
-      title: "🎯 Блок 3: Боевое знакомство",
-      irlChallengeConfig: {
-        description: "Написать в профильный профессиональный чат или познакомиться вживую с 2 экспертами, применив отработанную формулу самопрезентации."
-      }
-    },
-    {
-      blockType: "exam",
-      title: "🎓 Блок 4: Финальный экзамен (Голосовой монолог)",
-      examConfig: {
-        minScoreToPass: 85
-      }
-    }
-  ],
-  rewards: {
-    xp: 1200,
-    coins: 150,
-    achievementCode: "branding_king"
-  }
-},
-
-  // ==========================================
-  // КУРС 2: ШЕФ ПРОДАЖ (Шаблон для вашего следующего курса)
-  // ==========================================
-  {
-    courseCode: 'sales_pro',
-    title: 'Мастер переговоров: Закрытие сделок',
+    courseCode: 'hr_storm',
+    title: 'HR-Штурм: Искусство собеседований',
     description:
-      'Интенсив по преодолению ценовых возражений, удержанию границ в сложных переговорах и доведению клиента до оплаты.',
+      'Пошаговый интенсив по прохождению интервью. Избавитесь от страха перед рекрутерами, научитесь отвечать на неудобные вопросы и продавать свой опыт на 30% дороже рынка.',
     blocks: [
       {
         blockType: 'theory',
-        title: '📖 Блок 1: Психология отказа',
+        title: '📖 Блок 1: Стратегия успешного интервью',
         theoryConfig: {
           quiz: {
-            correctAnswerIndex: 0, // Правильный ответ для квиза курса продаж
+            correctAnswerIndex: 1, // Правильный ответ на вопрос о самопрезентации по STAR
           },
         },
       },
       {
         blockType: 'ai_workout',
-        title: '🤖 Блок 2: Минное поле возражений',
+        title: '🤖 Блок 2: Интерактивный HR-баттл',
         aiWorkoutConfig: {
-          workoutConfigIds: ['objection_handler'], // Использует только один ИИ-тренажер
-          requiredScore: 800,
+          // 💡 Два тренажёра на одном шаге! Проходятся в любом порядке
+          workoutConfigIds: ['hr_screener', 'stress_interview'],
+          requiredScore: 1000, // Нужно набрать суммарно 1000 баллов в обоих тренажёрах
         },
       },
       {
         blockType: 'irl_challenge',
-        title: '🎯 Блок 3: Практический вызов',
+        title: '🎯 Блок 3: Выход на реальный рынок',
         irlChallengeConfig: {
           description:
-            'Попросить у незнакомца скидку на чашку кофе не менее 30%, аргументировав выгоду для заведения.',
+            'Откликнуться на 3 открытые вакансии на профильном сайте и получить как минимум один письменный или устный ответ от рекрутера.',
         },
       },
       {
         blockType: 'exam',
-        title: '🎓 Блок 4: Финальный бой с закупщиком',
+        title: '🎓 Блок 4: Финальный экзамен (Голосовой монолог)',
+        examConfig: {
+          minScoreToPass: 85, // Промпт оценки на бэке будет требовать связный рассказ на 60-120 сек
+        },
+      },
+    ],
+    rewards: {
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
+    },
+  },
+
+  {
+    courseCode: 'self_pitch_pro',
+    title: 'Личный бренд: Самопрезентация на миллион',
+    description:
+      'Практикум по созданию сильного экспертного образа. Научитесь за 90 секунд доносить свою ценность до VIP-клиентов и партнеров без хвастовства и синдрома самозванца.',
+    blocks: [
+      {
+        blockType: 'theory',
+        title: '📖 Блок 1: Формула идеального личного питча',
+        theoryConfig: {
+          quiz: {
+            correctAnswerIndex: 2, // Правильный ответ на квиз по структуре нетворкинга
+          },
+        },
+      },
+      {
+        blockType: 'ai_workout',
+        title: '🤖 Блок 2: Воркаут на бизнес-конференции',
+        aiWorkoutConfig: {
+          // 💡 Два тренажёра для прокачки нетворкинга и лифта
+          workoutConfigIds: ['elevator_pitch', 'networking_expert'],
+          requiredScore: 1000,
+        },
+      },
+      {
+        blockType: 'irl_challenge',
+        title: '🎯 Блок 3: Боевое знакомство',
+        irlChallengeConfig: {
+          description:
+            'Написать в профильный профессиональный чат или познакомиться вживую с 2 экспертами, применив отработанную формулу самопрезентации.',
+        },
+      },
+      {
+        blockType: 'exam',
+        title: '🎓 Блок 4: Финальный экзамен (Голосовой монолог)',
         examConfig: {
           minScoreToPass: 85,
         },
       },
     ],
     rewards: {
-      xp: 1200,
-      coins: 150,
-      achievementCode: 'sales_hero',
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
+    },
+  },
+  {
+    courseCode: 'party_charisma',
+    title: 'Харизма нетворкинга: Свой в любой компании',
+    description:
+      'Практическое руководство по непринужденному общению. Избавитесь от страха подходить к незнакомцам, освоите искусство Small Talk и научитесь заводить полезные контакты на вечеринках, выставках и неформальных мероприятиях.',
+    blocks: [
+      {
+        blockType: 'theory',
+        title: '📖 Блок 1: Психология легкого общения',
+        theoryConfig: {
+          quiz: {
+            correctAnswerIndex: 1, // Соответствует второму варианту (стратегия ожидания и контекста)
+          },
+        },
+      },
+      {
+        blockType: 'ai_workout',
+        title: '🤖 Блок 2: Практика в эпицентре событий',
+        aiWorkoutConfig: {
+          workoutConfigIds: ['bar_small_talk', 'vip_afterparty'],
+          requiredScore: 1000,
+        },
+      },
+      {
+        blockType: 'irl_challenge',
+        title: '🎯 Блок 3: Выход в свет',
+        irlChallengeConfig: {
+          description:
+            'Посетить офлайн-мероприятие или популярный бар, применить формулу Small Talk минимум к двум незнакомым людям и обменяться контактами.',
+        },
+      },
+      {
+        blockType: 'exam',
+        title: '🎓 Блок 4: Финальный экзамен (Голосовая визитка)',
+        examConfig: {
+          minScoreToPass: 85,
+        },
+      },
+    ],
+    rewards: {
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
     },
   },
 ]

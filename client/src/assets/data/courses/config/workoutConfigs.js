@@ -2,11 +2,22 @@
 
 import * as pitchThunks from '../../../../redux/slices/ai-courses-thunks/pitchThunks'
 import * as objectionThunks from '../../../../redux/slices/ai-courses-thunks/objectionThunks'
-
+import * as networkingThunks from '../../../../redux/slices/ai-courses-thunks/networkingThunks'
+import * as vipCloseThunks from '../../../../redux/slices/ai-courses-thunks/vipCloseThunks'
+import * as hrScreenerThunks from '../../../../redux/slices/ai-courses-thunks/hrScreenerThunks'
+import * as stressInterviewThunks from '../../../../redux/slices/ai-courses-thunks/stressInterviewThunks'
+import * as barSmallTalkThunks from '../../../../redux/slices/ai-courses-thunks/barSmallTalkThunks'
+import * as vipAfterpartyThunks from '../../../../redux/slices/ai-courses-thunks/vipAfterpartyThunks'
 // Собираем все санки в единый объект для динамического вызова по ключу
 export const ALL_WORKOUT_THUNKS = {
   ...pitchThunks,
   ...objectionThunks,
+  ...networkingThunks,
+  ...vipCloseThunks,
+  ...hrScreenerThunks,
+  ...stressInterviewThunks,
+  ...barSmallTalkThunks,
+  ...vipAfterpartyThunks,
 }
 
 export const WORKOUT_CONFIGS = {
@@ -35,7 +46,6 @@ export const WORKOUT_CONFIGS = {
       { key: 'persuasion', label: 'Убедительность' },
     ],
   },
-
   objection_handler: {
     id: 'objection_handler',
     title: '🔥 Минное поле: Отработка возражений',
@@ -61,36 +71,6 @@ export const WORKOUT_CONFIGS = {
       { key: 'argumentation', label: 'Аргументация' },
     ],
   },
-  elevator_pitch: {
-    id: 'elevator_pitch',
-    title: '🚀 Elevator Pitch: Зацепить за 45 секунд',
-    description:
-      'Вы сталкиваетесь в лифте или кулуарах с топовым инвестором, крупным клиентом или потенциальным партнером. У вас есть считанные секунды, чтобы кратко заявить о себе, вызвать жгучий интерес и получить визитку.',
-    reward: 'Цель: 500 очков суммарно',
-    thunks: {
-      start: 'fetchStartElevatorPitch', // Соответствующие санки в вашем слайсе
-      send: 'fetchSendElevatorResponse',
-      finish: 'fetchFinishElevatorPitch',
-    },
-    ui: {
-      sessionLabel: 'Мини-презентация (Elevator Pitch)',
-      aiRoleName: 'Слушатель (VIP)',
-      thinkingText: '⏳ Собеседник обдумывает ваши слова...',
-      finishText:
-        '🗣️ Лифт приехал / беседа окончена. Собеседник делает выводы.',
-      finishButtonText: 'Узнать вердикт собеседника',
-      finishButtonLoadingText: 'Нейросеть оценивает силу питча...',
-    },
-    criteria: [
-      {
-        key: 'clarity',
-        label: 'Ясность (Понятно ли, чем вы заняты)',
-      },
-      { key: 'hook', label: 'Крючок (Зацепила ли интрига)' },
-    ],
-  },
-
-  // 2. ТРЕНАЖЕР: НЕТВОРКИНГ НА КОНФЕРЕНЦИИ
   networking_expert: {
     id: 'networking_expert',
     title: '🤝 Нетворкинг-мастер: Бизнес-знакомство',
@@ -122,30 +102,173 @@ export const WORKOUT_CONFIGS = {
       },
     ],
   },
-    // 3. ТРЕНАЖЕР: ВСТРЕЧА НА МИЛЛИОН (ЗАКРЫТИЕ VIP-КЛИЕНТА)
   vip_client_close: {
     id: 'vip_client_close',
     title: '👑 Встреча на миллион: Закрытие VIP-клиента',
-    description: 'Плотный деловой созвон или встреча в ресторане с потенциальным крупным заказчиком. Он выделил вам 5 минут. Задача — презентовать себя через кейсы, выявить его главную боль и закрыть на полноценный аудит/консалтинг.',
+    description:
+      'Плотный деловой созвон или встреча в ресторане с потенциальным крупным заказчиком. Он выделил вам 5 минут. Задача — презентовать себя через кейсы, выявить его главную боль и закрыть на полноценный аудит/консалтинг.',
     reward: 'Цель: 500 очков суммарно',
     thunks: {
       start: 'fetchStartVipClose',
       send: 'fetchSendVipResponse',
-      finish: 'fetchFinishVipClose'
+      finish: 'fetchFinishVipClose',
     },
     ui: {
       sessionLabel: 'Деловые переговоры с VIP',
       aiRoleName: 'Потенциальный заказчик',
       thinkingText: '⏳ Заказчик оценивает ваше предложение...',
-      finishText: '🗣️ Встреча подошла к концу. Клиент принимает решение по следующему шагу.',
+      finishText:
+        '🗣️ Встреча подошла к концу. Клиент принимает решение по следующему шагу.',
       finishButtonText: 'Посмотреть разбор переговоров',
-      finishButtonLoadingText: 'Нейросеть сканирует ваши аргументы...'
+      finishButtonLoadingText:
+        'Нейросеть сканирует ваши аргументы...',
     },
     criteria: [
-      { key: 'usp', label: 'УТП (Понятно ли ваше отличие от конкурентов)' },
-      { key: 'painFocus', label: 'Фокус на боли (Насколько питч попал в проблему клиента)' }
-    ]
-  }
+      {
+        key: 'usp',
+        label: 'УТП (Понятно ли ваше отличие от конкурентов)',
+      },
+      {
+        key: 'painFocus',
+        label:
+          'Фокус на боли (Насколько питч попал в проблему клиента)',
+      },
+    ],
+  },
+  hr_screener: {
+    id: 'hr_screener',
+    title: '📞 Первичный HR-скрининг: Чат-интервью',
+    description:
+      'Симуляция первого созвона с рекрутером. ИИ будет проверять вашу адекватность, базовые софт-скиллы и соответствие резюме.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartHrScreener',
+      send: 'fetchSendHrScreenerResponse',
+      finish: 'fetchFinishHrScreener',
+    },
+    ui: {
+      sessionLabel: 'Первичный скрининг (Голосовое интервью)',
+      aiRoleName: 'HR-Рекрутер',
+      thinkingText: '⏳ Рекрутер делает пометки в резюме...',
+      finishText:
+        '🗣️ Первичный созвон окончен. Рекрутер формирует фидбэк для нанимающего менеджера.',
+      finishButtonText: 'Посмотреть отчет рекрутера',
+      finishButtonLoadingText: 'ИИ анализирует ваши софт-скиллы...',
+    },
+    criteria: [
+      {
+        key: 'softSkills',
+        label: 'Софт-скиллы (Адекватность и самопрезентация)',
+      },
+      {
+        key: 'starStructure',
+        label: 'Структура STAR (Логика изложения опыта)',
+      },
+    ],
+  },
+  stress_interview: {
+    id: 'stress_interview',
+    title: '🔥 Стресс-интервью с будущим боссом',
+    description:
+      'Жесткий разговор с руководителем отдела. ИИ начнет давить, цепляться к пробелам в резюме и детально расспрашивать про ваши факапы.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartStressInterview',
+      send: 'fetchSendStressResponse',
+      finish: 'fetchFinishStressInterview',
+    },
+    ui: {
+      sessionLabel: 'Стресс-собеседование (Работа под давлением)',
+      aiRoleName: 'Руководитель отдела',
+      thinkingText: '⏳ Босс оценивает ваши аргументы...',
+      finishText:
+        '🗣️ Интервью подошло к концу. Руководитель принимает финальное решение по вашей кандидатуре.',
+      finishButtonText: 'Посмотреть разбор стресс-теста',
+      finishButtonLoadingText:
+        'Нейросеть сканирует вашу стрессоустойчивость...',
+    },
+    criteria: [
+      {
+        key: 'stressResistance',
+        label:
+          'Стрессоустойчивость (Реакция на давление и каверзные вопросы)',
+      },
+      {
+        key: 'reflection',
+        label:
+          'Рефлексия (Умение признавать и разбирать свои ошибки)',
+      },
+    ],
+  },
+  /* ==========================================================================
+     🥂 КУРС: Харизма нетворкинга: Свой в любой компании (party_charisma)
+     ========================================================================== */
+  bar_small_talk: {
+    id: 'bar_small_talk',
+    title: '🍹 Разговор у барной стойки',
+    description:
+      'Растопите лед в общении с незнакомцем на неформальной вечеринке. Завяжите непринужденный разговор ни о чем и плавно найдите общие темы.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartBarSmallTalk',
+      send: 'fetchSendBarSmallTalkResponse',
+      finish: 'fetchFinishBarSmallTalk',
+    },
+    ui: {
+      sessionLabel: 'Неформальный Small Talk (У стойки бара)',
+      aiRoleName: 'Собеседник у бара',
+      thinkingText: '⏳ Собеседник делает глоток и отвечает...',
+      finishText:
+        '🗣️ Легкая беседа завершается. Собеседник оценивает, насколько комфортно и интересно было с вами общаться.',
+      finishButtonText: 'Посмотреть анализ Small Talk',
+      finishButtonLoadingText:
+        'Нейросеть измеряет вашу легкость в общении...',
+    },
+    criteria: [
+      {
+        key: 'iceBreaking',
+        label:
+          'Растапливание льда (Ситуативный старт и естественность)',
+      },
+      {
+        key: 'conversationalFlow',
+        label: 'Плавность диалога (Умение слушать и передавать мяч)',
+      },
+    ],
+  },
+  vip_afterparty: {
+    id: 'vip_afterparty',
+    title: '🥂 Закрытое афтерпати лидеров',
+    description:
+      'Вклиньтесь в закрытый круг топ-менеджеров или инфлюенсеров. Органично заявите о себе без душной экспертности и договоритесь о кофе.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartVipAfterparty',
+      send: 'fetchSendVipAfterpartyResponse',
+      finish: 'fetchFinishVipAfterparty',
+    },
+    ui: {
+      sessionLabel: 'Общение на VIP-афтерпати (Высокий статус)',
+      aiRoleName: 'VIP-Гость / Лидер мнений',
+      thinkingText: '⏳ Собеседник оценивает вашу харизму...',
+      finishText:
+        '🗣️ Время экспресс-знакомства вышло. Лидеры мнений принимают решение, стоит ли добавлять вас в контакты.',
+      finishButtonText: 'Узнать вердикт VIP-круга',
+      finishButtonLoadingText:
+        'ИИ сканирует ваш харизматический статус...',
+    },
+    criteria: [
+      {
+        key: 'charismaStatus',
+        label: 'Харизматический статус (Уверенность на равных)',
+      },
+      {
+        key: 'ecologicalExit',
+        label:
+          'Экологичный выход (Красивый финал и фиксация контакта)',
+      },
+    ],
+  },
 }
 
 // Преобразуем объект в массив для интро-экрана, чтобы не дублировать константы

@@ -3,7 +3,11 @@ import axiosInstance from '../../utils/axiosInstance'
 import buildPitchCases from './ai-courses-reducers/pitchReducer.js'
 import buildObjectionCases from './ai-courses-reducers/objectionReducer.js'
 import buildVipCloseCases from './ai-courses-reducers/vipCloseReducer.js'
-import { buildNetworkingCases } from './ai-courses-reducers/networkingReducer.js'
+import buildNetworkingCases from './ai-courses-reducers/networkingReducer.js'
+import buildHrScreenerCases from './ai-courses-reducers/hrScreenerReducer.js'
+import buildStressInterviewCases from './ai-courses-reducers/stressInterviewReducer.js'
+import buildBarSmallTalkCases from './ai-courses-reducers/barSmallTalkReducer.js'
+import buildVipAfterpartyCases from './ai-courses-reducers/vipAfterpartyReducer.js'
 
 // 1. Инициализация прогресса по курсу
 const fetchCourseProgress = createAsyncThunk(
@@ -370,19 +374,20 @@ const courseSlice = createSlice({
       .addCase(fetchGetArchiveCourses.rejected, (state, action) => {
         state.courseStatus = 'failed'
         state.error = action.payload
-      }) //точка с запятой обязательно
+      })
 
     /* ==========================================================================
        🔥 ИНТЕГРАЦИЯ ИИ-ТРЕНАЖЕРОВ
        ========================================================================== */
-    // Передаем инстанс builder во внешний строитель кейсов для курса "Питч на миллион"
+    // Передаем инстанс builder во внешний строитель кейсов для курсов"
     buildPitchCases(builder)
     buildObjectionCases(builder)
     buildVipCloseCases(builder)
     buildNetworkingCases(builder)
-
-    // Будущие курсы будут дописываться сюда ниже аналогично одной строчкой:
-    // buildNegotiationCases(builder);
+    buildHrScreenerCases(builder)
+    buildStressInterviewCases(builder)
+    buildBarSmallTalkCases(builder)
+    buildVipAfterpartyCases(builder)
   },
 })
 
