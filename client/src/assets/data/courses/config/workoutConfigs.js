@@ -8,6 +8,14 @@ import * as hrScreenerThunks from '../../../../redux/slices/ai-courses-thunks/hr
 import * as stressInterviewThunks from '../../../../redux/slices/ai-courses-thunks/stressInterviewThunks'
 import * as barSmallTalkThunks from '../../../../redux/slices/ai-courses-thunks/barSmallTalkThunks'
 import * as vipAfterpartyThunks from '../../../../redux/slices/ai-courses-thunks/vipAfterpartyThunks'
+import * as toxicRelativeThunks from '../../../../redux/slices/ai-courses-thunks/toxicRelativeThunks.js'
+import * as streetRudenessThunks from '../../../../redux/slices/ai-courses-thunks/streetRudenessThunks.js'
+import * as trollHandlerThunks from '../../../../redux/slices/ai-courses-thunks/trollHandlerThunks'
+import * as timeLimitPitchThunks from '../../../../redux/slices/ai-courses-thunks/timeLimitPitchThunks'
+import * as impromptuToastThunks from '../../../../redux/slices/ai-courses-thunks/impromptuToastThunks'
+import * as weddingChallengeThunks from '../../../../redux/slices/ai-courses-thunks/weddingChallengeThunks'
+
+
 // Собираем все санки в единый объект для динамического вызова по ключу
 export const ALL_WORKOUT_THUNKS = {
   ...pitchThunks,
@@ -18,6 +26,13 @@ export const ALL_WORKOUT_THUNKS = {
   ...stressInterviewThunks,
   ...barSmallTalkThunks,
   ...vipAfterpartyThunks,
+  ...toxicRelativeThunks,
+  ...streetRudenessThunks,
+  ...trollHandlerThunks,
+  ...timeLimitPitchThunks,
+  ...impromptuToastThunks,
+  ...weddingChallengeThunks
+  
 }
 
 export const WORKOUT_CONFIGS = {
@@ -267,6 +282,168 @@ export const WORKOUT_CONFIGS = {
         label:
           'Экологичный выход (Красивый финал и фиксация контакта)',
       },
+    ],
+  },
+  toxic_relative: {
+    id: 'toxic_relative',
+    title: '👵 Манипуляции близких: Пассивная агрессия',
+    description:
+      'Очертите жесткие личные границы в разговоре с токсичным родственником или соседом, не скатываясь в чувство вины.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartToxicRelative',
+      send: 'fetchSendToxicRelativeResponse',
+      finish: 'fetchFinishToxicRelative',
+    },
+    ui: {
+      sessionLabel: 'Семейные границы (Защита от манипуляций)',
+      aiRoleName: 'Родственник / Сосед',
+      thinkingText: '⏳ Собеседник подбирает аргументы...',
+      finishText:
+        '🗣️ Разговор подошел к финалу. Собеседник оценивает твердость ваших границ.',
+      finishButtonText: 'Посмотреть разбор границ',
+      finishButtonLoadingText:
+        'ИИ сканирует манипулятивные маркеры...',
+    },
+    criteria: [
+      {
+        key: 'stressResistance',
+        label: 'Стрессоустойчивость (Выдержка)',
+      },
+      {
+        key: 'reflection',
+        label: 'Удержание границ (Отказ без вины)',
+      },
+    ],
+  },
+  street_rudeness: {
+    id: 'street_rudeness',
+    title: '🛑 Жесткое хамство «в поле»',
+    description:
+      'Примените техники психологического айкидо при столкновении с агрессивным хамом в МФЦ, на парковке или в сфере услуг.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartStreetRudeness',
+      send: 'fetchSendStreetRudenessResponse',
+      finish: 'fetchFinishStreetRudeness',
+    },
+    ui: {
+      sessionLabel: 'Бытовой конфликт (Отражение хамства)',
+      aiRoleName: 'Агрессивный персонаж',
+      thinkingText: '⏳ Хам реагирует на ваше спокойствие...',
+      finishText:
+        '🗣️ Словесная стычка завершена. Нейросеть оценивает ваше хладнокровие.',
+      finishButtonText: 'Посмотреть анализ конфликта',
+      finishButtonLoadingText: 'Психологический аудит диалога...',
+    },
+    criteria: [
+      {
+        key: 'stressResistance',
+        label: 'Стрессоустойчивость (Хладнокровие)',
+      },
+      { key: 'reflection', label: 'Амортизация конфликта (Айкидо)' },
+    ],
+  },
+  troll_handler: {
+    id: 'troll_handler',
+    title: '🤬 Отражение троллинга из зала',
+    description:
+      'Харизматично перехватить инициативу и отбить каверзные или едкие выкрики скептиков во время вашего публичного вебинара.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartTrollHandler',
+      send: 'fetchSendTrollResponse',
+      finish: 'fetchFinishTrollHandler',
+    },
+    ui: {
+      sessionLabel: 'Прямой эфир (Работа с хейтом)',
+      aiRoleName: 'Хейтер / Скептик',
+      thinkingText: '⏳ Оппонент формулирует едкую реплику...',
+      finishText:
+        '🗣️ Словесный поединок окончен. Аудитория оценивает ваше доминирование.',
+      finishButtonText: 'Посмотреть разбор атаки',
+      finishButtonLoadingText: 'Нейросеть сканирует вашу харизму...',
+    },
+    criteria: [
+      { key: 'trollHandler', label: 'Отражение хейта (Харизма)' },
+      {
+        key: 'timeLimit',
+        label: 'Перехват инициативы (Уверенность)',
+      },
+    ],
+  },
+  time_limit_pitch: {
+    id: 'time_limit_pitch',
+    title: '⏳ Спич в условиях цейтнота',
+    description:
+      'Уверенно презентовать свой проект перед экспертным комитетом, который постоянно перебивает, и уложиться строго в лимит.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+      start: 'fetchStartTimeLimitPitch', send: 'fetchSendTimeLimitResponse', finish: 'fetchFinishTimeLimitPitch' 
+    },
+    ui: {
+      sessionLabel: 'Защита проекта (Блиц-интервью)',
+      aiRoleName: 'Член комитета',
+      thinkingText: '⏳ Эксперт перебивает и задает вопрос...',
+      finishText:
+        '🗣️ Время вышло. Комитет удаляется для подсчета ваших баллов.',
+      finishButtonText: 'Посмотреть вердикт комитета',
+      finishButtonLoadingText: 'Анализ структуры спича нейросетью...',
+    },
+    criteria: [
+      { key: 'trollHandler', label: 'Логика изложения (Структура)' },
+      { key: 'timeLimit', label: 'Тайм-менеджмент (Цейтнот)' },
+    ],
+  },
+
+  /* ==========================================================================
+     🥂 КУРС 7: Король застолья: Искусство тостов (toast_master)
+     ========================================================================== */
+  impromptu_toast: {
+    id: 'impromptu_toast',
+    title: '🎤 Внезапное слово на корпоративе',
+    description:
+      'За 15 секунд сориентироваться, когда ведущий праздника неожиданно передает вам микрофон перед всем руководством.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+     start: 'fetchStartImpromptuToast', send: 'fetchSendImpromptuResponse', finish: 'fetchFinishImpromptuToast'
+    },
+    ui: {
+      sessionLabel: 'Корпоративное застолье (Экспромт)',
+      aiRoleName: 'Ведущий вечера',
+      thinkingText: '⏳ Зал затихает в ожидании продолжения...',
+      finishText:
+        '🗣️ Микрофон выключен. Коллеги оценивают ваше остроумие.',
+      finishButtonText: 'Посмотреть разбор экспромта',
+      finishButtonLoadingText: 'Нейросеть сканирует уровень юмора...',
+    },
+    criteria: [
+      { key: 'impromptu', label: 'Речевая мобилизация (Скорость)' },
+      { key: 'wedding', label: 'Уместность и юмор' },
+    ],
+  },
+  wedding_challenge: {
+    id: 'wedding_challenge',
+    title: '🍾 Свадебный тост / Юбилей',
+    description:
+      'Удержать внимание разношерстной, шумящей или отвлеченной аудитории, связав личную историю с виновником торжества.',
+    reward: 'Цель: 500 очков суммарно',
+    thunks: {
+     start: 'fetchStartWeddingChallenge', send: 'fetchSendWeddingResponse', finish: 'fetchFinishWeddingChallenge'
+    },
+    ui: {
+      sessionLabel: 'Праздничный банкет (Работа с залом)',
+      aiRoleName: 'Шумный гость / Зал',
+      thinkingText: '⏳ Зал реагирует на вашу историю...',
+      finishText:
+        '🗣️ Бокалы подняты. Гости оценивают душевность вашей речи.',
+      finishButtonText: 'Посмотреть разбор тоста',
+      finishButtonLoadingText:
+        'ИИ анализирует праздничный сторителлинг...',
+    },
+    criteria: [
+      { key: 'impromptu', label: 'Праздничный сторителлинг' },
+      { key: 'wedding', label: 'Удержание внимания толпы' },
     ],
   },
 }

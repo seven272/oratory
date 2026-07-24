@@ -194,6 +194,143 @@ const COURSES_TO_SEED = [
       achievementCode: 'course_master',
     },
   },
+  {
+    courseCode: 'social_shield',
+    title: 'Психологический щит: Ответ на агрессию и манипуляции',
+    blocks: [
+      {
+        blockType: 'theory',
+        title: '📖 Блок 1: Психология самообороны в диалоге',
+        theoryConfig: {
+          quiz: {
+            correctAnswerIndex: 1, // Индекс правильного ответа (второй вариант)
+          },
+        },
+      },
+      {
+        blockType: 'ai_workout',
+        title: '🤖 Блок 2: Психологический полигон',
+        aiWorkoutConfig: {
+          workoutConfigIds: ['toxic_relative', 'street_rudeness'],
+          requiredScore: 1000, // Накопительный порог для двух тренажёров
+        },
+      },
+      {
+        blockType: 'irl_challenge',
+        title: '🎯 Блок 3: Проверка границ на практике',
+        irlChallengeConfig: {
+          description:
+            'Применение техник «Амортизация», «Испорченная пластинка» или «Стоп-сигнал» при первой же реальной попытке нарушить ваши границы в быту или на работе.',
+        },
+      },
+      {
+        blockType: 'exam',
+        title: '🎓 Блок 4: Финальный экзамен (Голосовой тест)',
+        examConfig: {
+          minScoreToPass: 85,
+        },
+      },
+    ],
+    rewards: {
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
+    },
+  },
+
+  /* ==========================================================================
+     🎙️ КУРС 6: Оратор в кадре: Магия публичных выступлений
+     ========================================================================== */
+  {
+    courseCode: 'media_speaker',
+    title: 'Оратор в кадре: Магия публичных выступлений',
+    blocks: [
+      {
+        blockType: 'theory',
+        title: '📖 Блок 1: Законы удержания аудитории',
+        theoryConfig: {
+          quiz: {
+            correctAnswerIndex: 1, // Индекс правильного ответа (второй вариант)
+          },
+        },
+      },
+      {
+        blockType: 'ai_workout',
+        title: '🤖 Блок 2: Интерактивная трибуна',
+        aiWorkoutConfig: {
+          workoutConfigIds: ['troll_handler', 'time_limit_pitch'],
+          requiredScore: 1000,
+        },
+      },
+      {
+        blockType: 'irl_challenge',
+        title: '🎯 Блок 3: Выступление перед людьми',
+        irlChallengeConfig: {
+          description:
+            'Запись короткого видео (рилс/кружок в Telegram) до 2 минут или живое выступление на планерке перед коллегами с использованием правил удержания внимания.',
+        },
+      },
+      {
+        blockType: 'exam',
+        title: '🎓 Блок 4: Финальный экзамен (Вдохновляющий спич)',
+        examConfig: {
+          minScoreToPass: 85,
+        },
+      },
+    ],
+    rewards: {
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
+    },
+  },
+
+  /* ==========================================================================
+     🥂 КУРС 7: Король застолья: Искусство тостов и ярких речей
+     ========================================================================== */
+  {
+    courseCode: 'toast_master',
+    title: 'Король застолья: Искусство тостов и ярких речей',
+    blocks: [
+      {
+        blockType: 'theory',
+        title: '📖 Блок 1: Конструктор идеального тоста',
+        theoryConfig: {
+          quiz: {
+            correctAnswerIndex: 1, // Индекс правильного ответа (второй вариант)
+          },
+        },
+      },
+      {
+        blockType: 'ai_workout',
+        title: '🤖 Блок 2: Праздничный микрофон',
+        aiWorkoutConfig: {
+          workoutConfigIds: ['impromptu_toast', 'wedding_challenge'],
+          requiredScore: 1000,
+        },
+      },
+      {
+        blockType: 'irl_challenge',
+        title: '🎯 Блок 3: Праздничная практика',
+        irlChallengeConfig: {
+          description:
+            'Инициативное выступление с тостом на ближайшем семейном ужине, встрече с друзьями или корпоративе по формуле Зачин ➔ Метафора ➔ Пожелание.',
+        },
+      },
+      {
+        blockType: 'exam',
+        title: '🎓 Блок 4: Финальный экзамен (Главный тост вечера)',
+        examConfig: {
+          minScoreToPass: 85,
+        },
+      },
+    ],
+    rewards: {
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
+    },
+  },
 ]
 
 // Функция подключения к БД и массового сохранения курсов

@@ -19,6 +19,14 @@ import { HR_SCREENER_SCENARIOS } from '../../../../assets/data/courses/scenarios
 import { STRESS_INTERVIEW_SCENARIOS } from '../../../../assets/data/courses/scenarios/stressInterviewScenarios'
 import { VIP_AFTERPARTY_SCENARIOS } from '../../../../assets/data/courses/scenarios/vipAfterpartyScenarios'
 import { BAR_SMALL_TALK_SCENARIOS } from '../../../../assets/data/courses/scenarios/barSmallTalkScenarios'
+
+import { TOXIC_RELATIVE_SCENARIOS } from '../../../../assets/data/courses/scenarios/toxicRelativeScenarios'
+import { STREET_RUDENESS_SCENARIOS } from '../../../../assets/data/courses/scenarios/streetRudenessScenarios'
+import { TROLL_HANDLER_SCENARIOS } from '../../../../assets/data/courses/scenarios/trollHandlerScenarios'
+import { TIME_LIMIT_SCENARIOS } from '../../../../assets/data/courses/scenarios/timeLimitScenarios'
+import { IMPROMPTU_TOAST_SCENARIOS } from '../../../../assets/data/courses/scenarios/impromptuToastScenarios'
+import { WEDDING_CHALLENGE_SCENARIOS } from '../../../../assets/data/courses/scenarios/weddingChallengeScenarios'
+
 import {
   WORKOUT_CONFIGS,
   ALL_WORKOUT_THUNKS,
@@ -35,6 +43,12 @@ const SCENARIOS_MAP = {
   stress_interview: STRESS_INTERVIEW_SCENARIOS,
   bar_small_talk: BAR_SMALL_TALK_SCENARIOS,
   vip_afterparty: VIP_AFTERPARTY_SCENARIOS,
+  toxic_relative: TOXIC_RELATIVE_SCENARIOS,
+  street_rudeness: STREET_RUDENESS_SCENARIOS,
+  troll_handler: TROLL_HANDLER_SCENARIOS,
+  time_limit_pitch: TIME_LIMIT_SCENARIOS,
+  impromptu_toast: IMPROMPTU_TOAST_SCENARIOS,
+  wedding_challenge: WEDDING_CHALLENGE_SCENARIOS,
 }
 
 const AiWorkoutBlock = ({ courseCode }) => {
