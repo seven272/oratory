@@ -297,8 +297,16 @@ const finishHrScreenerTrainer = async (req, res) => {
       aiBlockConfig?.aiWorkoutConfig?.requiredScore || 1000
 
     progress.blocksProgress.aiWorkout.sessionsCount += 1
-    progress.blocksProgress.aiWorkout.accumulatedScore +=
-      evaluation.totalScore
+
+    // 🔥 ФЛАГ ДЛЯ ФРОНТЕНДА: пошли ли баллы в зачёт общего прогресса блока
+    let isScoreCounted = false
+
+    if (evaluation.totalScore >= 65) {
+      // Плюсуем баллы к накопительной системе только если попытка качественная
+      progress.blocksProgress.aiWorkout.accumulatedScore +=
+        evaluation.totalScore
+      isScoreCounted = true
+    }
 
     if (
       progress.blocksProgress.aiWorkout.accumulatedScore >=
@@ -323,6 +331,7 @@ const finishHrScreenerTrainer = async (req, res) => {
         totalScore: evaluation.totalScore,
         feedback: evaluation.feedback,
         criteria: evaluation.criteria,
+        isScoreCounted,
       },
     })
   } catch (error) {

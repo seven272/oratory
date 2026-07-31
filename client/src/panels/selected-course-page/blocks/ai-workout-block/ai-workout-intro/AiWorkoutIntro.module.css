@@ -3,7 +3,7 @@
 }
 
 .title {
-  font: var(--font-xl);
+  font: var(--font-l);
   color: var(--color-black);
   margin: 0 0 6px 0;
 }
@@ -25,6 +25,7 @@
   flex-direction: column;
   gap: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  margin-bottom: 20px; /* Добавили отступ до списка карточек */
 }
 
 .score_header {
@@ -112,19 +113,21 @@
 }
 
 .card_title {
-  font: var(--font-l);
+  font: var(--font-ml);
   font-weight: 600;
   color: var(--color-black);
   margin: 0;
 }
 
-.reward_badge {
-  background-color: rgba(46, 204, 113, 0.12);
-  color: #27ae60;
+/* 👑 ОБНОВЛЕНО: Сделали бейдж формата нейтральным и аккуратным, убрав кричащий зеленый */
+.badge {
+  background-color: rgba(0, 63, 192, 0.05); /* Легкий VK-blue оттенок подложки */
+  color: var(--color-blue-vk, #003fc0);
+  border: 1px solid rgba(0, 63, 192, 0.1);
   font: var(--font-s);
-  font-weight: 600;
+  font-weight: 500;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: 8px; /* Сделали форму чуть строже (как в UI VK) вместо круглых 20px */
   white-space: nowrap;
 }
 
@@ -155,6 +158,41 @@
 
 .simulate_button:active {
   background-color: var(--color-blue-dark);
+}
+
+/* 👑 ОБНОВЛЕНО: Стилизовали выделенную зону под кнопкой карточек */
+.theory_action_zone {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.refresh_theory_btn {
+  background-color: var(--color-bg, #e8f3ff);
+  color: var(--color-primary, #007aff);
+  font: var(--font-m); 
+  border: none;
+  padding: 14px 24px; /* Выровняли высоту с simulate_button для баланса интерфейса */
+  border-radius: 12px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.refresh_theory_btn:hover {
+  background-color: var(--color-secondary, #b2d7ff);
+}
+
+.refresh_theory_btn:active {
+  transform: scale(0.98);
 }
 
 .simulate_button:disabled {

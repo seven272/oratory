@@ -21,7 +21,7 @@
 }
 
 .quiz_question {
-  font: var(--font-l);
+  font: var(--font-ml);
   color: var(--color-black);
   margin: 0 0 20px 0;
   line-height: 1.4;

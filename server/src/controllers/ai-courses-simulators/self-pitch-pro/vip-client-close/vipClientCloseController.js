@@ -92,13 +92,6 @@ const generateVipCloseResponse = async (req, res) => {
     // 1. Извлекаем аудиофайл из multer (он лежит в req.file из-за thunk-ключа 'file')
     if (req.file) {
       try {
-        console.log('--- ДАННЫЕ ИЗ REQ.FILE (MULTER) ---')
-        console.log('Имя поля (fieldname):', req.file.fieldname)
-        console.log(
-          'MIME-тип от фронта (mimetype):',
-          req.file.mimetype,
-        )
-        console.log('-----------------------------------')
         userMessage = await transcribeShortAudio(req.file.buffer)
       } catch (speechError) {
         console.error(
@@ -120,7 +113,7 @@ const generateVipCloseResponse = async (req, res) => {
     const attemptsCount = session.messages.filter(
       (m) => m.role === 'user',
     ).length
-    const isSessionFinished = attemptsCount >= 2 // Конец диалога на 3-й раз (индексы ответов: 0, 1, 2)
+    const isSessionFinished = attemptsCount >= 3 // Конец диалога на 3-й раз (индексы ответов: 0, 1, 2)
 
     // 2. Обработка промалчивания / пустого распознавания
     if (
@@ -196,7 +189,7 @@ const generateVipCloseResponse = async (req, res) => {
       new Promise((resolve) => setTimeout(resolve, ms))
     await sleep(Math.floor(Math.random() * 1500) + 1500)
 
-    return res.json({
+    return res.status(200).json({
       user_transcript: cleanUserMessage,
       answer: aiAnswer.trim(),
       isSessionFinished,
@@ -204,8 +197,9 @@ const generateVipCloseResponse = async (req, res) => {
     })
   } catch (error) {
     console.error('Ошибка в generateVipCloseResponse:', error.message)
-    res.status(503).json({
-      answer:
+
+    return res.status(503).json({
+      message:
         'Клиент отвлекся на входящее уведомление. Пожалуйста, повторите фразу.',
     })
   }
@@ -323,8 +317,15 @@ const finishVipCloseTrainer = async (req, res) => {
 
     // Обновляем статистику вашего блока
     progress.blocksProgress.aiWorkout.sessionsCount += 1
-    progress.blocksProgress.aiWorkout.accumulatedScore +=
-      evaluation.totalScore
+    // 🔥 ФЛАГ ДЛЯ ФРОНТЕНДА: пошли ли баллы в зачёт общего прогресса блока
+    let isScoreCounted = false
+
+    if (evaluation.totalScore >= 65) {
+      // Плюсуем баллы к накопительной системе только если попытка качественная
+      progress.blocksProgress.aiWorkout.accumulatedScore +=
+        evaluation.totalScore
+      isScoreCounted = true
+    }
 
     // Проверяем, набрал ли пользователь нужную сумму баллов суммарно за все подходы
     if (
@@ -353,6 +354,7 @@ const finishVipCloseTrainer = async (req, res) => {
         totalScore: evaluation.totalScore,
         feedback: evaluation.feedback,
         criteria: evaluation.criteria,
+        isScoreCounted,
       },
     })
   } catch (error) {

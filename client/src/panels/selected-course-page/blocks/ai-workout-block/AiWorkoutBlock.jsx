@@ -8,6 +8,7 @@ import {
 import AiWorkoutIntro from './ai-workout-intro/AiWorkoutIntro'
 import AiWorkoutChat from './ai-workout-chat/AiWorkoutChat'
 import AiWorkoutResult from './ai-workout-result/AiWorkoutResult'
+import TheoryReviewMode from '../theory-review-mode/TheoryReviewMode'
 import { useSpeechSber } from '../../../../hooks/useSpeechSber'
 import { COURSES_STATIC_CONTENT } from '../../../../assets/data/courses/coursesContent'
 import { INVESTOR_PITCH_SCENARIOS } from '../../../../assets/data/courses/scenarios/investorPitchScenarios'
@@ -19,11 +20,10 @@ import { HR_SCREENER_SCENARIOS } from '../../../../assets/data/courses/scenarios
 import { STRESS_INTERVIEW_SCENARIOS } from '../../../../assets/data/courses/scenarios/stressInterviewScenarios'
 import { VIP_AFTERPARTY_SCENARIOS } from '../../../../assets/data/courses/scenarios/vipAfterpartyScenarios'
 import { BAR_SMALL_TALK_SCENARIOS } from '../../../../assets/data/courses/scenarios/barSmallTalkScenarios'
-
 import { TOXIC_RELATIVE_SCENARIOS } from '../../../../assets/data/courses/scenarios/toxicRelativeScenarios'
 import { STREET_RUDENESS_SCENARIOS } from '../../../../assets/data/courses/scenarios/streetRudenessScenarios'
 import { TROLL_HANDLER_SCENARIOS } from '../../../../assets/data/courses/scenarios/trollHandlerScenarios'
-import { TIME_LIMIT_SCENARIOS } from '../../../../assets/data/courses/scenarios/timeLimitScenarios'
+import { TIME_LIMIT_PITCH_SCENARIOS } from '../../../../assets/data/courses/scenarios/timeLimitPitchScenarios'
 import { IMPROMPTU_TOAST_SCENARIOS } from '../../../../assets/data/courses/scenarios/impromptuToastScenarios'
 import { WEDDING_CHALLENGE_SCENARIOS } from '../../../../assets/data/courses/scenarios/weddingChallengeScenarios'
 
@@ -46,7 +46,7 @@ const SCENARIOS_MAP = {
   toxic_relative: TOXIC_RELATIVE_SCENARIOS,
   street_rudeness: STREET_RUDENESS_SCENARIOS,
   troll_handler: TROLL_HANDLER_SCENARIOS,
-  time_limit_pitch: TIME_LIMIT_SCENARIOS,
+  time_limit_pitch: TIME_LIMIT_PITCH_SCENARIOS,
   impromptu_toast: IMPROMPTU_TOAST_SCENARIOS,
   wedding_challenge: WEDDING_CHALLENGE_SCENARIOS,
 }
@@ -62,10 +62,13 @@ const AiWorkoutBlock = ({ courseCode }) => {
 
   // Храним ID текущего активного тренажера
   const [selectedMode, setSelectedMode] = useState(null)
+  const [isReviewingTheory, setIsReviewingTheory] = useState(false)
 
+  //файлы теории
+  const theorySlides =
+    COURSES_STATIC_CONTENT[courseCode]?.theory?.slides || []
   // Достаем активный конфиг на основе стейта
   const currentConfig = WORKOUT_CONFIGS[selectedMode]
-
   // Читаем данные напрямую из вашего единого контент-файла
   const aiWorkoutStatic =
     COURSES_STATIC_CONTENT[courseCode]?.ai_workout
@@ -165,6 +168,15 @@ const AiWorkoutBlock = ({ courseCode }) => {
     setSelectedMode(null)
   }
 
+  if (isReviewingTheory) {
+    return (
+      <TheoryReviewMode
+        slides={theorySlides}
+        onBack={() => setIsReviewingTheory(false)}
+      />
+    )
+  }
+
   if (aiStatus === 'finished') {
     return (
       <div className={styles.workout_container}>
@@ -204,6 +216,7 @@ const AiWorkoutBlock = ({ courseCode }) => {
         requiredScore={REQUIRED_SCORE}
         courseStatus={chatStatus}
         onStartTrainer={handleStartTrainer}
+        onReviewTheory={() => setIsReviewingTheory(true)}
       />
       {(error || aiChat.error) && (
         <div className={styles.error_alert}>

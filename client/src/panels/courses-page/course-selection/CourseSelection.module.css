@@ -1,5 +1,6 @@
 .selection_container {
   max-width: 600px;
+  width: 100%;
   margin: 0 auto;
   padding: 20px;
   display: flex;
@@ -10,10 +11,22 @@
   min-height: 100vh;
 }
 
+/* --- ИНФОРМАЦИОННАЯ ШАПКА --- */
+.info_header_block {
+  width: 100%;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
 .main_title {
-  font: var(--font-xl);
+  font: var(--font-l);
   color: var(--color-black);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
@@ -21,43 +34,106 @@
   font: var(--font-m);
   color: var(--color-text-secondary);
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
-/* Сетка/Список карточек */
-.courses_list_block {
+.structure_badge_container {
   width: 100%;
+  border-top: 1px dashed var(--color-secondary);
+  padding-top: 16px;
+}
+
+.structure_title {
+  font: var(--font-s);
+  color: var(--color-text-dark);
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.badges_grid {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.badge_item {
+  font: var(--font-s);
+  background-color: var(--color-bg);
+  color: var(--color-black);
+  padding: 6px 12px;
+  border-radius: 30px;
+  border: 1px solid var(--color-secondary);
+  white-space: nowrap;
+}
+
+.badge_item_clickable {
+  font: var(--font-s);
+  background-color: var(--color-bg);
+  color: var(--color-black);
+  padding: 6px 12px;
+  border-radius: 30px;
+  border: 1px solid var(--color-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.badge_item_clickable:hover {
+  background-color: var(--color-light-blue);
+  border-color: var(--color-blue-vk);
+  color: var(--color-blue-dark);
+}
+
+.badge_item_clickable:active {
+  transform: scale(0.96);
+}
+
+/* --- СЕТКА КАРТОЧЕК КУРСОВ --- */
+.courses_grid_block {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   margin-bottom: 30px;
 }
 
-/* Базовая карточка курса */
 .course_card {
   background-color: var(--color-white);
   border: 1px solid var(--color-secondary);
   border-radius: 16px;
-  padding: 16px;
-  cursor: pointer;
+  padding: 14px;
   box-sizing: border-box;
-  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Активное/выбранное состояние карточки */
-.course_card_active {
-  border: 2px solid var(--color-blue-vk);
-  box-shadow: 0 4px 14px rgba(38, 136, 235, 0.15);
+.course_card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 480px) {
+  .courses_grid_block {
+    grid-template-columns: 1fr;
+  }
+  .course_card_fullwidth {
+    grid-column: span 1 !important;
+  }
+}
+
+.course_card_fullwidth {
+  grid-column: span 2;
 }
 
 .card_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .course_tag {
@@ -68,48 +144,52 @@
   border-radius: 20px;
 }
 
-.course_reward {
-  font: var(--font-submenu);
-  color: var(--color-green);
-  font-weight: bold;
+.course_icon_avatar {
+  font-size: 20px;
+  background-color: var(--color-bg);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .course_title {
-  font: var(--font-l);
+  font: var(--font-ml);
   color: var(--color-black);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  line-height: 1.2;
 }
 
 .course_text {
   font: var(--font-m-light);
   color: var(--color-text-dark);
   line-height: var(--font-line-m);
+  font-size: 13px;
+  margin-bottom: 14px;
+  flex-grow: 1; /* Растягивает текст, чтобы кнопка всегда прижималась к низу карточки */
 }
 
-/* Нижняя кнопка действия */
-.action_zone {
+/* --- КНОПКА ВНУТРИ КАРТОЧКИ --- */
+.card_action_button {
   width: 100%;
-  margin-top: auto;
-}
-
-.menu_button_primary {
   background-color: var(--color-blue-vk);
   color: var(--color-white);
-  font: var(--font-ml);
   border: none;
-  padding: 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  width: 100%;
+  margin-top: auto; /* Жестко прижимает кнопку к низу карточки при разной длине описаний */
 }
 
-.menu_button_primary:active {
+.card_action_button:hover {
   background-color: var(--color-blue-dark);
 }
 
-.menu_button_primary:disabled {
-  background-color: var(--color-grey-light);
-  color: var(--color-grey);
-  cursor: not-allowed;
+.card_action_button:active {
+  transform: scale(0.98);
 }

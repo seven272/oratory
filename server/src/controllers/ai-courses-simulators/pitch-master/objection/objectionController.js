@@ -318,8 +318,16 @@ const finishObjectionTrainer = async (req, res) => {
 
     // Накапливаем статистику в общую структуру прогресса блока
     progress.blocksProgress.aiWorkout.sessionsCount += 1
-    progress.blocksProgress.aiWorkout.accumulatedScore +=
-      evaluation.totalScore
+    // 🔥 ФЛАГ ДЛЯ ФРОНТЕНДА: пошли ли баллы в зачёт общего прогресса блока
+    let isScoreCounted = false
+
+    if (evaluation.totalScore >= 65) {
+      // Плюсуем баллы к накопительной системе только если попытка качественная
+      progress.blocksProgress.aiWorkout.accumulatedScore +=
+        evaluation.totalScore
+      isScoreCounted = true
+    }
+
 
     // Логика автоперехода при успешном наборе XP
     if (
@@ -346,6 +354,7 @@ const finishObjectionTrainer = async (req, res) => {
         totalScore: evaluation.totalScore,
         feedback: evaluation.feedback,
         criteria: evaluation.criteria, // Передаст объект { empathy, argumentation }
+        isScoreCounted
       },
     })
   } catch (error) {

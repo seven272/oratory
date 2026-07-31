@@ -42,7 +42,7 @@ const buildVipAfterpartyCases = (builder) => {
         state.aiChat.chatStatus = 'succeeded'
         const {
           answer,
-          isSessionFinished,
+          isSessionFinished, 
           user_transcript,
           progressData,
         } = action.payload

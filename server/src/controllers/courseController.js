@@ -7,6 +7,7 @@ import { EXAM_PROMPTS_REGISTRY } from '../assets/prompts/examPrompt.js'
 import gigachatAxiosClient from '../utils/gigachatAxiosClient.js'
 import { parseAiResponse } from '../utils/aiJsonParser.js'
 import { transcribeLongAudio } from '../utils/speechService.js'
+import { getXpThreshold } from '../utils/fnForControllers.js'
 
 const getCourseProgress = async (req, res) => {
   try {
@@ -414,6 +415,13 @@ const submitExamReport = async (req, res) => {
             user.stats.lifetimeXp += rewardXp
             user.weeklyXp += rewardXp
             user.progression.coins += rewardCoins
+
+            // 🔥 АВТОМАТИЧЕСКИЙ ПЕРЕСЧЕТ УРОВНЯ («СТАКАН» ОПЫТА)
+            // Цикл вычитает порог текущего уровня из накопленного опыта и апает level
+            while (user.progression.xp >= getXpThreshold(user.progression.level)) {
+              user.progression.xp -= getXpThreshold(user.progression.level)
+              user.progression.level += 1
+            }
 
             // Выдаем ачивку за успешное закрытие курса
             newAnnouncedAchievements = checkAchievements(

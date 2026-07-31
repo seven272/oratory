@@ -16,7 +16,7 @@ const startAlibi = async (req, res) => {
 
     // Первая реплика берется напрямую из настроек сценария
     const question = exerciseData.init_phrase
-
+ 
     await AiExercise.create({
       userId,
       exerciseType: 'alibi',

@@ -14,6 +14,7 @@ import ExamIdle from './exam-idle/ExamIdle'
 import ExamQuestions from './exam-questions/ExamQuestions'
 import ExamVerdict from './exam-verdict/ExamVerdict'
 import ExamLocked from './exam-locked/ExamLocked'
+import TheoryReviewMode from '../theory-review-mode/TheoryReviewMode'
 import { COURSES_STATIC_CONTENT } from '../../../../assets/data/courses/coursesContent'
 import styles from './ExamBlock.module.css'
 
@@ -21,14 +22,14 @@ const ExamBlock = ({ courseCode }) => {
   const dispatch = useDispatch()
 
   const { error, progressData, examSubmittingStatus } = useSelector(
-    (state) => state.course,
+    (state) => state.course, 
   )
   const examProgress = progressData?.blocksProgress?.exam
 
   const bestScore = examProgress?.bestScore || 0
   const currentScore = examProgress?.lastAttemptScore || 0
   const isCompleted = examProgress?.isCompleted || false
-  const attemptsCount = examProgress?.attemptsCount || 0
+  const attemptsCount = examProgress?.attemptsCount || 0 
   const aiFeedback = examProgress?.aiFeedback || ''
   const lockedUntilStr = examProgress?.lockedUntil
 
@@ -41,10 +42,15 @@ const ExamBlock = ({ courseCode }) => {
     attemptsCount >= 5
 
   const [examStarted, setExamStarted] = useState(false)
-  // 💡 НОВЫЙ СТЕЙТ: Флаг, закрыл ли пользователь текущий вердикт ИИ
+  // Флаг, закрыл ли пользователь текущий вердикт ИИ
   const [verdictClosed, setVerdictClosed] = useState(false)
+   // Режим повторения теории на экзамене
+  const [isReviewingTheory, setIsReviewingTheory] = useState(false)
   const isSubmitting = examSubmittingStatus === 'loading'
-  const examStatic = COURSES_STATIC_CONTENT[courseCode]?.exam
+  // Извлекаем статический контент курса
+  const courseStatic = COURSES_STATIC_CONTENT[courseCode]
+  const examStatic = courseStatic?.exam
+  const theorySlides = courseStatic?.theory?.slides || [] // <-- Забираем слайды Блока 0
 
   const handleAudioSubmit = async ({ formData }) => {
     try {
@@ -76,6 +82,16 @@ const ExamBlock = ({ courseCode }) => {
       message.error('Ошибка покупки попытки сдачи экзамена')
       console.error('Ошибка покупки попытки:', err)
     }
+  }
+
+   // 👑 ПРИОРИТЕТ 0: Если пользователь нажал "Вспомнить теорию", перекрываем экран инлайн-слайдером
+  if (isReviewingTheory) {
+    return (
+      <TheoryReviewMode
+        slides={theorySlides}
+        onBack={() => setIsReviewingTheory(false)}
+      />
+    )
   }
 
   return (
@@ -121,6 +137,7 @@ const ExamBlock = ({ courseCode }) => {
             attemptsCount={attemptsCount}
             staticData={examStatic}
             onStart={() => setExamStarted(true)}
+            onReviewTheory={() => setIsReviewingTheory(true)}
           />
         )}
 

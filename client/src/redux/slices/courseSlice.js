@@ -8,20 +8,15 @@ import buildHrScreenerCases from './ai-courses-reducers/hrScreenerReducer.js'
 import buildStressInterviewCases from './ai-courses-reducers/stressInterviewReducer.js'
 import buildBarSmallTalkCases from './ai-courses-reducers/barSmallTalkReducer.js'
 import buildVipAfterpartyCases from './ai-courses-reducers/vipAfterpartyReducer.js'
-
-
 // Импорты редюсеров Курса 5
-import  buildToxicRelativeCases  from './ai-courses-reducers/toxicRelativeReducer.js'
-import buildStreetRudenessCases  from './ai-courses-reducers/streetRudenessReducer.js'
-
+import buildToxicRelativeCases from './ai-courses-reducers/toxicRelativeReducer.js'
+import buildStreetRudenessCases from './ai-courses-reducers/streetRudenessReducer.js'
 // Импорты редюсеров Курса 6
-import  buildTrollHandlerCases  from './ai-courses-reducers/trollHandlerReducer.js'
-import  buildTimeLimitPitchCases  from './ai-courses-reducers/timeLimitPitchReducer.js'
-
+import buildTrollHandlerCases from './ai-courses-reducers/trollHandlerReducer.js'
+import buildTimeLimitPitchCases from './ai-courses-reducers/timeLimitPitchReducer.js'
 // Импорты редюсеров Курса 7
-import  buildImpromptuToastCases  from './ai-courses-reducers/impromptuToastReducer.js'
-import  buildWeddingChallengeCases from './ai-courses-reducers/weddingChallengeReducer.js'
-
+import buildImpromptuToastCases from './ai-courses-reducers/impromptuToastReducer.js'
+import buildWeddingChallengeCases from './ai-courses-reducers/weddingChallengeReducer.js'
 
 // 1. Инициализация прогресса по курсу
 const fetchCourseProgress = createAsyncThunk(
@@ -169,7 +164,8 @@ const courseSlice = createSlice({
   initialState: {
     courseStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     status: 'not_started', // 'not_started' | 'active' | 'completed'
-    examSubmittingStatus: 'idle', // 💡 ДОБАВИТЬ СЮДА: 'idle' | 'loading' | 'succeeded' | 'failed'
+    examSubmittingStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    irlSubmittingStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     currentBlockIndex: -1, // 0: теория, 1: ИИ, 2: IRL, 3: экзамен
     progressData: null,
     archives: [],
@@ -179,7 +175,7 @@ const courseSlice = createSlice({
       messages: [], // { role: 'assistant' | 'user', text: string }
       chatStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed' (для крутилок)
       aiStatus: 'idle', // 'idle' | 'active' | 'ready_to_finish' | 'finished' (для экранов)
-      verdict: null, // { totalScore, feedback, criteria }
+      verdict: null, // { totalScore, feedback, criteria, isScoreCounted}
       error: null,
     },
   },
@@ -290,11 +286,11 @@ const courseSlice = createSlice({
          5. FETCH  SUBMIT IRL CHALLENGE REPORT
          ========================================== */
       .addCase(fetchSubmitIrlReport.pending, (state) => {
-        state.courseStatus = 'loading'
+        state.irlSubmittingStatus = 'loading'
         state.error = null
       })
       .addCase(fetchSubmitIrlReport.fulfilled, (state, action) => {
-        state.courseStatus = 'succeeded'
+        state.irlSubmittingStatus = 'succeeded'
 
         // Записываем актуальный объект прогресса из БД
         state.progressData = action.payload.progressData
@@ -308,7 +304,7 @@ const courseSlice = createSlice({
         state.error = null
       })
       .addCase(fetchSubmitIrlReport.rejected, (state, action) => {
-        state.courseStatus = 'failed'
+        state.irlSubmittingStatus = 'failed'
         state.error = action.payload
       })
 
@@ -318,8 +314,7 @@ const courseSlice = createSlice({
         state.error = null
       })
       .addCase(fetchSubmitExam.fulfilled, (state, action) => {
-        console.log('слайс курсов 338')
-        console.log(action.payload.progressData)
+       
         state.examSubmittingStatus = 'succeeded'
         // Обновляем прогресс актуальными данными из БД
         state.progressData = action.payload.progressData
@@ -403,14 +398,12 @@ const courseSlice = createSlice({
     buildBarSmallTalkCases(builder)
     buildVipAfterpartyCases(builder)
 
-   buildToxicRelativeCases(builder)
+    buildToxicRelativeCases(builder)
     buildStreetRudenessCases(builder)
-
 
     buildTrollHandlerCases(builder)
     buildTimeLimitPitchCases(builder)
 
-   
     buildImpromptuToastCases(builder)
     buildWeddingChallengeCases(builder)
   },

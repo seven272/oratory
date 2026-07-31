@@ -36,18 +36,26 @@ const buildTrollHandlerCases = (builder) => {
         user_transcript,
         progressData,
       } = action.payload
-      if (user_transcript)
+
+      if (user_transcript) {
         state.aiChat.messages.push({
           role: 'user',
           text: user_transcript,
         })
-      if (progressData) state.progressData = progressData
-      if (isSessionFinished) state.aiChat.aiStatus = 'ready_to_finish'
-      else
+      }
+      if (progressData) {
+        state.progressData = progressData
+      }
+
+      if (isSessionFinished) {
+        state.aiChat.aiStatus = 'ready_to_finish'
+      } else {
         state.aiChat.messages.push({
           role: 'assistant',
           text: answer,
         })
+        state.aiChat.aiStatus = 'active'
+      }
     })
     .addCase(fetchSendTrollResponse.rejected, (state, action) => {
       state.aiChat.chatStatus = 'failed'

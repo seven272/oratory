@@ -41,7 +41,7 @@ const ChallengeVerdict = ({
         </button>
       ) : (
         <button className={styles.retry_button} onClick={onRetry}>
-          <TiArrowSync size={15}/> Исправить отчет
+          <TiArrowSync size={20}/> Исправить отчет
         </button>
       )}
     </div>

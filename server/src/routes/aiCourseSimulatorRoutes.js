@@ -50,6 +50,42 @@ import {
   finishVipAfterpartyTrainer,
 } from '../controllers/ai-courses-simulators/party-charisma/vip-afterparty/vipAfterpartyController.js'
 
+import {
+  startToxicRelativeTrainer,
+  generateToxicRelativeResponse,
+  finishToxicRelativeTrainer,
+} from '../controllers/ai-courses-simulators/social-shield/toxic-relative/toxicRelativeController.js'
+
+import {
+  startStreetRudenessTrainer,
+  generateStreetRudenessResponse,
+  finishStreetRudenessTrainer,
+} from '../controllers/ai-courses-simulators/social-shield/street-rudeness/streetRudenessController.js'
+
+import {
+  startTrollHandlerTrainer,
+  generateTrollResponse,
+  finishTrollHandlerTrainer,
+} from '../controllers/ai-courses-simulators/media-speaker/troll-handler/trollHandlerController.js'
+
+import {
+  startTimeLimitPitchTrainer,
+  generateTimeLimitResponse,
+  finishTimeLimitPitchTrainer,
+} from '../controllers/ai-courses-simulators/media-speaker/time-limit-pitch/timeLimitPitchController.js'
+
+import {
+  startImpromptuToastTrainer,
+  generateImpromptuResponse,
+  finishImpromptuToastTrainer,
+} from '../controllers/ai-courses-simulators/toast-master/impromptu-toast/impromptuToastController.js'
+
+import {
+  startWeddingChallengeTrainer,
+  generateWeddingResponse,
+  finishWeddingChallengeTrainer,
+} from '../controllers/ai-courses-simulators/toast-master/wedding-challenge/weddingChallengeController.js'
+
 const aiCourseSimulatorRouter = express.Router()
 
 // Настройка multer для аудио
@@ -86,7 +122,6 @@ aiCourseSimulatorRouter.post(
   checkAuth,
   startObjectionTrainer,
 )
-
 aiCourseSimulatorRouter.post(
   '/pitch-master/objection/respond',
   checkAuth,
@@ -148,15 +183,12 @@ aiCourseSimulatorRouter.post(
   startHrScreenerTrainer,
 )
 
-// Обработка аудио-ответов и генерация реплик рекрутера
 aiCourseSimulatorRouter.post(
   '/hr-storm/hr-screener/respond',
   checkAuth,
   upload.single('file'), // Перехват аудиофайла через thunk-ключ 'file'
   generateHrScreenerResponse,
 )
-
-// Финализация интервью, ИИ-анализ софт-скиллов по STAR и начисление баллов
 aiCourseSimulatorRouter.post(
   '/hr-storm/hr-screener/finish',
   checkAuth,
@@ -186,51 +218,156 @@ aiCourseSimulatorRouter.post(
 /* ==========================================================================
    🥂 КУРС: Харизма нетворкинга: Свой в любой компании (party_charisma)
    ========================================================================== */
-
 // --- ТРЕНАЖЕР 1: Разговор у барной стойки (bar_small_talk) ---
-// Инициализация сессии Small Talk у бара
 aiCourseSimulatorRouter.post(
   '/party-charisma/bar-small-talk/start',
   checkAuth,
   startBarSmallTalkTrainer,
 )
 
-// Обработка аудио-ответов и генерация реплик собеседника у бара
 aiCourseSimulatorRouter.post(
   '/party-charisma/bar-small-talk/respond',
   checkAuth,
   upload.single('file'), // Перехват аудиозаписи через thunk-ключ 'file'
   generateBarSmallTalkResponse,
 )
-
-// Финализация Small Talk, ИИ-анализ по критериям и начисление баллов
 aiCourseSimulatorRouter.post(
   '/party-charisma/bar-small-talk/finish',
   checkAuth,
   finishBarSmallTalkTrainer,
 )
 
-// --- ТРЕНАЖЕР 2: Закрытое афтерпати лидеров (vip_afterparty) ---
-// Инициализация беседы на VIP-афтерпати
+// --- ТРЕНАЖЕР Закрытое афтерпати лидеров (vip_afterparty) ---
 aiCourseSimulatorRouter.post(
   '/party-charisma/vip-afterparty/start',
   checkAuth,
   startVipAfterpartyTrainer,
 )
-
-// Обработка ответов на афтерпати и генерация реплик VIP-гостя
 aiCourseSimulatorRouter.post(
   '/party-charisma/vip-afterparty/respond',
   checkAuth,
   upload.single('file'), // Перехват аудиозаписи через thunk-ключ 'file'
   generateVipAfterpartyResponse,
 )
-
-// Финализация VIP-встречи, ИИ-анализ статуса и экологичного выхода
 aiCourseSimulatorRouter.post(
   '/party-charisma/vip-afterparty/finish',
   checkAuth,
   finishVipAfterpartyTrainer,
+)
+
+// Инициализация сессии и старт тренажера манипуляций
+aiCourseSimulatorRouter.post(
+  '/social-shield/toxic-relative/start',
+  checkAuth,
+  startToxicRelativeTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/social-shield/toxic-relative/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи из thunk-ключа 'file'
+  generateToxicRelativeResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/social-shield/toxic-relative/finish',
+  checkAuth,
+  finishToxicRelativeTrainer,
+)
+
+// Тренажер хамстов
+aiCourseSimulatorRouter.post(
+  '/social-shield/street-rudeness/start',
+  checkAuth,
+  startStreetRudenessTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/social-shield/street-rudeness/respond',
+  checkAuth,
+  upload.single('file'),
+  generateStreetRudenessResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/social-shield/street-rudeness/finish',
+  checkAuth,
+  finishStreetRudenessTrainer,
+)
+
+// --- ТРЕНАЖЕР  Отражение троллинга из зала ---
+aiCourseSimulatorRouter.post(
+  '/media-speaker/troll-handler/start',
+  checkAuth,
+  startTrollHandlerTrainer,
+)
+
+aiCourseSimulatorRouter.post(
+  '/media-speaker/troll-handler/respond',
+  checkAuth,
+  upload.single('file'),
+  generateTrollResponse,
+)
+
+aiCourseSimulatorRouter.post(
+  '/media-speaker/troll-handler/finish',
+  checkAuth,
+  finishTrollHandlerTrainer,
+)
+
+// --- ТРЕНАЖЕР Спич в условиях цейтнота ---
+
+aiCourseSimulatorRouter.post(
+  '/media-speaker/time-limit-pitch/start',
+  checkAuth,
+  startTimeLimitPitchTrainer,
+)
+
+aiCourseSimulatorRouter.post(
+  '/media-speaker/time-limit-pitch/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи через thunk-ключ 'file'
+  generateTimeLimitResponse,
+)
+
+aiCourseSimulatorRouter.post(
+  '/media-speaker/time-limit-pitch/finish',
+  checkAuth,
+  finishTimeLimitPitchTrainer,
+)
+
+// --- ТРЕНАЖЕР Внезапное слово на корпоративе ---
+aiCourseSimulatorRouter.post(
+  '/toast-master/impromptu-toast/start',
+  checkAuth,
+  startImpromptuToastTrainer,
+)
+
+aiCourseSimulatorRouter.post(
+  '/toast-master/impromptu-toast/respond',
+  checkAuth,
+  upload.single('file'),
+  generateImpromptuResponse,
+)
+
+aiCourseSimulatorRouter.post(
+  '/toast-master/impromptu-toast/finish',
+  checkAuth,
+  finishImpromptuToastTrainer,
+)
+
+// --- ТРЕНАЖЕР Свадебный тост / Юбилей ---
+aiCourseSimulatorRouter.post(
+  '/toast-master/wedding-challenge/start',
+  checkAuth,
+  startWeddingChallengeTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/toast-master/wedding-challenge/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи через thunk-ключ 'file'
+  generateWeddingResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/toast-master/wedding-challenge/finish',
+  checkAuth,
+  finishWeddingChallengeTrainer,
 )
 
 export default aiCourseSimulatorRouter

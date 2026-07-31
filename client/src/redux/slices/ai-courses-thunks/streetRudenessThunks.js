@@ -5,7 +5,7 @@ export const fetchStartStreetRudeness = createAsyncThunk(
   'course/fetchStartStreetRudeness',
   async ({ courseCode, exerciseData }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/street-rudeness/start', { courseCode, exerciseData })
+      const res = await axiosInstance.post('/courses/simulate/social-shield/street-rudeness/start', { courseCode, exerciseData })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Ошибка старта тренажера хамства' })
@@ -21,7 +21,7 @@ export const fetchSendStreetRudenessResponse = createAsyncThunk(
       formData.append('courseCode', courseCode)
       formData.append('file', audioBlob, 'street_rudeness_speech.wav')
 
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/street-rudeness/respond', formData, {
+      const res = await axiosInstance.post('/courses/simulate/social-shield/street-rudeness/respond', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       return res.data
@@ -35,10 +35,10 @@ export const fetchFinishStreetRudeness = createAsyncThunk(
   'course/fetchFinishStreetRudeness',
   async ({ courseCode }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/street-rudeness/finish', { courseCode })
+      const res = await axiosInstance.post('/courses/simulate/social-shield/street-rudeness/finish', { courseCode })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Ошибка финализации сессии' })
     }
   }
-)
+) 

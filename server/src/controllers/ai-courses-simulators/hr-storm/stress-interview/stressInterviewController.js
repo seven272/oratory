@@ -93,13 +93,7 @@ const generateStressResponse = async (req, res) => {
 
     if (req.file) {
       try {
-        console.log('--- ДАННЫЕ ИЗ REQ.FILE (MULTER) ---')
-        console.log('Имя поля (fieldname):', req.file.fieldname)
-        console.log(
-          'MIME-тип от фронта (mimetype):',
-          req.file.mimetype,
-        )
-        console.log('-----------------------------------')
+     
         userMessage = await transcribeShortAudio(req.file.buffer)
       } catch (speechError) {
         console.error(
@@ -121,7 +115,7 @@ const generateStressResponse = async (req, res) => {
     const attemptsCount = session.messages.filter(
       (m) => m.role === 'user',
     ).length
-    const isSessionFinished = attemptsCount >= 2 // Конец интервью на 3-й раз (0, 1, 2)
+    const isSessionFinished = attemptsCount >= 3 // Конец интервью на 3-й раз (0, 1, 2)
 
     if (!userMessage || !userMessage.trim()) {
       session.messages.push({
@@ -295,8 +289,16 @@ const finishStressInterviewTrainer = async (req, res) => {
       aiBlockConfig?.aiWorkoutConfig?.requiredScore || 1000
 
     progress.blocksProgress.aiWorkout.sessionsCount += 1
-    progress.blocksProgress.aiWorkout.accumulatedScore +=
-      evaluation.totalScore
+     // 🔥 ФЛАГ ДЛЯ ФРОНТЕНДА: пошли ли баллы в зачёт общего прогресса блока
+    let isScoreCounted = false
+
+    if (evaluation.totalScore >= 65) {
+      // Плюсуем баллы к накопительной системе только если попытка качественная
+      progress.blocksProgress.aiWorkout.accumulatedScore +=
+        evaluation.totalScore
+      isScoreCounted = true
+    }
+
 
     if (
       progress.blocksProgress.aiWorkout.accumulatedScore >=
@@ -321,6 +323,7 @@ const finishStressInterviewTrainer = async (req, res) => {
         totalScore: evaluation.totalScore,
         feedback: evaluation.feedback,
         criteria: evaluation.criteria,
+        isScoreCounted
       },
     })
   } catch (error) {

@@ -5,7 +5,7 @@ export const fetchStartToxicRelative = createAsyncThunk(
   'course/fetchStartToxicRelative',
   async ({ courseCode, exerciseData }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/toxic-relative/start', { courseCode, exerciseData })
+      const res = await axiosInstance.post('/courses/simulate/social-shield/toxic-relative/start', { courseCode, exerciseData })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Ошибка старта тренажера манипуляций' })
@@ -21,7 +21,7 @@ export const fetchSendToxicRelativeResponse = createAsyncThunk(
       formData.append('courseCode', courseCode)
       formData.append('file', audioBlob, 'toxic_relative_speech.wav')
 
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/toxic-relative/respond', formData, {
+      const res = await axiosInstance.post('/courses/simulate/social-shield/toxic-relative/respond', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       return res.data
@@ -32,10 +32,10 @@ export const fetchSendToxicRelativeResponse = createAsyncThunk(
 )
 
 export const fetchFinishToxicRelative = createAsyncThunk(
-  'course/fetchFinishToxicRelative',
+  'course/fetchFinishToxicRelative', 
   async ({ courseCode }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/toxic-relative/finish', { courseCode })
+      const res = await axiosInstance.post('/courses/simulate/social-shield/toxic-relative/finish', { courseCode })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Ошибка финализации сессии' })

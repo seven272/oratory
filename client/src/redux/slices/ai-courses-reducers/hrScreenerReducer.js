@@ -73,7 +73,8 @@ const buildHrScreenerCases = (builder) => {
       state.status = action.payload.status || 'active'
       state.progressData = action.payload.progressData
       state.currentBlockIndex = action.payload.currentBlockIndex
-      state.aiChat.verdict = action.payload.evaluation // Критерии softSkills и starStructure
+      state.aiChat.verdict = action.payload.evaluation //  totalScore, feedback, criteria, isScoreCounted
+      
     })
     .addCase(fetchFinishHrScreener.rejected, (state, action) => {
       state.aiChat.chatStatus = 'failed'

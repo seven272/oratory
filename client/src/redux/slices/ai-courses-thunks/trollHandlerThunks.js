@@ -5,7 +5,7 @@ export const fetchStartTrollHandler = createAsyncThunk(
   'course/fetchStartTrollHandler',
   async ({ courseCode, exerciseData }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/troll-handler/start', { courseCode, exerciseData })
+      const res = await axiosInstance.post('/courses/simulate/media-speaker/troll-handler/start', { courseCode, exerciseData })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Ошибка старта тренажера троллинга' })
@@ -21,7 +21,7 @@ export const fetchSendTrollResponse = createAsyncThunk(
       formData.append('courseCode', courseCode)
       formData.append('file', audioBlob, 'troll_handler_speech.wav')
 
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/troll-handler/respond', formData, {
+      const res = await axiosInstance.post('/courses/simulate/media-speaker/troll-handler/respond', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       return res.data
@@ -35,7 +35,7 @@ export const fetchFinishTrollHandler = createAsyncThunk(
   'course/fetchFinishTrollHandler',
   async ({ courseCode }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post('/courses/simulate/hr-storm/troll-handler/finish', { courseCode })
+      const res = await axiosInstance.post('/courses/simulate/media-speaker/troll-handler/finish', { courseCode })
       return res.data
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: 'Ошибка финализации сессии' })

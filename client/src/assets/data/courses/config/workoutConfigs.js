@@ -15,7 +15,6 @@ import * as timeLimitPitchThunks from '../../../../redux/slices/ai-courses-thunk
 import * as impromptuToastThunks from '../../../../redux/slices/ai-courses-thunks/impromptuToastThunks'
 import * as weddingChallengeThunks from '../../../../redux/slices/ai-courses-thunks/weddingChallengeThunks'
 
-
 // Собираем все санки в единый объект для динамического вызова по ключу
 export const ALL_WORKOUT_THUNKS = {
   ...pitchThunks,
@@ -31,8 +30,7 @@ export const ALL_WORKOUT_THUNKS = {
   ...trollHandlerThunks,
   ...timeLimitPitchThunks,
   ...impromptuToastThunks,
-  ...weddingChallengeThunks
-  
+  ...weddingChallengeThunks,
 }
 
 export const WORKOUT_CONFIGS = {
@@ -41,7 +39,7 @@ export const WORKOUT_CONFIGS = {
     title: '🤖 Питч-сессия с жестким инвестором',
     description:
       'Симуляция встречи с венчурным фондом. ИИ будет перебивать, задавать неудобные вопросы о юнит-экономике.',
-    reward: 'Цель: 500 XP суммарно',
+    badge: 'Венчурный созвон / Питч',
     thunks: {
       start: 'fetchStartPitchTrainer',
       send: 'fetchSendPitchResponse',
@@ -66,7 +64,7 @@ export const WORKOUT_CONFIGS = {
     title: '🔥 Минное поле: Отработка возражений',
     description:
       'Вам противостоит разгневанный, экономный или скептичный клиент. Спасите сделку и удержите позиции без оправданий.',
-    reward: 'Цель: 600 XP суммарно',
+    badge: 'Кризисные переговоры / B2B',
     thunks: {
       start: 'fetchStartObjectionTrainer',
       send: 'fetchSendObjectionResponse',
@@ -88,10 +86,10 @@ export const WORKOUT_CONFIGS = {
   },
   networking_expert: {
     id: 'networking_expert',
-    title: '🤝 Нетворкинг-мастер: Бизнес-знакомство',
+    title: '🤝 Нетворкинг-мастер: бизнес-знакомство',
     description:
       'Вы на профильной конференции. Вокруг сотни экспертов и заказчиков. Ваша задача — уверенно подойти, познакомиться, кратко донести свою ценность по формуле "Польза + Кейс" и договориться о созвоне.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Бизнес-знакомство / Нетворкинг',
     thunks: {
       start: 'fetchStartNetworking',
       send: 'fetchSendNetworkingResponse',
@@ -119,10 +117,10 @@ export const WORKOUT_CONFIGS = {
   },
   vip_client_close: {
     id: 'vip_client_close',
-    title: '👑 Встреча на миллион: Закрытие VIP-клиента',
+    title: '👑 Встреча на миллион: закрытие VIP-клиента',
     description:
       'Плотный деловой созвон или встреча в ресторане с потенциальным крупным заказчиком. Он выделил вам 5 минут. Задача — презентовать себя через кейсы, выявить его главную боль и закрыть на полноценный аудит/консалтинг.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Закрытие сделки / VIP',
     thunks: {
       start: 'fetchStartVipClose',
       send: 'fetchSendVipResponse',
@@ -155,7 +153,7 @@ export const WORKOUT_CONFIGS = {
     title: '📞 Первичный HR-скрининг: Чат-интервью',
     description:
       'Симуляция первого созвона с рекрутером. ИИ будет проверять вашу адекватность, базовые софт-скиллы и соответствие резюме.',
-    reward: 'Цель: 500 очков суммарно',
+   badge: 'Чат-интервью / Скрининг',
     thunks: {
       start: 'fetchStartHrScreener',
       send: 'fetchSendHrScreenerResponse',
@@ -186,7 +184,7 @@ export const WORKOUT_CONFIGS = {
     title: '🔥 Стресс-интервью с будущим боссом',
     description:
       'Жесткий разговор с руководителем отдела. ИИ начнет давить, цепляться к пробелам в резюме и детально расспрашивать про ваши факапы.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Работа под давлением / Стресс-тест',
     thunks: {
       start: 'fetchStartStressInterview',
       send: 'fetchSendStressResponse',
@@ -215,15 +213,12 @@ export const WORKOUT_CONFIGS = {
       },
     ],
   },
-  /* ==========================================================================
-     🥂 КУРС: Харизма нетворкинга: Свой в любой компании (party_charisma)
-     ========================================================================== */
   bar_small_talk: {
     id: 'bar_small_talk',
     title: '🍹 Разговор у барной стойки',
     description:
       'Растопите лед в общении с незнакомцем на неформальной вечеринке. Завяжите непринужденный разговор ни о чем и плавно найдите общие темы.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Неформальный Small Talk',
     thunks: {
       start: 'fetchStartBarSmallTalk',
       send: 'fetchSendBarSmallTalkResponse',
@@ -256,7 +251,7 @@ export const WORKOUT_CONFIGS = {
     title: '🥂 Закрытое афтерпати лидеров',
     description:
       'Вклиньтесь в закрытый круг топ-менеджеров или инфлюенсеров. Органично заявите о себе без душной экспертности и договоритесь о кофе.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Харизматичный нетворкинг',
     thunks: {
       start: 'fetchStartVipAfterparty',
       send: 'fetchSendVipAfterpartyResponse',
@@ -289,7 +284,7 @@ export const WORKOUT_CONFIGS = {
     title: '👵 Манипуляции близких: Пассивная агрессия',
     description:
       'Очертите жесткие личные границы в разговоре с токсичным родственником или соседом, не скатываясь в чувство вины.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Личные границы',
     thunks: {
       start: 'fetchStartToxicRelative',
       send: 'fetchSendToxicRelativeResponse',
@@ -321,7 +316,7 @@ export const WORKOUT_CONFIGS = {
     title: '🛑 Жесткое хамство «в поле»',
     description:
       'Примените техники психологического айкидо при столкновении с агрессивным хамом в МФЦ, на парковке или в сфере услуг.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Конфликтология',
     thunks: {
       start: 'fetchStartStreetRudeness',
       send: 'fetchSendStreetRudenessResponse',
@@ -349,7 +344,7 @@ export const WORKOUT_CONFIGS = {
     title: '🤬 Отражение троллинга из зала',
     description:
       'Харизматично перехватить инициативу и отбить каверзные или едкие выкрики скептиков во время вашего публичного вебинара.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Публичные выступления',
     thunks: {
       start: 'fetchStartTrollHandler',
       send: 'fetchSendTrollResponse',
@@ -365,11 +360,8 @@ export const WORKOUT_CONFIGS = {
       finishButtonLoadingText: 'Нейросеть сканирует вашу харизму...',
     },
     criteria: [
-      { key: 'trollHandler', label: 'Отражение хейта (Харизма)' },
-      {
-        key: 'timeLimit',
-        label: 'Перехват инициативы (Уверенность)',
-      },
+    { key: 'poiseAndCharisma', label: 'Отражение хейта' },
+      { key: 'initiativeTake', label: 'Уверенность' },
     ],
   },
   time_limit_pitch: {
@@ -377,9 +369,11 @@ export const WORKOUT_CONFIGS = {
     title: '⏳ Спич в условиях цейтнота',
     description:
       'Уверенно презентовать свой проект перед экспертным комитетом, который постоянно перебивает, и уложиться строго в лимит.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Питч в цейтноте',
     thunks: {
-      start: 'fetchStartTimeLimitPitch', send: 'fetchSendTimeLimitResponse', finish: 'fetchFinishTimeLimitPitch' 
+      start: 'fetchStartTimeLimitPitch',
+      send: 'fetchSendTimeLimitResponse',
+      finish: 'fetchFinishTimeLimitPitch',
     },
     ui: {
       sessionLabel: 'Защита проекта (Блиц-интервью)',
@@ -391,22 +385,21 @@ export const WORKOUT_CONFIGS = {
       finishButtonLoadingText: 'Анализ структуры спича нейросетью...',
     },
     criteria: [
-      { key: 'trollHandler', label: 'Логика изложения (Структура)' },
-      { key: 'timeLimit', label: 'Тайм-менеджмент (Цейтнот)' },
+      { key: 'speechLogic', label: 'Логика изложения' },
+      { key: 'timeManagement', label: 'Тайм-менеджмент' },
     ],
   },
-
-  /* ==========================================================================
-     🥂 КУРС 7: Король застолья: Искусство тостов (toast_master)
-     ========================================================================== */
   impromptu_toast: {
     id: 'impromptu_toast',
     title: '🎤 Внезапное слово на корпоративе',
     description:
       'За 15 секунд сориентироваться, когда ведущий праздника неожиданно передает вам микрофон перед всем руководством.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Речевой экспромт',
+
     thunks: {
-     start: 'fetchStartImpromptuToast', send: 'fetchSendImpromptuResponse', finish: 'fetchFinishImpromptuToast'
+      start: 'fetchStartImpromptuToast',
+      send: 'fetchSendImpromptuResponse',
+      finish: 'fetchFinishImpromptuToast',
     },
     ui: {
       sessionLabel: 'Корпоративное застолье (Экспромт)',
@@ -418,8 +411,8 @@ export const WORKOUT_CONFIGS = {
       finishButtonLoadingText: 'Нейросеть сканирует уровень юмора...',
     },
     criteria: [
-      { key: 'impromptu', label: 'Речевая мобилизация (Скорость)' },
-      { key: 'wedding', label: 'Уместность и юмор' },
+      { key: 'reactionSpeed', label: 'Речевая мобилизация' },
+      { key: 'corporateHumor', label: 'Уместность и корпоративный юмор' },
     ],
   },
   wedding_challenge: {
@@ -427,9 +420,11 @@ export const WORKOUT_CONFIGS = {
     title: '🍾 Свадебный тост / Юбилей',
     description:
       'Удержать внимание разношерстной, шумящей или отвлеченной аудитории, связав личную историю с виновником торжества.',
-    reward: 'Цель: 500 очков суммарно',
+    badge: 'Праздничный сторителлинг',
     thunks: {
-     start: 'fetchStartWeddingChallenge', send: 'fetchSendWeddingResponse', finish: 'fetchFinishWeddingChallenge'
+      start: 'fetchStartWeddingChallenge',
+      send: 'fetchSendWeddingResponse',
+      finish: 'fetchFinishWeddingChallenge',
     },
     ui: {
       sessionLabel: 'Праздничный банкет (Работа с залом)',
@@ -442,8 +437,8 @@ export const WORKOUT_CONFIGS = {
         'ИИ анализирует праздничный сторителлинг...',
     },
     criteria: [
-      { key: 'impromptu', label: 'Праздничный сторителлинг' },
-      { key: 'wedding', label: 'Удержание внимания толпы' },
+      { key: 'festiveStorytelling', label: 'Праздничный сторителлинг' },
+      { key: 'crowdEngagement', label: 'Удержание внимания толпы' },
     ],
   },
 }

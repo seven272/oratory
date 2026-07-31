@@ -7,6 +7,7 @@ const ExamIdle = ({
   attemptsCount,
   staticData,
   onStart,
+  onReviewTheory
 }) => {
   const maxAttempts = 5
   const hasNoAttempts = attemptsCount >= maxAttempts && !isCompleted
@@ -30,9 +31,12 @@ const ExamIdle = ({
         <span className={badgeClass}>{badgeText}</span>
       </div>
 
-      <h2 className={styles.title}>{staticData?.title || 'Итоговый аудио-экзамен'}</h2>
+      <h2 className={styles.title}>
+        {staticData?.taskTitle || 'Итоговый аудио-экзамен'}
+      </h2>
       <p className={styles.description}>
-         {staticData?.taskDescription || 'Запишите устный ответ на практический кейс длительностью от 60 до 120 секунд.'}
+        {staticData?.taskDescription ||
+          'Запишите устный ответ на практический кейс длительностью от 60 до 120 секунд.'}
       </p>
 
       {/* Современный блок метрик без лишних рамок */}
@@ -70,11 +74,19 @@ const ExamIdle = ({
             куратору для открытия дополнительного слота.
           </div>
         ) : (
-          <button className={styles.start_button} onClick={onStart}>
-            {attemptsCount > 0
-              ? `Начать попытку №${attemptsCount + 1}`
-              : 'Начать тестирование'}
-          </button>
+          <>
+            <button className={styles.start_button} onClick={onStart}>
+              {attemptsCount > 0
+                ? `Начать попытку №${attemptsCount + 1}`
+                : 'Начать тестирование'}
+            </button>
+            <button
+              className={styles.refresh_theory_btn}
+              onClick={onReviewTheory}
+            >
+              📖 Вспомнить теорию
+            </button>
+          </>
         )}
       </div>
     </div>

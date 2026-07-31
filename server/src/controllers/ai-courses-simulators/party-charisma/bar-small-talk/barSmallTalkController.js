@@ -7,9 +7,7 @@ import { parseAiResponse } from '../../../../utils/aiJsonParser.js'
 import { transcribeShortAudio } from '../../../../utils/speechService.js'
 import { getBarSmallTalkDialogPrompt, BAR_SMALL_TALK_EVALUATION_PROMPT } from './barSmallTalkPrompt.js'
 
-/**
- * 1. СТАРТ ТРЕНАЖЕРА (Инициализация Small Talk)
- */
+
 const startBarSmallTalkTrainer = async (req, res) => {
   try {
     const userId = req.userId
@@ -52,9 +50,6 @@ const startBarSmallTalkTrainer = async (req, res) => {
   }
 }
 
-/**
- * 2. ХОД СЕССИИ (Прием аудио, транскрипция, ответ барного собеседника)
- */
 const generateBarSmallTalkResponse = async (req, res) => {
   try {
     const userId = req.userId
@@ -93,7 +88,7 @@ const generateBarSmallTalkResponse = async (req, res) => {
     }
 
     const attemptsCount = session.messages.filter((m) => m.role === 'user').length
-    const isSessionFinished = attemptsCount >= 2 // Завершение диалога на 3-й раз (0, 1, 2)
+    const isSessionFinished = attemptsCount >= 3 // Завершение диалога на 4-й раз (0, 1, 2)
 
     // Обработка тишины
     if (!userMessage || !userMessage.trim()) {
@@ -148,9 +143,6 @@ const generateBarSmallTalkResponse = async (req, res) => {
   }
 }
 
-/**
- * 3. ЗАВЕРШЕНИЕ СЕССИИ (ИИ-оценка качества Small Talk)
- */
 const finishBarSmallTalkTrainer = async (req, res) => {
   try {
     const userId = req.userId
@@ -228,7 +220,16 @@ const finishBarSmallTalkTrainer = async (req, res) => {
     const globalRequiredScore = aiBlockConfig?.aiWorkoutConfig?.requiredScore || 1000
 
     progress.blocksProgress.aiWorkout.sessionsCount += 1
-    progress.blocksProgress.aiWorkout.accumulatedScore += evaluation.totalScore
+     // 🔥 ФЛАГ ДЛЯ ФРОНТЕНДА: пошли ли баллы в зачёт общего прогресса блока
+    let isScoreCounted = false
+
+    if (evaluation.totalScore >= 65) {
+      // Плюсуем баллы к накопительной системе только если попытка качественная
+      progress.blocksProgress.aiWorkout.accumulatedScore +=
+        evaluation.totalScore
+      isScoreCounted = true
+    }
+
 
     if (progress.blocksProgress.aiWorkout.accumulatedScore >= globalRequiredScore) {
       progress.blocksProgress.aiWorkout.isCompleted = true
@@ -250,6 +251,7 @@ const finishBarSmallTalkTrainer = async (req, res) => {
         totalScore: evaluation.totalScore,
         feedback: evaluation.feedback,
         criteria: evaluation.criteria,
+        isScoreCounted
       },
     })
   } catch (error) {

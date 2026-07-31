@@ -23,7 +23,7 @@
 }
 
 .title {
-  font: var(--font-xl);
+  font: var(--font-l);
   color: var(--color-black);
   margin: 0 0 14px 0;
 }
