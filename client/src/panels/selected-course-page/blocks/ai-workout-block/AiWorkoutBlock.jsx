@@ -26,6 +26,8 @@ import { TROLL_HANDLER_SCENARIOS } from '../../../../assets/data/courses/scenari
 import { TIME_LIMIT_PITCH_SCENARIOS } from '../../../../assets/data/courses/scenarios/timeLimitPitchScenarios'
 import { IMPROMPTU_TOAST_SCENARIOS } from '../../../../assets/data/courses/scenarios/impromptuToastScenarios'
 import { WEDDING_CHALLENGE_SCENARIOS } from '../../../../assets/data/courses/scenarios/weddingChallengeScenarios'
+import { HERO_JOURNEY_SCENARIOS } from '../../../../assets/data/courses/scenarios/heroJourneyScenarios'
+import { FIASCO_TURN_SCENARIOS } from '../../../../assets/data/courses/scenarios/fiascoTurnScenarios'
 
 import {
   WORKOUT_CONFIGS,
@@ -49,6 +51,8 @@ const SCENARIOS_MAP = {
   time_limit_pitch: TIME_LIMIT_PITCH_SCENARIOS,
   impromptu_toast: IMPROMPTU_TOAST_SCENARIOS,
   wedding_challenge: WEDDING_CHALLENGE_SCENARIOS,
+  hero_journey: HERO_JOURNEY_SCENARIOS,
+  fiasco_turn: FIASCO_TURN_SCENARIOS,
 }
 
 const AiWorkoutBlock = ({ courseCode }) => {

@@ -86,6 +86,18 @@ import {
   finishWeddingChallengeTrainer,
 } from '../controllers/ai-courses-simulators/toast-master/wedding-challenge/weddingChallengeController.js'
 
+import {
+  startHeroJourneyTrainer,
+  generateHeroJourneyResponse,
+  finishHeroJourneyTrainer,
+} from '../controllers/ai-courses-simulators/story-master/hero-journey/heroJourneyController.js'
+
+import {
+  startFiascoTurnTrainer,
+  generateFiascoTurnResponse,
+  finishFiascoTurnTrainer,
+} from '../controllers/ai-courses-simulators/story-master/fiasco-turn/fiascoTurnController.js'
+
 const aiCourseSimulatorRouter = express.Router()
 
 // Настройка multer для аудио
@@ -115,7 +127,7 @@ aiCourseSimulatorRouter.post(
   checkAuth,
   finishPitchTrainer,
 )
-
+ 
 // тренажер Обработка возвражений
 aiCourseSimulatorRouter.post(
   '/pitch-master/objection/start',
@@ -368,6 +380,41 @@ aiCourseSimulatorRouter.post(
   '/toast-master/wedding-challenge/finish',
   checkAuth,
   finishWeddingChallengeTrainer,
+)
+// --- ТРЕНАЖЕР  Путь героя (hero_journey) ---
+aiCourseSimulatorRouter.post(
+  '/story-master/hero-journey/start',
+  checkAuth,
+  startHeroJourneyTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/story-master/hero-journey/respond',
+  checkAuth,
+  upload.single('file'), // Перехват аудиозаписи от фронтенда через thunk-ключ 'file'
+  generateHeroJourneyResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/story-master/hero-journey/finish',
+  checkAuth,
+  finishHeroJourneyTrainer,
+)
+
+// --- ТРЕНАЖЕР  Из провала в триумф (fiasco_turn) ---
+aiCourseSimulatorRouter.post(
+  '/story-master/fiasco-turn/start',
+  checkAuth,
+  startFiascoTurnTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/story-master/fiasco-turn/respond',
+  checkAuth,
+  upload.single('file'), 
+  generateFiascoTurnResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/story-master/fiasco-turn/finish',
+  checkAuth,
+  finishFiascoTurnTrainer,
 )
 
 export default aiCourseSimulatorRouter

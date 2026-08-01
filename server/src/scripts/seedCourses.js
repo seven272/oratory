@@ -331,6 +331,53 @@ const COURSES_TO_SEED = [
       achievementCode: 'course_master',
     },
   },
+  {
+    courseCode: 'story_master',
+    title: 'Магия истории: искусство увлекательного рассказа',
+    description:
+      'Практический курс по созданию сильных историй для выступлений, рабочих задач и повседневной жизни. Изучите законы драматургии для удержания внимания.',
+    blocks: [
+      {
+        blockType: 'theory',
+        title: '📖 Блок 1: Архитектура сильного повествования',
+        theoryConfig: {
+          quiz: {
+            // Соответствует второму варианту в созданном нами QUIZ_STORY_MASTER (индекс 1)
+            correctAnswerIndex: 1,
+          },
+        },
+      },
+      {
+        blockType: 'ai_workout',
+        title: '🤖 Блок 2: Речевой полигон историй',
+        aiWorkoutConfig: {
+          // Идентификаторы двух созданных нами тренажеров для связи с фронтендом
+          workoutConfigIds: ['hero_journey', 'fiasco_turn'],
+          requiredScore: 1000,
+        },
+      },
+      {
+        blockType: 'irl_challenge',
+        title: '🎯 Блок 3: Живой рассказ на публике',
+        irlChallengeConfig: {
+          description:
+            'Применить изученную четырехшаговую формулу живого повествования во время реального общения с коллегами, друзьями или в видеосообщении.',
+        },
+      },
+      {
+        blockType: 'exam',
+        title: '🎓 Блок 4: Финальный экзамен «Вдохновляющая речь»',
+        examConfig: {
+          minScoreToPass: 85,
+        },
+      },
+    ],
+    rewards: {
+      xp: 1000,
+      coins: 100,
+      achievementCode: 'course_master',
+    },
+  },
 ]
 
 // Функция подключения к БД и массового сохранения курсов

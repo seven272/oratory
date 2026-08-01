@@ -14,6 +14,8 @@ import * as trollHandlerThunks from '../../../../redux/slices/ai-courses-thunks/
 import * as timeLimitPitchThunks from '../../../../redux/slices/ai-courses-thunks/timeLimitPitchThunks'
 import * as impromptuToastThunks from '../../../../redux/slices/ai-courses-thunks/impromptuToastThunks'
 import * as weddingChallengeThunks from '../../../../redux/slices/ai-courses-thunks/weddingChallengeThunks'
+import * as heroJourneyThunks from '../../../../redux/slices/ai-courses-thunks/heroJourneyThunks'
+import * as fiascoTurnThunks from '../../../../redux/slices/ai-courses-thunks/fiascoTurnThunks'
 
 // Собираем все санки в единый объект для динамического вызова по ключу
 export const ALL_WORKOUT_THUNKS = {
@@ -31,6 +33,8 @@ export const ALL_WORKOUT_THUNKS = {
   ...timeLimitPitchThunks,
   ...impromptuToastThunks,
   ...weddingChallengeThunks,
+  ...heroJourneyThunks,
+  ...fiascoTurnThunks,
 }
 
 export const WORKOUT_CONFIGS = {
@@ -153,7 +157,7 @@ export const WORKOUT_CONFIGS = {
     title: '📞 Первичный HR-скрининг: Чат-интервью',
     description:
       'Симуляция первого созвона с рекрутером. ИИ будет проверять вашу адекватность, базовые софт-скиллы и соответствие резюме.',
-   badge: 'Чат-интервью / Скрининг',
+    badge: 'Чат-интервью / Скрининг',
     thunks: {
       start: 'fetchStartHrScreener',
       send: 'fetchSendHrScreenerResponse',
@@ -360,7 +364,7 @@ export const WORKOUT_CONFIGS = {
       finishButtonLoadingText: 'Нейросеть сканирует вашу харизму...',
     },
     criteria: [
-    { key: 'poiseAndCharisma', label: 'Отражение хейта' },
+      { key: 'poiseAndCharisma', label: 'Отражение хейта' },
       { key: 'initiativeTake', label: 'Уверенность' },
     ],
   },
@@ -412,7 +416,10 @@ export const WORKOUT_CONFIGS = {
     },
     criteria: [
       { key: 'reactionSpeed', label: 'Речевая мобилизация' },
-      { key: 'corporateHumor', label: 'Уместность и корпоративный юмор' },
+      {
+        key: 'corporateHumor',
+        label: 'Уместность и корпоративный юмор',
+      },
     ],
   },
   wedding_challenge: {
@@ -437,8 +444,76 @@ export const WORKOUT_CONFIGS = {
         'ИИ анализирует праздничный сторителлинг...',
     },
     criteria: [
-      { key: 'festiveStorytelling', label: 'Праздничный сторителлинг' },
+      {
+        key: 'festiveStorytelling',
+        label: 'Праздничный сторителлинг',
+      },
       { key: 'crowdEngagement', label: 'Удержание внимания толпы' },
+    ],
+  },
+  hero_journey: {
+    id: 'hero_journey',
+    title: '🏹 Путь героя: презентация идеи',
+    description:
+      'Упакуйте свой опыт в классическую структуру повествования, чтобы вдохновить руководство или партнеров.',
+    badge: 'Драматургия',
+    thunks: {
+      start: 'fetchStartHeroJourney',
+      send: 'fetchSendHeroJourneyResponse',
+      finish: 'fetchFinishHeroJourney',
+    },
+    ui: {
+      sessionLabel: 'Презентация через историю (Влияние)',
+      aiRoleName: 'Слушатель / Партнер',
+      thinkingText:
+        '⏳ Собеседник мысленно примеряет вашу историю на себя...',
+      finishText:
+        '🗣️ Рассказ завершен. Руководство оценивает логику и вдохновляющий потенциал вашей истории.',
+      finishButtonText: 'Посмотреть разбор структуры',
+      finishButtonLoadingText:
+        'Нейросеть сканирует законы драматургии...',
+    },
+    criteria: [
+      {
+        key: 'dramaturgyStructure',
+        label: 'Структура повествования (Динамика)',
+      },
+      {
+        key: 'emotionalHook',
+        label: 'Смысловой крючок (Удержание внимания)',
+      },
+    ],
+  },
+  fiasco_turn: {
+    id: 'fiasco_turn',
+    title: '💎 Из провала в триумф',
+    description:
+      'Расскажите о своей самой жесткой ошибке так, чтобы вызвать уважение и доказать свою зрелость.',
+    badge: 'Управление уязвимостью',
+    thunks: {
+      start: 'fetchStartFiascoTurn',
+      send: 'fetchSendFiascoTurnResponse',
+      finish: 'fetchFinishFiascoTurn',
+    },
+    ui: {
+      sessionLabel: 'Исповедь лидера (Завоевание доверия)',
+      aiRoleName: 'Недоверчивый инвестор',
+      thinkingText: '⏳ Инвестор ищет фальшь в ваших словах...',
+      finishText:
+        '🗣️ Диалог окончен. Слушатель принимает решение, можно ли иметь с вами дело после таких кризисов.',
+      finishButtonText: 'Посмотреть анализ искренности',
+      finishButtonLoadingText:
+        'ИИ измеряет уровень психологической зрелости...',
+    },
+    criteria: [
+      {
+        key: 'vulnerabilityBalance',
+        label: 'Уровень искренности (Без самобичевания)',
+      },
+      {
+        key: 'lessonExtracted',
+        label: 'Выводы из кризиса (Трансформация в плюс)',
+      },
     ],
   },
 }

@@ -8,15 +8,14 @@ import buildHrScreenerCases from './ai-courses-reducers/hrScreenerReducer.js'
 import buildStressInterviewCases from './ai-courses-reducers/stressInterviewReducer.js'
 import buildBarSmallTalkCases from './ai-courses-reducers/barSmallTalkReducer.js'
 import buildVipAfterpartyCases from './ai-courses-reducers/vipAfterpartyReducer.js'
-// Импорты редюсеров Курса 5
 import buildToxicRelativeCases from './ai-courses-reducers/toxicRelativeReducer.js'
 import buildStreetRudenessCases from './ai-courses-reducers/streetRudenessReducer.js'
-// Импорты редюсеров Курса 6
 import buildTrollHandlerCases from './ai-courses-reducers/trollHandlerReducer.js'
 import buildTimeLimitPitchCases from './ai-courses-reducers/timeLimitPitchReducer.js'
-// Импорты редюсеров Курса 7
 import buildImpromptuToastCases from './ai-courses-reducers/impromptuToastReducer.js'
 import buildWeddingChallengeCases from './ai-courses-reducers/weddingChallengeReducer.js'
+import buildHeroJourneyCases from './ai-courses-reducers/heroJourneReducer.js'
+import buildFiascoTurnCases from './ai-courses-reducers/fiascoTurnReducer.js'
 
 // 1. Инициализация прогресса по курсу
 const fetchCourseProgress = createAsyncThunk(
@@ -397,15 +396,14 @@ const courseSlice = createSlice({
     buildStressInterviewCases(builder)
     buildBarSmallTalkCases(builder)
     buildVipAfterpartyCases(builder)
-
     buildToxicRelativeCases(builder)
     buildStreetRudenessCases(builder)
-
     buildTrollHandlerCases(builder)
     buildTimeLimitPitchCases(builder)
-
     buildImpromptuToastCases(builder)
     buildWeddingChallengeCases(builder)
+    buildHeroJourneyCases(builder)
+    buildFiascoTurnCases(builder)
   },
 })
 
