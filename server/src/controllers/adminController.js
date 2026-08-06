@@ -1,4 +1,5 @@
 import User from '../models/User.js'
+import UserCourseProgress from '../models/UserCourseProgress.js'
 
 const getStatistics = async (req, res) => {
   try {
@@ -89,6 +90,61 @@ const getStatistics = async (req, res) => {
       purchase_count: item.purchase_count,
     }))
 
+    // А) Глобальная сводка по всем курсам приложения
+    const global_courses_aggregation =
+      await UserCourseProgress.aggregate([
+        {
+          $group: {
+            _id: null,
+            total_purchased: { $sum: 1 }, // Общее количество начатых/купленных курсов
+            total_completed: {
+              $sum: {
+                $cond: [{ $eq: ['$status', 'completed'] }, 1, 0],
+              },
+            },
+            total_failed: {
+              $sum: { $cond: [{ $eq: ['$status', 'failed'] }, 1, 0] },
+            },
+          },
+        },
+      ])
+
+    const courses_summary = global_courses_aggregation[0] || {
+      total_purchased: 0,
+      total_completed: 0,
+      total_failed: 0,
+    }
+
+    // Б) Покурсовая детализация (группировка по courseCode)
+    const courses_items_analytics =
+      await UserCourseProgress.aggregate([
+        {
+          $group: {
+            _id: '$courseCode',
+            purchased: { $sum: 1 }, // Сколько раз курс был открыт
+            completed: {
+              $sum: {
+                $cond: [{ $eq: ['$status', 'completed'] }, 1, 0],
+              },
+            },
+            failed: {
+              $sum: { $cond: [{ $eq: ['$status', 'failed'] }, 1, 0] },
+            },
+          },
+        },
+        { $sort: { purchased: -1 } }, // Сортируем от самых популярных курсов к менее популярным
+      ])
+
+    // Форматируем вывод по каждому курсу для фронтенда
+    const formatted_courses_items = courses_items_analytics.map(
+      (item) => ({
+        courseCode: item._id,
+        purchased: item.purchased,
+        completed: item.completed,
+        failed: item.failed,
+      }),
+    )
+
     // 6. Отправка ответа на фронтенд
     res.status(200).json({
       success: true,
@@ -104,6 +160,10 @@ const getStatistics = async (req, res) => {
         },
         exercises_analytics,
         top_purchases: formatted_purchases,
+        courses_analytics: {
+          summary: courses_summary,
+          items: formatted_courses_items,
+        },
       },
     })
   } catch (error) {
@@ -292,5 +352,5 @@ export {
   togglePremiumUser,
   deleteUser,
   getMerchOrders,
-  toggleStatusMerch
+  toggleStatusMerch,
 }

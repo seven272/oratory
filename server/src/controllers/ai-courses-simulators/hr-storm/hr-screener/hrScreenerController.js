@@ -5,7 +5,7 @@ import { parseAiResponse } from '../../../../utils/aiJsonParser.js'
 import { transcribeShortAudio } from '../../../../utils/speechService.js'
 import {
   getHrScreenerDialogPrompt,
-  HR_SCREENER_EVALUATION_PROMPT,
+  HR_SCREENER_EVALUATION_PROMPT, 
 } from './hrScreenerPrompt.js'
 
 const startHrScreenerTrainer = async (req, res) => {

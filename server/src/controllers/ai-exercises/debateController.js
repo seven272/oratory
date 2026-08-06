@@ -3,7 +3,7 @@ import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
 import { parseAiResponse } from '../../utils/aiJsonParser.js'
-import { transcribeShortAudio } from '../../utils/salutSpeechAxiosClient.js'
+import { transcribeShortAudio } from '../../utils/speechService.js'
 
 const startDebate = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ const startDebate = async (req, res) => {
     const { exerciseData } = req.body
 
     //  Формируем приветсвенное сообщение от ИИ
-    let answer = `Тема "${exerciseData.topic}". Ваша позиция "${exerciseData.position}". Отлично. Я буду вашим оппонентом. \Жду ваших аргументов.`
+    let answer = `Тема "${exerciseData.topic}". Ваша позиция "${exerciseData.position}". Отлично. Я буду вашим оппонентом. \nЖду ваших аргументов.`
 
     // Создаем сессию в БД
     await AiExercise.create({

@@ -9,7 +9,7 @@ import DailyChallengesBlock from './daily-challenges-block/DailyChallengesBlock'
 import ExerciseCatalogBlock from './exercise-catalog-block/ExerciseCatalogBlock'
 import LeaderboardShortBlock from './leaderboard-short-block/LeaderboardShortBlock'
 import ActivityBlock from './activity-block/ActivityBlock'
-
+import CoursesBannerBlock from './courses-banner-block/CoursesBannerBlock'
 const MainPage = ({ id }) => {
   return (
     <Panel id={id}>
@@ -28,10 +28,13 @@ const MainPage = ({ id }) => {
         <div className={styles.border}></div>
         <ExerciseCatalogBlock />
         <div className={styles.border}></div>
+        <CoursesBannerBlock />
+        <div className={styles.border}></div>
         <ActivityBlock />
         <div className={styles.border}></div>
         <LeaderboardShortBlock />
         <div className={styles.border}></div>
+        
       </div>
       <Footer />
     </Panel>

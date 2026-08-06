@@ -3,7 +3,7 @@ import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
 import { parseAiResponse } from '../../utils/aiJsonParser.js'
-import { transcribeShortAudio } from '../../utils/salutSpeechAxiosClient.js'
+import { transcribeShortAudio } from '../../utils/speechService.js'
 
 // 1. СТАРТ УПРАЖНЕНИЯ
 const startBargain = async (req, res) => {

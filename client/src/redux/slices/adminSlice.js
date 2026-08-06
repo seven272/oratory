@@ -14,7 +14,7 @@ const fetchAdminAnalytics = createAsyncThunk(
         error.res?.data?.message || 'Не удалось загрузить аналитику',
       )
     }
-  },
+  }, 
 )
 
 const fetchAdminUsers = createAsyncThunk(

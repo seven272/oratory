@@ -27,7 +27,7 @@ const BLOCK_DESCRIPTIONS = {
     title: '🎓 Блок 5: Финальный экзамен',
     content: 'Итоговая проверка навыков. Вы записываете связный голосовой монолог на 60–120 секунд. Робот-экзаменатор строго оценивает логику, подачу и структуру спича. Проходной балл — 85.',
   },
-}
+} 
 
 const CourseSelection = () => {
   const routeNavigator = useRouteNavigator()
@@ -90,7 +90,14 @@ const CourseSelection = () => {
             >
               <div className={styles.card_header}>
                 <span className={styles.course_tag}>{course.tag}</span>
-                <span className={styles.course_icon_avatar}>{course.icon || '🎯'}</span>
+                 <div className={styles.course_icon_container}>
+                  <img 
+                    src={course.icon} 
+                    alt={`Иконка интенсива ${course.title}`} 
+                    className={styles.course_png_image} 
+                  />
+                </div>
+              
               </div>
               
               <h3 className={styles.course_title}>{course.title}</h3>

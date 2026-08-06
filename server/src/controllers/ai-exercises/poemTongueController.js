@@ -3,7 +3,7 @@ import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
 import { parseAiResponse } from '../../utils/aiJsonParser.js'
-import { transcribeLongAudio } from '../../utils/salutSpeechAxiosClient.js'
+import { transcribeLongAudio } from '../../utils/speechService.js'
 
 // 1. Старт упражнения «Тяжелая дикция»
 const startPoemTongue = async (req, res) => {

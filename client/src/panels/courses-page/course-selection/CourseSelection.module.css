@@ -108,7 +108,9 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .course_card:hover {
@@ -144,15 +146,39 @@
   border-radius: 20px;
 }
 
-.course_icon_avatar {
-  font-size: 20px;
-  background-color: var(--color-bg);
-  width: 32px;
-  height: 32px;
+.course_icon_container {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    var(--color-light-blue)
+  );
+
+  /* Контурная рамка в тон приложения, сочетающаяся с экраном not_started */
+  border: 2px solid var(--color-secondary);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  /* Мягкий объем */
+  box-shadow:
+    0 4px 10px rgba(0, 122, 255, 0.04),
+    inset 0 0 6px rgba(0, 122, 255, 0.02);
+}
+
+/* Сама PNG картинка от ИИ внутри контейнера */
+.course_png_image {
+  width: 32px; /* Оставляем красивый внутренний "воздух", чтобы картинка не липла к краям */
+  height: 32px;
+  object-fit: contain;
+
+  /* Легкий 3D эффект глубины */
+  filter: drop-shadow(0 3px 6px rgba(0, 122, 255, 0.12));
 }
 
 .course_title {

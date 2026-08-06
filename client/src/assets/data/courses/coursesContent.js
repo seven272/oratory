@@ -22,6 +22,15 @@ import { QUIZ_TOAST_MASTER } from './toast-master/quiz.js'
 import { SLIDES_STORY_MASTER } from './story-master/slides.jsx'
 import { QUIZ_STORY_MASTER } from './story-master/quiz.js'
 
+import imgCourse1 from '../../images/courses/course1.png'
+import imgCourse2 from '../../images/courses/course2.png'
+import imgCourse3 from '../../images/courses/course3.png'
+import imgCourse4 from '../../images/courses/course4.png'
+import imgCourse5 from '../../images/courses/course5.png'
+import imgCourse6 from '../../images/courses/course6.png'
+import imgCourse7 from '../../images/courses/course7.png'
+import imgCourse8 from '../../images/courses/course8.png'
+
 const COURSES_STATIC_CONTENT = {
   pitch_master: {
     code: 'pitch_master',
@@ -30,7 +39,7 @@ const COURSES_STATIC_CONTENT = {
       'Освойте жесткую аргументацию, избавьтесь от воды в речи и научитесь продавать свои идеи инвесторам за 3 минуты.',
     tag: 'Техника речи',
     reward: '1000 XP',
-    icon: '💰',
+    icon: imgCourse1,
     theory: {
       title: 'Теория идеального питча',
       slides: SLIDES_PITCH_MASTER,
@@ -73,12 +82,12 @@ const COURSES_STATIC_CONTENT = {
   },
   self_pitch_pro: {
     code: 'self_pitch_pro',
-    title: 'Личный бренд: Самопрезентация на миллион',
+    title: 'Личный бренд: самопрезентация на миллион',
     description:
       'Практикум по созданию сильного экспертного образа. Научитесь за 90 секунд доносить свою ценность до VIP-клиентов и партнеров без хвастовства и синдрома самозванца.',
     tag: 'Влияние',
     reward: '1000 XP',
-    icon: '👑',
+    icon: imgCourse2,
     theory: {
       title: 'Формула идеального личного питча',
       slides: SLIDES_SELF_PITCH_PRO,
@@ -116,12 +125,12 @@ const COURSES_STATIC_CONTENT = {
   },
   hr_storm: {
     code: 'hr_storm',
-    title: 'HR-Штурм: Искусство собеседований',
+    title: 'HR-штурм: искусство собеседований',
     description:
       'Пошаговый интенсив по прохождению интервью. Избавитесь от страха перед рекрутерами, научитесь отвечать на неудобные вопросы и продавать свой опыт на 30% дороже рынка.',
     tag: 'Карьера',
     reward: '1000 XP',
-    icon: '💼',
+    icon: imgCourse3,
     theory: {
       title: 'Теория успешного интервью',
       slides: SLIDES_HR_STORM,
@@ -159,12 +168,12 @@ const COURSES_STATIC_CONTENT = {
   },
   party_charisma: {
     code: 'party_charisma',
-    title: 'Харизма нетворкинга: Свой в любой компании',
+    title: 'Харизма нетворкинга: свой в любой компании',
     description:
       'Практическое руководство по непринужденному общению. Избавитесь от страха подходить к незнакомцам, освоите искусство Small Talk и научитесь заводить полезные контакты на вечеринках, выставках и неформальных мероприятиях.',
     tag: 'Связи',
     reward: '1000 XP',
-    icon: '🥂',
+    icon: imgCourse4,
     theory: {
       title: 'Психология легкого общения',
       slides: SLIDES_PARTY_CHARISMA,
@@ -207,7 +216,7 @@ const COURSES_STATIC_CONTENT = {
       'Интенсив по хладнокровному отражению словесных атак. Научитесь мгновенно группироваться, ломать сценарии хамов, уверенно выставлять личные границы и отбивать пассивную агрессию как на работе, так и в повседневной жизни.',
     tag: 'Защита',
     reward: '1000 XP',
-    icon: '🛡️',
+    icon: imgCourse5,
     theory: {
       title: 'Психология самообороны в диалоге',
       slides: SLIDES_SOCIAL_SHIELD,
@@ -251,7 +260,7 @@ const COURSES_STATIC_CONTENT = {
       'Полноценный тренинг по публичным выступлениям и работе на камеру. Избавитесь от страха сцены, научитесь удерживать внимание любой аудитории, говорить убедительно, управлять голосом и харизматично отбивать троллинг.',
     tag: 'Спикер',
     reward: '1000 XP',
-    icon: '🎥',
+    icon: imgCourse6,
     theory: {
       title: '📖 Блок 1: Законы удержания аудитории',
       slides: SLIDES_MEDIA_SPEAKER,
@@ -294,9 +303,9 @@ const COURSES_STATIC_CONTENT = {
       'Практикум по праздничной импровизации. Навсегда избавитесь от ступора при передаче микрофона, научитесь уходить от банальных клише и на ходу конструировать трогательные, остроумные и запоминающиеся тосты.',
     tag: 'Харизма',
     reward: '1000 XP',
-    icon: '🎤',
+    icon: imgCourse7,
     theory: {
-      title: '📖 Блок 1: Конструктор идеального тоста',
+      title: 'Конструктор идеального тоста',
       slides: SLIDES_TOAST_MASTER,
       quiz: QUIZ_TOAST_MASTER,
     },
@@ -337,7 +346,8 @@ const COURSES_STATIC_CONTENT = {
       'Практический курс по созданию сильных историй для бизнеса, выступлений и жизни. Научитесь собирать сценарии своих воспоминаний, управлять вниманием слушателей через драматургию и продавать идеи без прямых продаж.',
     tag: 'Лидерство',
     reward: '1000 XP',
-    icon: '📖',
+    // icon: '📖',
+    icon: imgCourse8,
     theory: {
       title: 'Архитектура сильного повествования',
       slides: SLIDES_STORY_MASTER,
@@ -370,7 +380,7 @@ const COURSES_STATIC_CONTENT = {
       title: 'Финальный экзамен (Голосовая притча)',
       taskTitle: 'Задание: Выступление перед скептиками',
       taskDescription:
-        'Представьте ситуацию: вы выступаете на конференции перед холодной и уставшей аудиторией. Вам нужно зажечь их. Включите микрофон и запишите вдохновляющий монолог-историю длительностью от 60 до 120 секунд. Робот-экзаменатор на бэкенде будет строго оценивать контраст между началом и кульминацией вашей истории, эмоциональное напряжение, отсутствие занудных описаний и яркость финального вывода. Минимальный проходной балл — 85.',
+        'Представьте ситуацию: вы выступаете на конференции перед холодной и уставшей аудиторией. Вам нужно зажечь их. Включите микрофон и запишите вдохновляющий монолог-историю длительностью от 60 до 120 секунд. Робот-экзаменатор будет строго оценивать контраст между началом и кульминацией вашей истории, эмоциональное напряжение, отсутствие занудных описаний и яркость финального вывода. Минимальный проходной балл — 85.',
     },
   },
 }

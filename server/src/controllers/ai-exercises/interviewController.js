@@ -3,7 +3,7 @@ import AiExercise from '../../models/AiExercise.js'
 import User from '../../models/User.js'
 import { applyAiGamificationProgress } from '../../utils/fnForControllers.js'
 import { parseAiResponse } from '../../utils/aiJsonParser.js'
-import { transcribeShortAudio } from '../../utils/salutSpeechAxiosClient.js'
+import { transcribeShortAudio } from '../../utils/speechService.js'
 
 const startInterview = async (req, res) => {
   try {
@@ -11,7 +11,7 @@ const startInterview = async (req, res) => {
     const { exerciseData } = req.body
 
     // Формируем приветсвенное сообщение от ИИ и первый вопрос
-    const preview = `Я выступаю в роли ведущего. Тема нашего интервью "${exerciseData.topic}". Ваша роль "${exerciseData.role}". ${exerciseData.context} \И мой первый вопрос...`
+    const preview = `Я выступаю в роли ведущего. Тема нашего интервью "${exerciseData.topic}". Ваша роль "${exerciseData.role}". ${exerciseData.context} \n И мой первый вопрос...`
 
     const question = `${exerciseData.firstQuestion}`
 

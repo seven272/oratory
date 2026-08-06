@@ -4,6 +4,8 @@ import {
   useParams,
   useRouteNavigator,
 } from '@vkontakte/vk-mini-apps-router'
+import { IoCompassOutline } from 'react-icons/io5'
+
 import {
   fetchCourseProgress,
   fetchStartCourse,
@@ -50,14 +52,34 @@ const CourseTimeline = () => {
   }
 
   // Защита на случай, если ввели несуществующий в конфиге courseCode
-  if (!courseContent) {
-    return (
-      <div className={styles.error_alert}>
-        Контент курса не найден
+// Обновленная защита на случай, если курс не выбран или код неверный
+if (!courseContent) {
+  return (
+    <div className={styles.empty_course_wrapper}>
+      {/* Крупный визуальный якорь с иконкой компаса */}
+      <div className={styles.empty_icon_container}>
+        <IoCompassOutline 
+          size="100%" 
+          color="var(--color-primary)" 
+        />
       </div>
-    )
-  }
 
+      <h1 className={styles.empty_title}>Курс не выбран</h1>
+      <p className={styles.empty_description}>
+        Похоже, вы не выбрали интенсив или указали неверный адрес. 
+        Вернитесь в Академию речи, чтобы начать прокачивать ораторское мастерство!
+      </p>
+
+      {/* Кнопка мгновенного возврата в каталог */}
+      <button
+        className={styles.primary_button}
+        onClick={() => routeNavigator.push('/courses')} // Перенаправляем на выбор курсов
+      >
+        Открыть каталог интенсивов
+      </button>
+    </div>
+  )
+}
   if (courseStatus === 'loading') {
     return (
       <div className={styles.loader_container}>
@@ -67,29 +89,38 @@ const CourseTimeline = () => {
   }
 
   // Сценарий 1: Приветственный экран
-  if (status === 'not_started') {
-    return (
-      <div className={styles.welcome_wrapper}>
-        <h1 className={styles.course_title}>{courseContent.title}</h1>
-        <p className={styles.course_description}>
-          {courseContent.description}
-        </p>
-        <button
-          className={styles.primary_button}
-          onClick={() => dispatch(fetchStartCourse(courseCode))}
-        >
-          Начать обучение
-        </button>
-        <button
-          className={styles.secondary_back_button}
-          onClick={handleGoBack}
-        >
-          Назад к выбору курсов
-        </button>
+ if (status === 'not_started') {
+  return (
+    <div className={styles.welcome_wrapper}>
+      {/* Крупный визуальный якорь курса на цветной подложке */}
+      <div className={styles.welcome_icon_container}>
+        <img 
+          src={courseContent.icon || '🎯'} 
+          alt={courseContent.title} 
+          className={styles.welcome_ai_image} 
+        />
       </div>
-    )
-  }
 
+      <h1 className={styles.course_title}>{courseContent.title}</h1>
+      <p className={styles.course_description}>
+        {courseContent.description}
+      </p>
+      
+      <button
+        className={styles.primary_button}
+        onClick={() => dispatch(fetchStartCourse(courseCode))}
+      >
+        Начать обучение
+      </button>
+      <button
+        className={styles.secondary_back_button}
+        onClick={handleGoBack}
+      >
+        Назад к выбору курсов
+      </button>
+    </div>
+  )
+}
   // Сценарий 2: Активный курс
   return (
     <div className={styles.timeline_container}>
