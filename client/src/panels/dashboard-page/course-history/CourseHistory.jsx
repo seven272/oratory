@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import {
   FaHistory,
   FaChevronDown,
@@ -12,7 +12,7 @@ import CourseHistorySummary from './course-history-summary/CourseHistorySummary'
 import styles from './CourseHistory.module.css'
 
 const CourseHistory = ({ historyList }) => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const [showList, setShowList] = useState(false)
 
   // 1. Отработка пустого состояния с редиректом через VK Router
@@ -29,7 +29,7 @@ const CourseHistory = ({ historyList }) => {
           </p>
           <button
             className={styles.route_btn}
-            onClick={() => routeNavigator.push('/courses')}
+            onClick={() => navigate('/courses')}
           >
             Перейти к курсам
             <FaArrowRight size={18} />

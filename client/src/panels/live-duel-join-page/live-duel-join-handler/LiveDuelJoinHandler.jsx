@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  useParams,
-  useRouteNavigator,
-} from '@vkontakte/vk-mini-apps-router'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   fetchCheckInviteToken,
   fetchJoinLiveRoom,
@@ -12,12 +9,11 @@ import styles from './LiveDuelJoinHandler.module.css' // Импорт стиле
 
 const LiveDuelJoinHandler = () => {
   const dispatch = useDispatch()
-  const routeNavigator = useRouteNavigator()
-
+  const navigate = useNavigate()
   const params = useParams()
   const token = params?.token
 
-  console.log(token)
+ 
 
   const [checking, setChecking] = useState(true)
   const [inviteError, setInviteError] = useState(null)
@@ -49,13 +45,13 @@ const LiveDuelJoinHandler = () => {
     dispatch(fetchJoinLiveRoom({ inviteToken: token }))
       .unwrap()
       .then(() => {
-        routeNavigator.push('/live-duel')
+        navigate('/live-duel')
       })
       .catch(() => {})
   }
 
   const handleGoBack = () => {
-    routeNavigator.push('/live-duel')
+    navigate('/live-duel')
   }
 
   // 1. Состояние проверки ссылки

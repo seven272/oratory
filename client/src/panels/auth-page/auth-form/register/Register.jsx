@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
 import { useDispatch } from 'react-redux'
 import { Button, Flex, Form, Input, Typography, message } from 'antd'
 import {
@@ -27,7 +26,7 @@ const questions = [
 
 const Register = ({ showLogin }) => {
   const dispatch = useDispatch()
-  const routeNavigator = useRouteNavigator()
+
   const [randomQuestion] = useState(
     () => questions[Math.floor(Math.random() * questions.length)],
   )
@@ -38,9 +37,6 @@ const Register = ({ showLogin }) => {
     try {
       await dispatch(fetchRegisterUser(values)).unwrap()
       message.success('Регистрация прошла успешно!')
-      setTimeout(() => {
-        routeNavigator.push('/')
-      }, 1000)
     } catch (error) {
       message.error(error?.message || 'Ошибка при регистрации')
     } finally {

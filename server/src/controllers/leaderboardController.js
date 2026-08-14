@@ -24,7 +24,7 @@ const getLeaderboard = async (req, res) => {
     // Маппим массив под единый формат для фронтенда
     const leaderboard = topUsers.map((user, index) => ({
       rank: index + 1,
-      id: user._id,
+      id: user._id, 
       displayName: user.displayName || 'Аноним',
       level: user.progression.level,
       score: isWeekly ? user.weeklyXp : user.stats.lifetimeXp, // Отдаем нужные очки

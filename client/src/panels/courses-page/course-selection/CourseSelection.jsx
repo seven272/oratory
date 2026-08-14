@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { Modal } from 'antd' // Импортируем модальное окно из Ant Design
 
 import styles from './CourseSelection.module.css'
@@ -30,13 +30,13 @@ const BLOCK_DESCRIPTIONS = {
 } 
 
 const CourseSelection = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   
   // 💡 Состояние для управления модальным окном Antd
   const [modalData, setModalData] = useState({ visible: false, title: '', content: '' })
 
   const handleStartTraining = (courseCode) => {
-    routeNavigator.push(`/course/${courseCode}`)
+    navigate(`/course/${courseCode}`)
   }
 
   // 💡 Функция для открытия модалки с нужным контентом

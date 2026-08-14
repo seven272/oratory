@@ -4,13 +4,10 @@ import { fetchProfileData } from '../../redux/slices/profileSlice'
 import { fetchLiveDuelStats } from '../../redux/slices/liveDuelSlice'
 import { fetchGetArchiveCourses } from '../../redux/slices/courseSlice'
 import { Spin, Alert } from 'antd'
-import { Panel } from '@vkontakte/vkui'
 
-import Footer from '../../components/footer/Footer'
-import Header from '../../components/header/Header'
 import Dashboard from './dashboard/Dashboard'
 
-const DashboardPage = ({ id }) => {
+const DashboardPage = () => {
   const dispatch = useDispatch()
   const {
     user,
@@ -43,31 +40,25 @@ const DashboardPage = ({ id }) => {
   if (currentError)
     return (
       <>
-        <Header />
         <Alert
           message="Ошибка загрузки данных"
           description={currentError}
           type="error"
           showIcon
         />
-        <Footer />
       </>
     )
 
   return (
-    <Panel id={id}>
-      <Header />
-      <Dashboard
-        user={user}
-        skills={skills}
-        weakPoint={weakPoint}
-        recentActivity={recentActivity}
-        totalExercises={totalExercises}
-        duelStats={duelStats}
-        archiveCourses={archives}
-      />
-      <Footer />
-    </Panel>
+    <Dashboard
+      user={user}
+      skills={skills}
+      weakPoint={weakPoint}
+      recentActivity={recentActivity}
+      totalExercises={totalExercises}
+      duelStats={duelStats}
+      archiveCourses={archives}
+    />
   )
 }
 

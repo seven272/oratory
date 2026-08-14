@@ -1,14 +1,14 @@
 import React from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 
 import styles from './ExerciseCatalogBlock.module.css'
 // Сюда вы подключите ваши новые сгенерированные ИИ-картинки
-import level1 from '../../../assets/images/other/level1.jpeg'
-import level2 from '../../../assets/images/other/level2.jpeg'
-import level3 from '../../../assets/images/other/level3.jpeg'
+import level1 from '../../../assets/images/other/level1.png'
+import level2 from '../../../assets/images/other/level2.png'
+import level3 from '../../../assets/images/other/level3.png'
 
 const ExerciseCatalogBlock = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   return (
     <section className={styles.catalog_section}>
@@ -18,7 +18,7 @@ const ExerciseCatalogBlock = () => {
         {/* КАРТОЧКА: БАЗА */}
         <button
           className={`${styles.catalog_item} ${styles.type_base}`}
-          onClick={() => routeNavigator.push('exercises/level1')}
+          onClick={() => navigate('exercises/level1')}
         >
           <div className={styles.image_container}>
             <img src={level1} alt="Базовый уровень" className={styles.ai_image} />
@@ -32,7 +32,7 @@ const ExerciseCatalogBlock = () => {
         {/* КАРТОЧКА: ПРОДВИНУТЫЙ */}
         <button
           className={`${styles.catalog_item} ${styles.type_advanced}`}
-          onClick={() => routeNavigator.push('exercises/level2')}
+          onClick={() => navigate('exercises/level2')}
         >
           <div className={styles.image_container}>
             <img src={level2} alt="Продвинутый уровень" className={styles.ai_image} />
@@ -46,7 +46,7 @@ const ExerciseCatalogBlock = () => {
         {/* КАРТОЧКА: ЭКСПЕРТ */}
         <button
           className={`${styles.catalog_item} ${styles.type_expert}`}
-          onClick={() => routeNavigator.push('exercises/level3')}
+          onClick={() => navigate('exercises/level3')}
         >
           <div className={styles.image_container}>
             <img src={level3} alt="Эксперт уровень" className={styles.ai_image} />

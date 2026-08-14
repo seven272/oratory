@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -38,7 +38,7 @@ const PoemRapAi = ({ alias, isDaily }) => {
   } = useSpeechSber()
 
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const [randomRap, setRandomRap] = useState(null)
   const [poolRap, setPoolRap] = useState([])
@@ -130,7 +130,7 @@ const PoemRapAi = ({ alias, isDaily }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetPoemRapState())
-    routerNavigator.push('/exercises/level3') // Возврат на экран уровней
+   navigate('/exercises/level3') // Возврат на экран уровней
   }
 
   const handleRestartExercise = () => {

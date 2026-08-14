@@ -14,7 +14,8 @@
   max-width: 600px;
   padding: 10px 16px;
   display: flex;
-  justify-content: space-between;
+  /* 📌 Распределяем левый блок (меню + лого) и правый блок (профиль) по краям */
+  justify-content: space-between; 
   align-items: center;
   box-sizing: border-box;
   height: 56px;
@@ -23,7 +24,8 @@
 .left_block {
   display: flex;
   align-items: center;
-  gap: 8px; /* Отступ между бургер-меню и логотипом */
+  /* 📌 Задаем комфортный отступ между гамбургер-меню и логотипом */
+  gap: 12px; 
   z-index: 2;
 }
 
@@ -33,19 +35,21 @@
   z-index: 2;
 }
 
-/* По умолчанию для больших экранов центрируем логотип абсолютно */
+/* 🤖 ОБНОВЛЕНО: Отменяем абсолютное центрирование для всех экранов */
 .logo_wrap {
   width: max-content;
   height: 40px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start; /* Выравнивание по левому краю */
   align-items: center;
   border-radius: 16px;
   cursor: pointer;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  
+  /* 📌 Переводим в обычный поток, убирая наезды на виджет профиля */
+  position: static; 
+  transform: none; 
+  gap: 6px; /* Отступ между иконкой пульса и текстом */
   z-index: 1;
 }
 
@@ -55,11 +59,14 @@
 }
 
 .logo_title {
-  font: var(--font-decor);
-  font-size: 25px;
+  font-family: var(--font-family-decor);
+  font-size: 20px; /* Чуть-чуть уменьшили, чтобы текст гарантированно дышал */
+  font-weight: 800;
   color: var(--color-primary);
   cursor: pointer;
   white-space: nowrap;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
 }
 
 /* Виджет профиля */
@@ -74,7 +81,7 @@
 .status_badge {
   display: flex;
   align-items: center;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
   border-radius: 20px;
   padding: 4px 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -89,7 +96,6 @@
   white-space: nowrap;
 }
 
-/* По умолчанию короткий вариант "Ур." скрыт */
 .level_short {
   display: none;
 }
@@ -102,33 +108,10 @@
   user-select: none;
 }
 
-.avatar {
-  cursor: pointer;
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
-  font-weight: 700;
-}
-
-/* 📱 МЕДИА-ЗАПРОСЫ ДЛЯ ИСКЛЮЧЕНИЯ НАЕЗДОВ НА ЭКРАНАХ СМАРТФОНОВ */
-
-@media screen and (max-width: 480px) {
-  /* 1. Отменяем абсолютное центрирование логотипа. 
-        Теперь он послушно встает в левый блок рядом с иконкой меню */
-  .logo_wrap {
-    position: static;
-    transform: none;
-  }
-  
-  /* 2. Чуть уменьшаем шрифт логотипа */
-  .logo_title {
-    font-size: 22px;
-  }
-}
+/* 📌 Убираем дублирующие медиа-запросы для max-width: 480px, */
+/* так как логотип теперь изначально ведет себя правильно и послушно */
 
 @media screen and (max-width: 380px) {
-  /* 3. На экстремально узких экранах переключаем "Уровень" на "Ур." */
   .level_full {
     display: none;
   }
@@ -136,7 +119,6 @@
     display: inline;
   }
   
-  /* Ужимаем паддинги шапки до минимума */
   .header_wrapper {
     padding: 10px 8px;
   }
@@ -144,10 +126,14 @@
   .status_badge {
     padding: 4px 6px;
   }
+  
+  /* На узких экранах делаем шрифт капельку компактнее */
+  .logo_title {
+    font-size: 18px;
+  }
 }
 
 @media screen and (max-width: 340px) {
-  /* 4. На экранах типа iPhone SE скрываем текст логотипа, оставляя только красивую иконку */
   .logo_title {
     display: none;
   }

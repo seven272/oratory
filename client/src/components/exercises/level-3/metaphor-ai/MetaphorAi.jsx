@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 import styles from './MetaphorAi.module.css'
@@ -34,7 +34,7 @@ const TIME_ROUND = 20
 const MetaphorAi = ({ alias, isDaily }) => {
   const { startListening, stopListening, resetTranscript } = useSpeechSber()
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   // --- UI СОСТОЯНИЕ ---
   const [randomSituation, setRandomSituation] = useState(null)
@@ -107,7 +107,7 @@ const MetaphorAi = ({ alias, isDaily }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetMetaphorState())
-    routerNavigator.push('/exercises/level3')
+    navigate('/exercises/level3')
   }
 
   const handleRestartExercise = () => {

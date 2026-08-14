@@ -1,16 +1,17 @@
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
-import { Avatar } from 'antd'
-import { GiOlive } from 'react-icons/gi'
-import { FiUser } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { IoPulseSharp } from 'react-icons/io5'
+
 import { useSelector } from 'react-redux'
 
 import styles from './Header.module.css'
 import DropdownMenu from '../dropdown-menu/DropdownMenu'
+import AvatarOrPlaceholder from '../avatar-or-placeholder/AvatarOrPlaceholder'
 import { checkIsAuth } from '../../redux/slices/authSlice'
 
 const Header = () => {
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const { user } = useSelector((state) => state.profile)
+  const authUser = useSelector((state) => state.auth.user)
   const isAuth = useSelector(checkIsAuth)
 
   return (
@@ -21,9 +22,9 @@ const Header = () => {
           <DropdownMenu />
           <div
             className={styles.logo_wrap}
-            onClick={() => routerNavigator.replace('/')}
+            onClick={() => navigate('/', { replace: true })}
           >
-            <GiOlive size={25} className={styles.logo_icon} />
+            <IoPulseSharp size={25} className={styles.logo_icon} />
             <span className={styles.logo_title}>говори смело</span>
           </div>
         </div>
@@ -33,9 +34,7 @@ const Header = () => {
             <div className={styles.profile_widget}>
               <div
                 className={styles.status_badge}
-                onClick={() =>
-                  routerNavigator.push('/mini-dashboard')
-                }
+                onClick={() => navigate('/mini-dashboard')}
               >
                 {user?.level && (
                   <>
@@ -62,26 +61,23 @@ const Header = () => {
                 )}
               </div>
 
-              <Avatar
-                size={34}
-                className={styles.avatar}
-                src={user?.avatar}
-                onClick={() => routerNavigator.push('/auth')}
-              >
-                {user?.displayName
-                  ? user.displayName.charAt(0).toUpperCase()
-                  : '+'}
-              </Avatar>
+              {/* Исправлено: заменено на sizeClass по правилу camelCase */}
+              <AvatarOrPlaceholder
+                user={authUser}
+                sizeClass="size_s"
+                onClick={() => navigate('/auth')}
+              />
             </div>
           ) : (
-            <Avatar
-              icon={<FiUser size={22} />}
-              size={34}
-              className={styles.avatar}
-              onClick={() => routerNavigator.push('/auth')}
+            /* ДОБАВЛЕНО: Заглушка или кнопка входа, если пользователь не авторизован */
+            <AvatarOrPlaceholder
+              user={null}
+              sizeClass="size_s"
+              onClick={() => navigate('/auth')}
             />
-          )}
+          )} 
         </div>
+        
       </div>
     </div>
   )

@@ -4,6 +4,9 @@ const userSchema = new mongoose.Schema(
   {
     // displayName — то, что видит пользователь в интерфейсе
     displayName: { type: String, trim: true },
+    firstName: { type: String, trim: true }, // Имя
+    lastName: { type: String, trim: true },
+    avatar: { type: String, default: '' },
     // Email + Пароль (sparse позволяет не заполнять их для VK-пользователей)
     email: {
       type: String,
@@ -13,11 +16,37 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
     password: { type: String },
-    avatar: { type: String, default: 'dicebear.com' },
 
     // Внешние ID (для будущего расширения)
     vkId: { type: String, unique: true, sparse: true },
     googleId: { type: String, unique: true, sparse: true },
+    // Способ авторизации (основной на момент регистрации)
+    authProvider: {
+      type: String,
+      enum: ['local', 'vk', 'google'],
+      default: 'local',
+    },
+
+    // Платформа, на которой аккаунт был создан
+    registeredFrom: {
+      type: String,
+      enum: ['site', 'vk', 'android'],
+      default: 'site',
+    },
+    // --- СЛУЖЕБНЫЕ ДАННЫЕ СОЦСЕТЕЙ ---
+    // Храним оригинальные данные, чтобы юзер мог нажать "Сбросить аватар до ВК"
+    socialProfilesData: {
+      vk: {
+        firstName: String,
+        lastName: String,
+        avatar: String,
+      },
+      google: {
+        firstName: String,
+        lastName: String,
+        avatar: String,
+      },
+    },
     // Роли
     isAdmin: { type: Boolean, default: false },
     isPremium: { type: Boolean, default: false },
@@ -44,7 +73,7 @@ const userSchema = new mongoose.Schema(
       lastCompletedDate: { type: Date },
     },
     stats: {
-      totalExercises: Number,
+      totalExercises: { type: Number, default: 0 },
       lifetimeXp: { type: Number, default: 0 }, // Глобальный счетчик опыта
       exerciseStats: [
         {

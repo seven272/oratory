@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { PiTimer } from 'react-icons/pi'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 
@@ -47,7 +47,8 @@ const TongueTwister = ({ alias, isDaily }) => {
     resetTranscript,
   } = useSpeech('ru-RU')
   const generator = useMemo(() => getRandomWord(randomTwisters), [])
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
+
   const dispatch = useDispatch()
 
   // --- СОСТОЯНИЯ КОМПОНЕНТА ---
@@ -71,7 +72,6 @@ const TongueTwister = ({ alias, isDaily }) => {
     setIsTaskInterrupted(false)
     setAccuracy(0)
   }
-
 
   const handleAutoCheckResult = (currentTranscript) => {
     stopListening()
@@ -119,7 +119,7 @@ const TongueTwister = ({ alias, isDaily }) => {
   // Обработка кнопки "Завершить и выйти"
   const clickStop = () => {
     resetExerciseState()
-    routerNavigator.back()
+    navigate(-1)
   }
 
   // логика основного таймера

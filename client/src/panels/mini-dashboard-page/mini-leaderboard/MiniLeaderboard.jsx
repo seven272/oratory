@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { fetchLeaderboard } from '../../../redux/slices/leaderboardSlice'
 import { FaCrown, FaChevronRight } from 'react-icons/fa'
 import styles from './MiniLeaderboard.module.css'
 
 const MiniLeaderboard = () => {
   const dispatch = useDispatch()
-  const routeNavigator = useRouteNavigator()
+   const navigate = useNavigate()
 
   const {
     list: leaderboardList,
@@ -113,7 +113,7 @@ const MiniLeaderboard = () => {
       <button
         type="button"
         className={styles.more_btn}
-        onClick={() => routeNavigator.push('/leaderboard')}
+        onClick={() => navigate('/leaderboard')}
       >
         <span>Весь рейтинг</span>
         <FaChevronRight className={styles.icon_arrow} />

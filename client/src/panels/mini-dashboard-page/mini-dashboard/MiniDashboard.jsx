@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { fetchProfileData } from '../../../redux/slices/profileSlice'
 
 import {
@@ -16,7 +16,7 @@ import styles from './MiniDashboard.module.css'
 
 const MiniDashboard = () => {
   const dispatch = useDispatch()
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const {
     user,
@@ -108,7 +108,7 @@ const MiniDashboard = () => {
       <button
         type="button"
         className={styles.more_btn}
-        onClick={() => routeNavigator.push('/dashboard')}
+        onClick={() => navigate('/dashboard')}
       >
         <span>Полная статистика</span>
         <FaChevronRight className={styles.icon_arrow} />

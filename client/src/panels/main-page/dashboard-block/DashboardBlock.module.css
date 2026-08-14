@@ -32,7 +32,7 @@
 /* Улучшено: Добавлены мягкие тени и убрана жесткая рамка */
 .banner_wrapper {
   width: 100%;
-  background-color: var(--color-white);
+  background-color: var(--color-bg-light);
   border-radius: 16px;
   padding: 16px;
   display: flex;

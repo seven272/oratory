@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { PiTimer } from 'react-icons/pi'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 
@@ -41,7 +41,7 @@ const Association = ({ alias, isDaily }) => {
     isListening,
     resetTranscript,
   } = useSpeech('ru-RU')
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const [xp, setXp] = useState(0)
   const [words, setWords] = useState(getRandomPairWords(similarWords))
@@ -105,7 +105,7 @@ const Association = ({ alias, isDaily }) => {
 
   const clickStop = () => {
     resetExerciseState()
-    routerNavigator.back()
+    navigate(-1) 
   }
 
   // логика основного таймера
@@ -171,7 +171,7 @@ const Association = ({ alias, isDaily }) => {
                 ? transcript
                 : isListening
                   ? 'Слушаю...'
-                  : 'Микрофон не активен'}
+                  : '🎤 Микрофон не активен'}
             </div>
           </div>
         )}

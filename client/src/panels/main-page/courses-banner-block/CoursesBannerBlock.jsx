@@ -1,14 +1,14 @@
 import React from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { IoSchoolOutline, IoTrendingUpOutline } from 'react-icons/io5'
 import styles from './CoursesBannerBlock.module.css'
 
 const CoursesBannerBlock = () => {
-  const routeNavigator = useRouteNavigator()
+   const navigate = useNavigate()
 
   // Замените '/courses' на реальный путь к вашей панели или экрану с курсами
   const handleNavigation = () => {
-    routeNavigator.go('/courses')
+    navigate('/courses')
   }
 
   return (

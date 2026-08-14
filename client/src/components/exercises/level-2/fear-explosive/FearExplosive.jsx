@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 import { PiTimer } from 'react-icons/pi'
@@ -38,7 +38,7 @@ const FearExplosive = ({ alias, isDaily }) => {
     isSupported,
   } = useAudioRecorder()
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const [randomTask, setRandomTask] = useState(null)
   const [poolTasks, setPoolTasks] = useState([])
   const [status, setStatus] = useState(STATUS.IDLE)
@@ -91,7 +91,6 @@ const FearExplosive = ({ alias, isDaily }) => {
     setPoolTasks(newPool)
   }
 
-
   const handleManualRate = (selectedXp) => {
     setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
     // отправляем этот выбранный балл на бэкенд
@@ -114,7 +113,7 @@ const FearExplosive = ({ alias, isDaily }) => {
   }
 
   const clickStop = () => {
-    routerNavigator.back()
+    navigate(-1)
   }
 
   if (!randomTask) return <ScreenSpinner />

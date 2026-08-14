@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { PiTimer } from 'react-icons/pi'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 
@@ -44,7 +44,7 @@ const Emotion = ({ alias, isDaily }) => {
     isListening,
     resetTranscript,
   } = useSpeech('ru-RU')
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const [xp, setXp] = useState(0)
@@ -119,7 +119,7 @@ const Emotion = ({ alias, isDaily }) => {
 
   const clickStop = () => {
     resetExerciseState()
-    routerNavigator.back()
+    navigate(-1)
   }
 
   // логика основного таймера
@@ -176,13 +176,9 @@ const Emotion = ({ alias, isDaily }) => {
               <PiTimer size={30} /> {timeLeft} сек
             </div>
 
-            <div className={styles.task_wrap}>
-              <span className={styles.task_emotion}>
-                {currentEmotion}
-              </span>
-              <span className={styles.task_phrase}>
-                {currentPhrase}
-              </span>
+            <div className={styles.words_wrap}>
+              <span className={styles.word_simple}> {currentEmotion}</span>
+              <span className={styles.word}> {currentPhrase}</span>
             </div>
 
             {/* Отображаем transcript, если он пустой - выводим статус */}

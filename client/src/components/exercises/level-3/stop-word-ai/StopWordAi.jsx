@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -38,7 +38,7 @@ const StopWordAi = ({ alias, isDaily }) => {
   } = useSpeechSber()
 
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const [randomScenario, setRandomScenario] = useState(null)
   const [poolScenarios, setPoolScenarios] = useState([])
@@ -129,7 +129,7 @@ const StopWordAi = ({ alias, isDaily }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetStopWordState())
-    routerNavigator.push('/exercises/level3')
+    navigate('/exercises/level3')
   }
 
   const handleRestartExercise = () => {

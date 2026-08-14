@@ -1,18 +1,18 @@
 import React from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { FaStar, FaAward, FaFire, FaCoins } from 'react-icons/fa'
 
 import styles from './PointsUser.module.css'
 
 const PointsUser = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const { level, coins, xp, streak } = useSelector((state) => state.profile.user)
 
   return (
     <div
       className={styles.main_points_user}
-      onClick={() => routeNavigator.push('/mini-dashboard')}
+      onClick={() => navigate('/mini-dashboard')}
     >
       {/* Верхний ярус таблички */}
       <div className={styles.row}>

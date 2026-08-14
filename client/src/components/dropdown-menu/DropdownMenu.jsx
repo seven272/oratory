@@ -1,12 +1,12 @@
 import { Dropdown, Space } from 'antd'
 import { TfiMenu } from 'react-icons/tfi'
 import { FaRegHandPointRight } from 'react-icons/fa'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 
 import styles from './DropdownMenu.module.css'
 
 const DropdownMenu = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const arrData = [
     {
@@ -68,9 +68,9 @@ const DropdownMenu = () => {
 
     if (categories.includes(key)) {
       // Используем replace, чтобы не плодить историю при переходах между категориями
-      routeNavigator.replace(`/${key}`)
+      navigate(`/${key}`, { replace: true })
     } else {
-      routeNavigator.push('/')
+      navigate('/')
     }
   }
 

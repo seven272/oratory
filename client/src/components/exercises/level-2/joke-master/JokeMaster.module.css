@@ -9,14 +9,17 @@
 .title {
   font: var(--font-title);
   color: var(--color-text-dark);
-  margin-bottom: 10px;
-}
-.descr {
-  font: var(--font-m-light);
-  color: var(--color-text-dark);
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
 
+.descr {
+  font: var(--font-m-light);
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* 🤖 ОБНОВЛЕНО: Минималистичная Neo-Tech карточка без греческого декора */
 .screen {
   width: 100%;
   height: auto;
@@ -25,20 +28,17 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-bg);
-  background-image:
-    url('../../../../assets/images/design/corner-left.png'),
-    url('../../../../assets/images/design/corner-right.png');
-  background-position:
-    left bottom,
-    right bottom;
-  background-size:
-    80px 75px,
-    80px 75px;
-  background-repeat: no-repeat;
+  background-color: var(--color-bg-light);
+  
+  /* 📌 Полностью убрали картинки-уголки */
+  background-image: none; 
+  
   border-radius: 24px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.02);
   overflow: hidden;
+  padding: 24px 16px;
+  box-sizing: border-box;
 }
 
 .screen_idle {
@@ -47,14 +47,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  row-gap: 15px;
+  row-gap: 16px;
   padding: 0 10px;
 }
 
 .text_start {
+  /* 🤖 ОБНОВЛЕНО: Перевели на новый Unbounded-Bold */
   font: var(--font-decor);
-  font-size: 40px;
-  letter-spacing: 4px;
+  font-size: 32px;
+  letter-spacing: 1px;
   color: var(--color-primary);
 }
 
@@ -65,6 +66,8 @@
   font: var(--font-m-light);
   color: var(--color-text-secondary);
   text-align: center;
+  line-height: 17px;
+  max-width: 90%;
 }
 
 .screen_running {
@@ -79,63 +82,96 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  column-gap: 10px;
-  font: var(--font-m-light);
-  font-size: 22px;
-  margin-bottom: 20px;
-  color: var(--color-text-dark);
+  column-gap: 8px;
+  font: var(--font-title);
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #ff4a4a; /* Акцентный красный для таймера */
 }
 
 .content_wrap {
   width: 100%;
+  max-width: 460px;
   height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 10px;
-  margin-bottom: 25px;
-}
-.content_label {
-  font: var(--font-subtitle);
-  background: rgba(0, 123, 255, 0.1);
-  color: var(--color-blue);
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-.content_text {
-  display: flex;
-  text-align: center;
-  width: 100%;
-  padding: 0 10px;
-  color: var(--color-text-primary);
-  font: var(--font-m);
-  margin: 5px 0 0 0;
+  margin-top: 4px;
+  margin-bottom: 20px;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
+/* Изменили на плоский технологичный бадж подзаголовка */
+.content_label {
+  font: var(--font-subtitle);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--color-primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+/* 🤖 ОБНОВЛЕНО: Адаптивная текстовая плашка анекдота (резиновая высота) */
+.content_text {
+  display: block; /* Изменили с flex на block для корректного переноса длинного текста */
+  text-align: center;
+  width: 100%;
+  padding: 12px 16px;
+  color: var(--color-text-primary);
+  font: var(--font-m);
+  line-height: 20px;
+  background-color: var(--color-white);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+  box-sizing: border-box;
+}
+
+/* 🤖 ОБНОВЛЕНО: Адаптивная плашка под оригинальный ответ анекдота */
 .original_wrap {
-  width: max-content;
+  width: 100%;
+  max-width: 460px;
   height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 10px;
-  margin-bottom: 25px;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 .original_label {
   font: var(--font-subtitle);
-  background: rgba(0, 123, 255, 0.1);
-  color: var(--color-blue);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(52, 199, 89, 0.08); /* Мягкий зеленый цвет для оригинального финала */
+  color: var(--color-green);
   padding: 4px 12px;
   border-radius: 20px;
+  margin-bottom: 12px;
 }
 
 .original_text {
+  display: block;
+  text-align: center;
+  width: 100%;
+  padding: 12px 16px;
   color: var(--color-text-primary);
-  font: var(--font-m-light);
-  margin: 5px 0 0 0;
+  font: var(--font-subtitle); /* Сделали панчлайн чуть плотнее */
+  font-size: 15px;
+  line-height: 20px;
+  background-color: var(--color-white);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  box-sizing: border-box;
 }
 
 .wrapper {
@@ -148,10 +184,12 @@
   line-height: 1.4;
   margin-top: 20px;
 }
+
 .note {
-  margin-top: 30px;
+  margin-top: 20px;
   font: var(--font-m-light);
-  color: var(--color-grey-dark);
+  font-weight: 600;
+  color: #34c759; /* Зеленый индикатор активного микрофона */
 }
 
 .screen_finished {
@@ -160,14 +198,15 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  row-gap: 10px;
-  margin-top: 20px;
+  row-gap: 12px;
 }
 
 .finished_question {
   text-align: center;
   color: var(--color-text-dark);
   font: var(--font-title);
+  font-size: 16px;
+  margin-top: 8px;
 }
 
 .finished_block_result {
@@ -176,97 +215,113 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  row-gap: 15px;
+  row-gap: 12px;
 }
 
 .finished_text {
   font: var(--font-title);
+  font-size: 18px;
   color: var(--color-text-dark);
   text-align: center;
 }
 
 .finished_xp {
-  color: var(--color-primary);
+  color: #34c759;
   font: var(--font-title);
-  font-size: 30px;
+  font-size: 32px;
+  font-weight: 800;
   text-align: center;
+  margin: 4px 0;
 }
 
+/* 🤖 ОБНОВЛЕНО: Кнопка "Узнать оригинал" в аккуратном EdTech-стиле пилюли */
 .btn_show {
-  padding: 10px 15px;
+  padding: 10px 24px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   column-gap: 5px;
-  background-color: var(--color-bg);
+  background-color: var(--color-white);
   color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  border-radius: 5px;
+  border: 1px solid rgba(38, 136, 235, 0.2);
+  border-radius: 20px; /* Скруглили в круглую пилюлю */
   font: var(--font-ml);
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin: 12px 0;
+}
+
+.btn_show:active {
+  background-color: #f1f5f9;
+  transform: scale(0.97);
 }
 
 .finished_answer {
   text-align: center;
-  color: var(--color-text-dark);
+  color: var(--color-text-secondary);
   font: var(--font-m-light);
+  max-width: 90%;
+  line-height: 18px;
 }
+
 .audio_wrap {
-  width: 90%;
+  width: 100%;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 .audio_title {
   font: var(--font-subtitle);
-  background: rgba(0, 123, 255, 0.1);
-  color: var(--color-blue);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--color-primary);
   padding: 4px 12px;
   border-radius: 20px;
-}
-.audio_pleer {
-  width: 100%;
-  margin: 5px 0 15px 0;
+  margin-bottom: 12px;
 }
 
+.audio_pleer {
+  width: 100%;
+  margin: 4px 0 12px 0;
+  border-radius: 30px;
+}
+
+/* Кнопка теории */
 .btn_theory {
-  /* Сбрасываем дефолтные стили кнопки */
   appearance: none;
-  background: transparent;
-  border: 1px solid var(--vkui--color_separator_primary);
-  border-radius: 10px;
+  background: var(--color-white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 12px auto; /* Центрируем */
+  margin: 8px auto 0 auto;
   padding: 8px 16px;
-  color: var(--vkui--color_text_secondary);
-  font-size: 14px;
-  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s active;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* Эффект при наведении (для десктопа) */
-@media (hover: hover) {
-  .btn_theory:hover {
-    background-color: var(--vkui--color_background_secondary);
-  }
-}
-
-/* Эффект при нажатии */
 .btn_theory:active {
   transform: scale(0.97);
-  background-color: var(--vkui--color_background_secondary);
+  background-color: #f1f5f9;
 }
 
 .theory_icon {
-  color: var(--vkui--color_icon_medium);
+  color: var(--color-primary);
 }

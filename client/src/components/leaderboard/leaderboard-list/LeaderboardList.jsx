@@ -6,24 +6,34 @@ const LeaderboardList = ({ user, isCurrent, activeTab }) => {
   const medals = { 1: '🥇', 2: '🥈', 3: '🥉' }
 
   // Валидация аватара: отсекаем пустые строки, заглушки 'dicebear.com' и строки без расширения файла
-  const hasValidAvatar = user.avatar && user.avatar.includes('https')
- 
+  const hasValidAvatar =
+    user.avatar &&
+    (user.avatar.startsWith('http://') ||
+      user.avatar.startsWith('https://') ||
+      user.avatar.startsWith('/uploads/'))
+
   return (
-    <div 
+    <div
       className={`
         ${styles.row} 
         ${isCurrent ? styles.rowCurrentUser : ''} 
         ${user.isPremium ? styles.rowPremium : ''}
       `}
-    > 
+    >
       {/* Место в рейтинге (медаль или цифра) */}
-      <div className={`${styles.rank} ${isTopThree ? styles.rank_medal : ''}`}>
+      <div
+        className={`${styles.rank} ${isTopThree ? styles.rank_medal : ''}`}
+      >
         {isTopThree ? medals[user.rank] : user.rank}
       </div>
 
       {/* Аватар или текстовый фоллбек */}
       {hasValidAvatar ? (
-        <img src={user.avatar} alt={user.displayName} className={styles.avatar} />
+        <img
+          src={user.avatar}
+          alt={user.displayName}
+          className={styles.avatar}
+        />
       ) : (
         <div className={styles.avatarFallback}>
           {user.displayName?.charAt(0).toUpperCase() || 'A'}
@@ -32,7 +42,9 @@ const LeaderboardList = ({ user, isCurrent, activeTab }) => {
 
       {/* Имя и статус */}
       <div className={styles.nameContainer}>
-        <span className={styles.name}>{user.displayName || 'Аноним'}</span>
+        <span className={styles.name}>
+          {user.displayName || 'Аноним'}
+        </span>
         {user.isPremium && (
           <span className={styles.premiumBadge}>PRO</span>
         )}
@@ -41,7 +53,8 @@ const LeaderboardList = ({ user, isCurrent, activeTab }) => {
       {/* Очки и уровень */}
       <div className={styles.stats}>
         <span className={styles.score}>
-          {user.score?.toLocaleString() || 0} {activeTab === 'weekly' ? 'WXP' : 'XP'}
+          {user.score?.toLocaleString() || 0}{' '}
+          {activeTab === 'weekly' ? 'WXP' : 'XP'}
         </span>
         <span className={styles.level}>{user.level} ур.</span>
       </div>

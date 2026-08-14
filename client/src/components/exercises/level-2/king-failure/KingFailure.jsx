@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 import { PiTimer } from 'react-icons/pi'
@@ -37,7 +37,8 @@ const KingFailure = ({ alias, isDaily }) => {
     isSupported,
   } = useAudioRecorder()
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
+
   const [randomTask, setRandomTask] = useState(null)
   const [poolTasks, setPoolTasks] = useState([])
   const [status, setStatus] = useState(STATUS.IDLE)
@@ -89,17 +90,17 @@ const KingFailure = ({ alias, isDaily }) => {
     setPoolTasks(newPool)
   }
 
-   const handleManualRate = (selectedXp) => {
-      setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
-      // отправляем этот выбранный балл на бэкенд
-      dispatch(
-        fetchCompleteExercise({
-          exAlias: alias,
-          score: selectedXp,
-          isDaily: isDaily,
-        }),
-      )
-    }
+  const handleManualRate = (selectedXp) => {
+    setXp(selectedXp) // Сохраняем в стейт для отображения в интерфейсе
+    // отправляем этот выбранный балл на бэкенд
+    dispatch(
+      fetchCompleteExercise({
+        exAlias: alias,
+        score: selectedXp,
+        isDaily: isDaily,
+      }),
+    )
+  }
 
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
@@ -111,8 +112,7 @@ const KingFailure = ({ alias, isDaily }) => {
   }
 
   const clickStop = () => {
-   
-    routerNavigator.back()
+    navigate(-1)
   }
 
   if (!randomTask) return <ScreenSpinner />
@@ -131,7 +131,7 @@ const KingFailure = ({ alias, isDaily }) => {
 
             <button
               className={styles.btn_theory}
-             onClick={() => setShowModal(true)}
+              onClick={() => setShowModal(true)}
             >
               <Icon20InfoCircleOutline
                 className={styles.theory_icon}

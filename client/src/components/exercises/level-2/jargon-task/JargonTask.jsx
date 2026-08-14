@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { PiTimer } from 'react-icons/pi'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 
@@ -43,7 +43,7 @@ const JargonTask = ({ alias, isDaily }) => {
   } = useSpeech('ru-RU')
 
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+   const navigate = useNavigate()
 
   const [randomTask, setRandomTask] = useState(null)
   const [poolTasks, setPoolTasks] = useState([])
@@ -120,7 +120,7 @@ const JargonTask = ({ alias, isDaily }) => {
   }
 
   const clickStop = () => {
-    routerNavigator.back()
+    navigate(-1)
   }
 
   //получаю фразу при первом рендере компонента

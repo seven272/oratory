@@ -1,13 +1,13 @@
 :root {
   /*шрифты*/
-  --font-family-regular: 'Rubik-Regular', Verdana, Tahoma;
-  --font-family-decor: 'DS-Greece', 'ElMessiri-Bold';
-  --font-family-title: 'ElMessiri-Bold', Verdana, Tahoma;
-  --font-family-subtitle: 'ElMessiri-SemiBold', Verdana, Tahoma;
-  --font-family-string: 'ElMessiri-Regular', Verdana, Tahoma;
-  --font-family-upstring: 'Rubik-Medium', Verdana, Tahoma;
-  --font-family-substring: 'Rubik-Blond', Verdana, Tahoma;
-  --font-family-light: 'Rubik-Light', Verdana, Tahoma;
+  --font-family-regular: 'Onest-Regular', Verdana, Tahoma;
+  --font-family-decor: 'Unbounded-Bold', Verdana, Tahoma;
+  --font-family-title: 'Onest-Bold', Verdana, Tahoma;
+  --font-family-subtitle: 'Onest-SemiBold', Verdana, Tahoma;
+  --font-family-string: 'Onest-Regular', Verdana, Tahoma;
+  --font-family-upstring: 'Onest-Medium', Verdana, Tahoma;
+  --font-family-substring: 'Onest-ExtraLight', Verdana, Tahoma;
+  --font-family-light: 'Onest-Thin', Verdana, Tahoma;
   --font-size-s: 10px;
   --font-size-m: 14px;
   --font-size-ml: 16px;
@@ -64,9 +64,11 @@
   --color-primary: #007aff;
   --color-secondary: #b2d7ff;
   --color-dark: #2e3138;
+
   --color-bg: #e8f3ff;
-  --color-bg-light: #e8f3ff;
+  --color-bg-light: #f8fafc;
   --color-bg-dark: #303030;
+  --color-bg-layout: #fafafa;
   --color-text-dark: #2e3138;
   --color-text-primary: #2e3138;
   --color-text-secondary: #818c99;

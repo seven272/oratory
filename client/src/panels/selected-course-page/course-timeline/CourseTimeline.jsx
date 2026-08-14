@@ -2,8 +2,8 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   useParams,
-  useRouteNavigator,
-} from '@vkontakte/vk-mini-apps-router'
+  useNavigate,
+} from 'react-router-dom'
 import { IoCompassOutline } from 'react-icons/io5'
 
 import {
@@ -19,7 +19,7 @@ import { COURSES_STATIC_CONTENT } from '../../../assets/data/courses/coursesCont
 
 const CourseTimeline = () => {
   const { courseCode } = useParams()
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const {
@@ -48,7 +48,7 @@ const CourseTimeline = () => {
   }, [dispatch, courseCode])
 
   const handleGoBack = () => {
-    routeNavigator.back()
+    navigate(-1)
   }
 
   // Защита на случай, если ввели несуществующий в конфиге courseCode
@@ -73,7 +73,7 @@ if (!courseContent) {
       {/* Кнопка мгновенного возврата в каталог */}
       <button
         className={styles.primary_button}
-        onClick={() => routeNavigator.push('/courses')} // Перенаправляем на выбор курсов
+        onClick={() => navigate('/courses')} // Перенаправляем на выбор курсов
       >
         Открыть каталог интенсивов
       </button>

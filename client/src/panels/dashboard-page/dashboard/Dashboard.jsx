@@ -1,5 +1,5 @@
 import React from 'react'
-import { Spin, Progress, Button } from 'antd'
+import { Spin, Progress } from 'antd'
 import {
   FireOutlined,
   DollarOutlined,

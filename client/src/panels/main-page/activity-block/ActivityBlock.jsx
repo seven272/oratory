@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 
 import shopIcon from '../../../assets/images/other/shop-icon.png';
 import challengesIcon from '../../../assets/images/other/challenges-icon.png';
@@ -7,7 +7,7 @@ import duelsIcon from '../../../assets/images/other/duels-icon.png';
 import styles from './ActivityBlock.module.css'
 
 const ActivityBlock = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   // Конфигурация модулей с указанием целевых панелей для роутинга VK
   const blockItems = [
     {
@@ -38,7 +38,7 @@ const ActivityBlock = () => {
 
   const handleNavigate = (link) => {
     // Стандартный переход VK Bridge, либо замените на router.push(panelId) вашего VK-роутера
-    routeNavigator.push(link)
+    navigate(link)
   }
 
   return (

@@ -25,7 +25,7 @@
 }
 
 .catalog_item {
-  background-color: var(--color-white);
+  background-color: var(--color-bg-light);
   border: none;
   border-radius: 20px;
   padding: 16px 8px; /* Сделали одинаковые отступы сверху и снизу (по 16px) */
@@ -68,8 +68,8 @@
 }
 
 .ai_image {
-  width: 76px; /* Картинка чуть больше контейнера, чтобы создавался 3D-эффект «выхода» за рамки */
-  height: 76px;
+  width: 56px; /* Картинка чуть больше контейнера, чтобы создавался 3D-эффект «выхода» за рамки */
+  height: 56px;
   object-fit: contain;
   transition: transform 0.15s ease;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12)); /* Тень для объема */

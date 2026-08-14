@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 import styles from './BargainAi.module.css'
@@ -38,7 +38,7 @@ const BargainAi = ({ alias, isDaily }) => {
   const { startListening, stopListening, resetTranscript } =
     useSpeechSber()
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   // --- СОСТОЯНИЕ КОМПОНЕНТА (ТОЛЬКО UI-состояние) ---
   const [randomSituation, setRandomSituation] = useState(null)
@@ -126,7 +126,7 @@ const BargainAi = ({ alias, isDaily }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetBargainState())
-    routerNavigator.push('/exercises/level3')
+    navigate('/exercises/level3')
   }
 
   const handleRestartExercise = () => {

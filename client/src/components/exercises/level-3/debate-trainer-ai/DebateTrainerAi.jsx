@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -35,7 +35,7 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
     useSpeechSber()
 
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const [randomTopic, setRandomTopic] = useState(null)
   const [poolTopic, setPoolTopic] = useState([])
@@ -132,7 +132,7 @@ const DebateTrainerAi = ({ alias, isDaily }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetDebateState())
-    routerNavigator.push('/exercises/level3')
+    navigate('/exercises/level3')
   }
 
   const handleRestartExercise = () => {

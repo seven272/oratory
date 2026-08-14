@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { LuCrown } from 'react-icons/lu'
 import { MdOutlineLock } from 'react-icons/md'
 import { FaQuestion } from 'react-icons/fa'
@@ -10,7 +10,7 @@ import Modal from '../../UI/modal/Modal'
 import TheoryContent from '../theory-content/TheoryContent'
 
 const ExercisePreview = ({ exData }) => {
-  const routeNavigator = useRouteNavigator()
+    const navigate = useNavigate()
   const { user } = useSelector((state) => state.profile)
   const [showModal, setShowModal] = useState(false)
   
@@ -20,7 +20,7 @@ const ExercisePreview = ({ exData }) => {
 
   const handleClick = () => {
     if (!isLocked) {
-      routeNavigator.push(`/exercise/${exData.alias}`)
+     navigate(`/exercise/${exData.alias}`)
     }
   }
 

@@ -9,27 +9,20 @@ const storage = multer.diskStorage({
       console.log('Папки не существует, создаю ее')
       fs.mkdirSync('./src/uploads')
     }
-    if (file.fieldname === 'category') {
+    if (file.fieldname === 'avatar') {
       // проверка на наличие папки
-      if (!fs.existsSync('./src/uploads/categories')) { 
-        console.log('Папки не существует, создаю ее')
-        fs.mkdirSync('./src/uploads/categories')
+      if (!fs.existsSync('./src/uploads/avatars')) {
+        console.log('Папки avatars не существует, создаю ее')
+        fs.mkdirSync('./src/uploads/avatars')
       }
-      cb(null, './src/uploads/categories')
-    } else if (file.fieldname === 'sound') {
+      cb(null, './src/uploads/avatars/')
+    } else if (file.fieldname === 'other') {
       // проверка на наличие папки
-      if (!fs.existsSync('./src/uploads/sounds')) {
-        console.log('Папки не существует, создаю ее')
-        fs.mkdirSync('./src/uploads/sounds')
+      if (!fs.existsSync('./src/uploads/other')) {
+        console.log('Папки other не существует, создаю ее')
+        fs.mkdirSync('./src/uploads/other')
       }
-      cb(null, './src/uploads/sounds/')
-    } else if (file.fieldname === 'cover') {
-      // проверка на наличие папки
-      if (!fs.existsSync('./src/uploads/covers')) {
-        console.log('Папки не существует, создаю ее')
-        fs.mkdirSync('./src/uploads/covers')
-      }
-      cb(null, './src/uploads/covers/')
+      cb(null, './src/uploads/other/')
     } else {
       cb(null, './src/uploads/')
     }

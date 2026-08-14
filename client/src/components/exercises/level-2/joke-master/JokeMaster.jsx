@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { PiTimer } from 'react-icons/pi'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
@@ -39,7 +39,7 @@ const JokeMaster = ({ alias, isDaily }) => {
   } = useAudioRecorder()
 
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const [scenario, setScenario] = useState(null)
   const [poolTasks, setPoolTasks] = useState([])
@@ -117,7 +117,7 @@ const JokeMaster = ({ alias, isDaily }) => {
   }
 
   const clickStop = () => {
-    routerNavigator.back()
+    navigate(-1)
   }
 
   if (!scenario) return <ScreenSpinner />

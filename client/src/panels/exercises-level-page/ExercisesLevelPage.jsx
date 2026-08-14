@@ -1,19 +1,16 @@
 import React from 'react'
-import { Panel } from '@vkontakte/vkui'
-import { useParams } from '@vkontakte/vk-mini-apps-router'
+import { useParams } from 'react-router-dom'
 
-import Header from '../../components/header/Header'
-import Footer from '../../components/footer/Footer'
 import ExercisePreview from '../../components/exercise-preview/ExercisePreview'
 import styles from './ExercisesLevelPage.module.css'
 import { All_EXERCISES } from '../../assets/mocks/exercises'
 
 // Импортируем ИИ-картинки, которые сгенерировали для каталога
-import aiLevel1 from '../../assets/images/other/level1.jpeg'
-import aiLevel2 from '../../assets/images/other/level2.jpeg'
-import aiLevel3 from '../../assets/images/other/level3.jpeg'
+import aiLevel1 from '../../assets/images/other/level1.png'
+import aiLevel2 from '../../assets/images/other/level2.png'
+import aiLevel3 from '../../assets/images/other/level3.png'
 
-const ExercisesLevelPage = ({ id }) => {
+const ExercisesLevelPage = () => {
   const { level } = useParams()
   const exList = All_EXERCISES[level] || []
 
@@ -41,8 +38,8 @@ const ExercisesLevelPage = ({ id }) => {
   const currentLevelData = dictionary[level]
 
   return (
-    <Panel id={id}>
-      <Header />
+
+      
       <div className={styles.level_section}>
         
         {currentLevelData ? (
@@ -76,8 +73,7 @@ const ExercisesLevelPage = ({ id }) => {
           ))}
         </div>
       </div>
-      <Footer />
-    </Panel>
+   
   )
 }
 

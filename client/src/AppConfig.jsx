@@ -11,14 +11,14 @@ import {
   ConfigProvider,
   AppRoot,
 } from '@vkontakte/vkui'
-import { RouterProvider } from '@vkontakte/vk-mini-apps-router'
+// 📌 Импортируем стандартный RouterProvider из react-router-dom
+import { RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import '@vkontakte/vkui/dist/vkui.css'
 
 import transformVKBridgeAdaptivity from './utils/transformVKBridgeAdaptivity'
-import router from './router/AppRoutes'
+import router from './router/AppRoutes' // Ваша новая конфигурация маршрутов
 import store from './redux/store'
-import App from './App'
 import './assets/styles/index.css'
 
 const AppConfig = () => {
@@ -26,7 +26,7 @@ const AppConfig = () => {
   const vkBridgeInsets = useInsets() || undefined
   const adaptivity = transformVKBridgeAdaptivity(useAdaptivity())
   const { vk_platform } = parseURLSearchParamsForGetLaunchParams(
-    window.location.search
+    window.location.search,
   )
 
   return (
@@ -39,9 +39,8 @@ const AppConfig = () => {
       <AdaptivityProvider {...adaptivity}>
         <AppRoot mode="full" safeAreaInsets={vkBridgeInsets}>
           <Provider store={store}>
-            <RouterProvider router={router}>
-              <App />
-            </RouterProvider>
+         
+            <RouterProvider router={router} />
           </Provider>
         </AppRoot>
       </AdaptivityProvider>

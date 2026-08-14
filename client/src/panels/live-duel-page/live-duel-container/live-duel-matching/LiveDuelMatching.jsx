@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
  
 import {
   fetchStartLiveDuelAiBot,
@@ -14,7 +14,7 @@ import LiveDuelPaywall from '../../live-duel-ui/live-duel-paywall/LiveDuelPaywal
 
 const LiveDuelMatching = () => {
   const dispatch = useDispatch()
-  const routeNavigator = useRouteNavigator()
+    const navigate = useNavigate()
   const { currentRoom, loading } = useSelector(
     (state) => state.liveDuel,
   )
@@ -92,7 +92,7 @@ const LiveDuelMatching = () => {
   }
 
   const handleGoMainScreen = () => {
-    routeNavigator.push('/live-duel')
+    navigate('/live-duel')
     setShowAiOffer(false)
     setShowPaywall(false)
     dispatch(setSearchStatus('idle'))

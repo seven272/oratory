@@ -1,11 +1,11 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 
 import styles from './DashboardBlock.module.css'
 
 const DashboardBlock = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   // деструктуризация с защитой от undefined (fallback объект)
   const userData = useSelector((state) => state.profile?.user) || {}
@@ -14,7 +14,7 @@ const DashboardBlock = () => {
   return (
     <section
       className={styles.banner}
-      onClick={() => routeNavigator.go('/dashboard')}
+      onClick={() => navigate('/dashboard')}
       role="button"
       tabIndex={0}
     >

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { ScreenSpinner } from '@vkontakte/vkui'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -38,7 +38,7 @@ const RadioHostAi = ({ alias, isDaily }) => {
   } = useSpeechSber()
 
   const dispatch = useDispatch()
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
 
   const [randomRadio, setRandomRadio] = useState(null)
   const [poolRadio, setPoolRadio] = useState([])
@@ -133,7 +133,7 @@ const RadioHostAi = ({ alias, isDaily }) => {
 
   const handleCloseExercise = () => {
     dispatch(resetRadioHostState())
-    routerNavigator.push('/exercises/level3') // Навигация в меню уровней VK Mini App
+    navigate('/exercises/level3') // Навигация в меню уровней VK Mini App
   }
 
   const handleRestartExercise = () => {

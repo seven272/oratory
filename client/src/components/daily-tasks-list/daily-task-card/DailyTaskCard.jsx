@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { FaCheckSquare } from 'react-icons/fa'
 
 import { All_EXERCISES } from '../../../assets/mocks/exercises'
@@ -16,7 +16,7 @@ const DailyTaskCard = ({ task }) => {
     isCompleted,
     locked,
   } = task
-  const routeNavigator = useRouteNavigator()
+ const navigate = useNavigate()
 
   // Находим иконку из статического конфига по alias
   const exerciseConfig = Object.values(All_EXERCISES)
@@ -35,8 +35,8 @@ const DailyTaskCard = ({ task }) => {
       return
     }
 
-    console.log(`Запуск ${alias} в режиме Daily`)
-    routeNavigator.push(`/exercise/${alias}?daily=true`)
+  
+    navigate(`/exercise/${alias}?daily=true`)
   }
 
   // Динамические классы собраны через удобный массив в snake_case

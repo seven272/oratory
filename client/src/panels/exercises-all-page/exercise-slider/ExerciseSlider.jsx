@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -10,7 +10,7 @@ import styles from './ExerciseSlider.module.css'
 import ExercisePreview from '../../../components/exercise-preview/ExercisePreview'
 
 const ExerciseSlider = ({ titleLvl, levelKey, exList = [] }) => {
-  const routeNavigator = useRouteNavigator()
+ const navigate = useNavigate()
   const sliderRef = useRef(null)
 
   // Функция для плавного скролла влево/вправо
@@ -26,7 +26,7 @@ const ExerciseSlider = ({ titleLvl, levelKey, exList = [] }) => {
   }
 
   const handleGoToLevel = () => {
-    routeNavigator.push(`/exercises/${levelKey}`)
+    navigate(`/exercises/${levelKey}`)
   }
 
   return (

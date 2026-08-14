@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 import { PiTimer } from 'react-icons/pi'
 import { Icon20InfoCircleOutline } from '@vkontakte/icons'
 
@@ -40,7 +40,7 @@ const LogicChain = ({ alias, isDaily }) => {
     isListening,
     resetTranscript,
   } = useSpeech('ru-RU')
-  const routerNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const [xp, setXp] = useState(0)
   // Генератор для незавершенных фраз
@@ -93,7 +93,6 @@ const LogicChain = ({ alias, isDaily }) => {
     )
   }
 
-
   const handleInterrupt = () => {
     setStatus(STATUS.FINISHED)
     setIsTaskInterrupted(true)
@@ -105,8 +104,8 @@ const LogicChain = ({ alias, isDaily }) => {
   }
 
   const clickStop = () => {
-     resetExerciseState()
-    routerNavigator.back()
+    resetExerciseState()
+    navigate(-1)
   }
 
   // логика основного таймера
@@ -163,7 +162,9 @@ const LogicChain = ({ alias, isDaily }) => {
               <PiTimer size={30} /> {timeLeft} сек
             </div>
 
-            <span className={styles.task_text}>{currentStart}</span>
+            <div className={styles.words_wrap}>
+              <span className={styles.word}>{currentStart}</span>
+            </div>
 
             {/* Отображаем transcript, если он пустой - выводим статус */}
             <div className={styles.live_transcript}>

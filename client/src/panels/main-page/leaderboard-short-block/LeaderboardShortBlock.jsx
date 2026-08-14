@@ -1,12 +1,12 @@
 // components/Dashboard/LeaderboardShortBlock.jsx
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router'
+import { useNavigate } from 'react-router-dom'
 
 import styles from './LeaderboardShortBlock.module.css'
 
 const LeaderboardShortBlock = () => {
-  const routeNavigator = useRouteNavigator()
+  const navigate = useNavigate()
   const { list, currentUser, status } = useSelector(
     (state) => state.leaderboard,
   )
@@ -25,7 +25,7 @@ const LeaderboardShortBlock = () => {
         🏆 ТОП ОРАТОРОВ (НЕДЕЛЯ)
       </h2>
 
-      <div className={styles.leaderboard_wrapper} onClick={() => routeNavigator.push('leaderboard')}>
+      <div className={styles.leaderboard_wrapper} onClick={() => navigate('leaderboard')}>
         <ul className={styles.leaderboard_list}>
           {weeklyTop3.map((player, index) => (
             <li key={player.id} className={styles.leaderboard_item}>
