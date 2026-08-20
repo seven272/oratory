@@ -16,6 +16,12 @@ import buildImpromptuToastCases from './ai-courses-reducers/impromptuToastReduce
 import buildWeddingChallengeCases from './ai-courses-reducers/weddingChallengeReducer.js'
 import buildHeroJourneyCases from './ai-courses-reducers/heroJourneReducer.js'
 import buildFiascoTurnCases from './ai-courses-reducers/fiascoTurnReducer.js'
+import buildEmpathySparkCases from './ai-courses-reducers/empathySparkReducer.js'
+import buildAntiFlatteryCases from './ai-courses-reducers/antiFlatteryReducer.js'
+import buildTaxiBlitzCases from './ai-courses-reducers/taxiBlitzReducer.js'
+import buildFamilyMinefieldCases from './ai-courses-reducers/familyMinefieldReducer.js'
+import buildVintageScoutCases from './ai-courses-reducers/vintageScoutReducer.js'
+import buildDeafPassengerCases from './ai-courses-reducers/deafPassengerReducer.js'
 
 // 1. Инициализация прогресса по курсу
 const fetchCourseProgress = createAsyncThunk(
@@ -313,7 +319,6 @@ const courseSlice = createSlice({
         state.error = null
       })
       .addCase(fetchSubmitExam.fulfilled, (state, action) => {
-       
         state.examSubmittingStatus = 'succeeded'
         // Обновляем прогресс актуальными данными из БД
         state.progressData = action.payload.progressData
@@ -404,6 +409,12 @@ const courseSlice = createSlice({
     buildWeddingChallengeCases(builder)
     buildHeroJourneyCases(builder)
     buildFiascoTurnCases(builder)
+    buildEmpathySparkCases(builder)
+    buildAntiFlatteryCases(builder)
+    buildTaxiBlitzCases(builder)
+    buildFamilyMinefieldCases(builder)
+    buildVintageScoutCases(builder)
+    buildDeafPassengerCases(builder)
   },
 })
 

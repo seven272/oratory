@@ -62,7 +62,7 @@ const AiWorkoutChat = ({
             {config.ui.sessionLabel} {/* ДИНАМИЧЕСКИЙ ТЕКСТ ШАПКИ */}
           </span>
           <button className={styles.exit_button} onClick={onExit}>
-            Выйти из тренажера
+            Выйти из тренажера 
           </button>
         </div>
         <p className={styles.context_subtitle}>{preview}</p>

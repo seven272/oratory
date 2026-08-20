@@ -16,6 +16,12 @@ import * as impromptuToastThunks from '../../../../redux/slices/ai-courses-thunk
 import * as weddingChallengeThunks from '../../../../redux/slices/ai-courses-thunks/weddingChallengeThunks'
 import * as heroJourneyThunks from '../../../../redux/slices/ai-courses-thunks/heroJourneyThunks'
 import * as fiascoTurnThunks from '../../../../redux/slices/ai-courses-thunks/fiascoTurnThunks'
+import * as empathySparkThunks from '../../../../redux/slices/ai-courses-thunks/empathySparkThunks'
+import * as antiFlatteryThunks from '../../../../redux/slices/ai-courses-thunks/antiFlatteryThunks'
+import * as taxiBlitzThunks from '../../../../redux/slices/ai-courses-thunks/taxiBlitzThunks'
+import * as familyMinefieldThunks from '../../../../redux/slices/ai-courses-thunks/familyMinefieldThunks'
+import * as vintageScoutThunks from '../../../../redux/slices/ai-courses-thunks/vintageScoutThunks'
+import * as deafPassengerThunks from '../../../../redux/slices/ai-courses-thunks/deafPassengerThunks'
 
 // Собираем все санки в единый объект для динамического вызова по ключу
 export const ALL_WORKOUT_THUNKS = {
@@ -35,6 +41,12 @@ export const ALL_WORKOUT_THUNKS = {
   ...weddingChallengeThunks,
   ...heroJourneyThunks,
   ...fiascoTurnThunks,
+  ...empathySparkThunks,
+  ...antiFlatteryThunks,
+  ...taxiBlitzThunks,
+  ...familyMinefieldThunks,
+  ...vintageScoutThunks,
+  ...deafPassengerThunks,
 }
 
 export const WORKOUT_CONFIGS = {
@@ -514,6 +526,174 @@ export const WORKOUT_CONFIGS = {
         key: 'lessonExtracted',
         label: 'Выводы из кризиса (Трансформация в плюс)',
       },
+    ],
+  },
+  // ==========================================
+  // КУРС: СИЛА КОМПЛИМЕНТА (compliment_pro)
+  // ==========================================
+  empathy_spark: {
+    id: 'empathy_spark',
+    title: '✨ Искра доверия',
+    description:
+      'Растопить лед в общении с закрытым, уставшим незнакомцем, точно подметив деталь его образа или поведения.',
+    badge: 'Первое впечатление',
+    thunks: {
+      start: 'fetchStartEmpathySparkTrainer',
+      send: 'fetchSendEmpathySparkResponse',
+      finish: 'fetchFinishEmpathySparkTrainer',
+    },
+    ui: {
+      sessionLabel: 'Текущая сессия ИИ (Живой экспромт)',
+      // 🔥 Роль теперь динамическая! Берем из выбранного сценария: exerciseData.role
+      aiRoleName: 'Собеседник',
+      thinkingText: '⏳ Собеседник слушает вас и думает...',
+      finishText:
+        '🗣️ Диалог завершен. Собеседник анализирует ваше влияние на его настроение.',
+      finishButtonText: 'Узнать вердикт собеседника',
+      finishButtonLoadingText: 'Анализ эмпатии нейросетью...',
+    },
+    criteria: [
+      { key: 'observation', label: 'Наблюдательность' },
+      { key: 'relevance', label: 'Уместность' },
+    ],
+  },
+  anti_flattery: {
+    id: 'anti_flattery',
+    title: '🔥 Тонкая грань',
+    description:
+      'Похвалить близкого человека за его творчество или личные усилия так, чтобы обойти банальные дежурные фразы. ИИ будет жестко резать примитивную лесть и дежурные фразы.',
+    badge: 'Искренность',
+    thunks: {
+      start: 'fetchStartAntiFlatteryTrainer',
+      send: 'fetchSendAntiFlatteryResponse',
+      finish: 'fetchFinishAntiFlatteryTrainer',
+    },
+    ui: {
+      sessionLabel: 'Текущая сессия ИИ (Калибровка искренности)',
+      // 🔥 Роль берем динамически из сценария (Брат, Подруга, Партнер)
+      aiRoleName: 'Близкий человек',
+      thinkingText: '⏳ Близкий человек реагирует на похвалу...',
+      finishText:
+        '🗣️ Разговор окончен. Система вычисляет индекс искренности ваших слов.',
+      finishButtonText: 'Получить оценку искренности',
+      finishButtonLoadingText: 'Анализ текста психологом-ИИ...',
+    },
+    criteria: [
+      { key: 'sincerity', label: 'Искренность' },
+      { key: 'focus', label: 'Фокус на усилиях' },
+    ],
+  },
+
+  // КУРС: ИСКУССТВО ОТВЕТОВ НА ВОПРОСЫ (qa_master)
+  // ==========================================
+  taxi_blitz: {
+    id: 'taxi_blitz',
+    title: '🚖 Такси-Блиц',
+    description:
+      'Симуляция спонтанного диалога. Разговорчивый водитель-философ засыпает вас неожиданными вопросами о смысле жизни. Удержите темп беседы.',
+    badge: 'Бытовой экспромт',
+    thunks: {
+      start: 'fetchStartTaxiBlitzTrainer',
+      send: 'fetchSendTaxiBlitzResponse',
+      finish: 'fetchFinishTaxiBlitzTrainer',
+    },
+    ui: {
+      sessionLabel: 'Текущая сессия ИИ (Скорость ответов)',
+      // 🔥 Роль динамическая: подтягивается из выбранного сценария (например, Водитель-меломан, Пассажир-оптимист)
+      aiRoleName: 'Собеседник',
+      thinkingText: '⏳ Собеседник обдумывает следующую мысль...',
+      finishText:
+        '🗣️ Поездка подошла к концу. Собеседник оценивает, насколько интересным и быстрым в общении вы оказались.',
+      finishButtonText: 'Послушать финальный вердикт',
+      finishButtonLoadingText: 'Анализ речевой скорости...',
+    },
+    criteria: [
+      { key: 'reactionSpeed', label: 'Скорость мышления' },
+      { key: 'structuralFrame', label: 'Структура ответа' },
+    ],
+  },
+  family_minefield: {
+    id: 'family_minefield',
+    title: '🍽️ Семейный ужин: Минное поле',
+    description:
+      'Праздничное застолье прерывается бестактным вопросом «с подвохом» от прямолинейного родственника. Сохраните лицо и переведите тему.',
+    badge: 'Стресс-диалог',
+    thunks: {
+      start: 'fetchStartFamilyMinefieldTrainer',
+      send: 'fetchSendFamilyMinefieldResponse',
+      finish: 'fetchFinishFamilyMinefieldTrainer',
+    },
+    ui: {
+      sessionLabel: 'Текущая сессия ИИ (Отражение бестактности)',
+      // 🔥 Роль динамическая из сценария (Тетя, Дядя, Бабушка, Троюродный брат)
+      aiRoleName: 'Родственник',
+      thinkingText: '⏳ Родственник прищуривается и подливает чай...',
+      finishText:
+        '🗣️ Застолье завершено. Система оценивает ваш уровень хладнокровия и дипломатичности.',
+      finishButtonText: 'Узнать вердикт семейного совета',
+      finishButtonLoadingText:
+        'Анализ уровня защиты и токсичности...',
+    },
+    criteria: [
+      { key: 'emotionalControl', label: 'Хладнокровие' },
+      { key: 'topicShift', label: 'Элегантный перефраз' },
+    ],
+  },
+
+  // ==========================================
+  // КУРС: МАСТЕР ВОПРОСОВ (question_architect)
+  // ==========================================
+  vintage_scout: {
+    id: 'vintage_scout',
+    title: '🕵️‍♂️ Винтажный раритет',
+    description:
+      'Сложные переговоры с закрытым или хитрым персонажем. С помощью открытых вопросов докопайтесь до скрытых дефектов и реальной истории вещи.',
+    badge: 'Сбор информации / Глубинная разведка',
+    thunks: {
+      start: 'fetchStartVintageScoutTrainer',
+      send: 'fetchSendVintageScoutResponse',
+      finish: 'fetchFinishVintageScoutTrainer',
+    },
+    ui: {
+      sessionLabel: 'Текущая сессия ИИ (Глубинные вопросы)',
+      // 🔥 Роль динамическая из сценария (Коллекционер винила, Продавец Волги, Скрытная хозяйка)
+      aiRoleName: 'Продавец',
+      thinkingText: '⏳ Собеседник недоверчиво разглядывает вас...',
+      finishText:
+        '🗣️ Вы завершили расспросы. Владелец анализирует, удалось ли вам втереться в доверие и узнать всю правду.',
+      finishButtonText: 'Узнать реальное состояние раритета',
+      finishButtonLoadingText: 'Вычисление индекса открытости ИИ...',
+    },
+    criteria: [
+      { key: 'openQuestions', label: 'Воронка вопросов' },
+      { key: 'trustBuilding', label: 'Доверие' },
+    ],
+  },
+  deaf_passenger: {
+    id: 'deaf_passenger',
+    title: '🚂 Попутчик-Глухарь',
+    description:
+      'Собеседник бесконечно флудит и уходит от темы. Поймайте микро-паузу и снайперским вопросом вежливо верните контроль над таймингом.',
+    badge: 'Перехват инициативы / Защита времени',
+    thunks: {
+      start: 'fetchStartDeafPassengerTrainer',
+      send: 'fetchSendDeafPassengerResponse',
+      finish: 'fetchFinishDeafPassengerTrainer',
+    },
+    ui: {
+      sessionLabel: 'Текущая сессия ИИ (Управление фокусом)',
+      // 🔥 Роль динамическая из сценария (Рыбак в поезде, Парикмахер, Тренер, Любитель заговоров)
+      aiRoleName: 'Рассказчик',
+      thinkingText:
+        '⏳ Собеседник продолжает увлеченно тараторить...',
+      finishText:
+        '🗣️ Диалог остановлен. Нейросеть вычисляет, насколько технично вы перехватили управление инициативой.',
+      finishButtonText: 'Получить оценку перехвата руля',
+      finishButtonLoadingText: 'Анализ структуры перебивания...',
+    },
+    criteria: [
+      { key: 'interruptionTiming', label: 'Точность перехвата' },
+      { key: 'focusReturn', label: 'Возврат к сути' },
     ],
   },
 }

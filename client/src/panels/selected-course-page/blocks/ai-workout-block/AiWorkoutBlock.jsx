@@ -28,6 +28,12 @@ import { IMPROMPTU_TOAST_SCENARIOS } from '../../../../assets/data/courses/scena
 import { WEDDING_CHALLENGE_SCENARIOS } from '../../../../assets/data/courses/scenarios/weddingChallengeScenarios'
 import { HERO_JOURNEY_SCENARIOS } from '../../../../assets/data/courses/scenarios/heroJourneyScenarios'
 import { FIASCO_TURN_SCENARIOS } from '../../../../assets/data/courses/scenarios/fiascoTurnScenarios'
+import { EMPATHY_SPARK_SCENARIOS } from '../../../../assets/data/courses/scenarios/empathySparkScenarios'
+import { ANTI_FLATTERY_SCENARIOS } from '../../../../assets/data/courses/scenarios/antiFlatteryScenarios'
+import { TAXI_BLITZ_SCENARIOS } from '../../../../assets/data/courses/scenarios/taxiBlitzScenarios'
+import { FAMILY_MINEFIELD_SCENARIOS } from '../../../../assets/data/courses/scenarios/familyMinefieldScenarios'
+import { VINTAGE_SCOUT_SCENARIOS } from '../../../../assets/data/courses/scenarios/vintageScoutScenarios'
+import { DEAF_PASSENGER_SCENARIOS } from '../../../../assets/data/courses/scenarios/deafPassengerScenarios'
 
 import {
   WORKOUT_CONFIGS,
@@ -53,6 +59,12 @@ const SCENARIOS_MAP = {
   wedding_challenge: WEDDING_CHALLENGE_SCENARIOS,
   hero_journey: HERO_JOURNEY_SCENARIOS,
   fiasco_turn: FIASCO_TURN_SCENARIOS,
+  empathy_spark: EMPATHY_SPARK_SCENARIOS,
+  anti_flattery: ANTI_FLATTERY_SCENARIOS,
+  family_minefield: FAMILY_MINEFIELD_SCENARIOS,
+  taxi_blitz: TAXI_BLITZ_SCENARIOS,
+  vintage_scout: VINTAGE_SCOUT_SCENARIOS,
+  deaf_passenger: DEAF_PASSENGER_SCENARIOS,
 }
 
 const AiWorkoutBlock = ({ courseCode }) => {
@@ -98,10 +110,13 @@ const AiWorkoutBlock = ({ courseCode }) => {
   }, [dispatch])
 
   const handleStartTrainer = (modeId) => {
+    
     setSelectedMode(modeId) // Запоминаем режим
 
     const config = WORKOUT_CONFIGS[modeId]
+  
     const targetScenarios = SCENARIOS_MAP[modeId]
+
     if (!config || !targetScenarios || targetScenarios.length === 0)
       return
 
@@ -109,7 +124,7 @@ const AiWorkoutBlock = ({ courseCode }) => {
       Math.random() * targetScenarios.length,
     )
     const selectedScenario = targetScenarios[randomIndex]
-
+   
     const payload = {
       role: selectedScenario.role,
       topic: selectedScenario.topic,

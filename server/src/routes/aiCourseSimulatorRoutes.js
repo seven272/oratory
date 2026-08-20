@@ -98,6 +98,45 @@ import {
   finishFiascoTurnTrainer,
 } from '../controllers/ai-courses-simulators/story-master/fiasco-turn/fiascoTurnController.js'
 
+import {
+  startEmpathySparkTrainer,
+  generateEmpathySparkResponse,
+  finishEmpathySparkTrainer,
+} from '../controllers/ai-courses-simulators/compliment-pro/empathy-spark/empathySparkController.js'
+
+import {
+  startAntiFlatteryTrainer,
+  generateAntiFlatteryResponse,
+  finishAntiFlatteryTrainer,
+} from '../controllers/ai-courses-simulators/compliment-pro/anti-flattery/antiFlatteryController.js'
+
+import {
+  startTaxiBlitzTrainer,
+  generateTaxiBlitzResponse,
+  finishTaxiBlitzTrainer,
+} from '../controllers/ai-courses-simulators/qa-master/taxi-blitz/taxiBlitzController.js'
+
+// Импорт контроллеров тренажера «Семейное минное поле» (family-minefield)
+import {
+  startFamilyMinefieldTrainer,
+  generateFamilyMinefieldResponse,
+  finishFamilyMinefieldTrainer,
+} from '../controllers/ai-courses-simulators/qa-master/family-minefield/familyMinefieldController.js'
+
+// Импорт контроллеров тренажера «Винтажный раритет» (vintage-scout)
+import {
+  startVintageScoutTrainer,
+  generateVintageScoutResponse,
+  finishVintageScoutTrainer,
+} from '../controllers/ai-courses-simulators/question-architect/vintage-scout/vintageScoutController.js'
+
+// Импорт контроллеров тренажера «Попутчик-Глухарь» (deaf-passenger)
+import {
+  startDeafPassengerTrainer,
+  generateDeafPassengerResponse,
+  finishDeafPassengerTrainer,
+} from '../controllers/ai-courses-simulators/question-architect/deaf-passenger/deafPassengerController.js'
+
 const aiCourseSimulatorRouter = express.Router()
 
 // Настройка multer для аудио
@@ -127,7 +166,7 @@ aiCourseSimulatorRouter.post(
   checkAuth,
   finishPitchTrainer,
 )
- 
+
 // тренажер Обработка возвражений
 aiCourseSimulatorRouter.post(
   '/pitch-master/objection/start',
@@ -408,13 +447,120 @@ aiCourseSimulatorRouter.post(
 aiCourseSimulatorRouter.post(
   '/story-master/fiasco-turn/respond',
   checkAuth,
-  upload.single('file'), 
+  upload.single('file'),
   generateFiascoTurnResponse,
 )
 aiCourseSimulatorRouter.post(
   '/story-master/fiasco-turn/finish',
   checkAuth,
   finishFiascoTurnTrainer,
+)
+
+// Тренажер Искра доверия (empathy_spark)
+aiCourseSimulatorRouter.post(
+  '/compliment-pro/empathy-spark/start',
+  checkAuth,
+  startEmpathySparkTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/compliment-pro/empathy-spark/respond',
+  checkAuth,
+  upload.single('file'),
+  generateEmpathySparkResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/compliment-pro/empathy-spark/finish',
+  checkAuth,
+  finishEmpathySparkTrainer,
+)
+
+// Тренажер  Тонкая грань (anti_flattery)
+aiCourseSimulatorRouter.post(
+  '/compliment-pro/anti-flattery/start',
+  checkAuth,
+  startAntiFlatteryTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/compliment-pro/anti-flattery/respond',
+  checkAuth,
+  upload.single('file'),
+  generateAntiFlatteryResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/compliment-pro/anti-flattery/finish',
+  checkAuth,
+  finishAntiFlatteryTrainer,
+)
+
+// --- Тренажер Такси-Блиц (taxi_blitz) ---
+aiCourseSimulatorRouter.post(
+  '/qa-master/taxi-blitz/start',
+  checkAuth,
+  startTaxiBlitzTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/qa-master/taxi-blitz/respond',
+  checkAuth,
+  upload.single('file'),
+  generateTaxiBlitzResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/qa-master/taxi-blitz/finish',
+  checkAuth,
+  finishTaxiBlitzTrainer,
+)
+
+// --- Тренажер Семейное минное поле (family_minefield) ---
+aiCourseSimulatorRouter.post(
+  '/qa-master/family-minefield/start',
+  checkAuth,
+  startFamilyMinefieldTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/qa-master/family-minefield/respond',
+  checkAuth,
+  upload.single('file'),
+  generateFamilyMinefieldResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/qa-master/family-minefield/finish',
+  checkAuth,
+  finishFamilyMinefieldTrainer,
+)
+// --- Тренажер: Винтажный раритет (vintage_scout) ---
+aiCourseSimulatorRouter.post(
+  '/question-architect/vintage-scout/start',
+  checkAuth,
+  startVintageScoutTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/question-architect/vintage-scout/respond',
+  checkAuth,
+  upload.single('file'),
+  generateVintageScoutResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/question-architect/vintage-scout/finish',
+  checkAuth,
+  finishVintageScoutTrainer,
+)
+
+// --- Тренажер Попутчик-Глухарь (deaf_passenger) ---
+aiCourseSimulatorRouter.post(
+  '/question-architect/deaf-passenger/start',
+  checkAuth,
+  startDeafPassengerTrainer,
+)
+aiCourseSimulatorRouter.post(
+  '/question-architect/deaf-passenger/respond',
+  checkAuth,
+  upload.single('file'),
+  generateDeafPassengerResponse,
+)
+aiCourseSimulatorRouter.post(
+  '/question-architect/deaf-passenger/finish',
+  checkAuth,
+  finishDeafPassengerTrainer,
 )
 
 export default aiCourseSimulatorRouter
